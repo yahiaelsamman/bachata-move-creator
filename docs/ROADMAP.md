@@ -2,9 +2,13 @@
 
 ## Needs a dancer (data)
 
-- **Moves flagged `check`:** the crossed-hands left and right turns (does the cross
-  flip?), the crossed half turn into shadow (which cross allows which direction?),
-  and the shadow exit turn (which hand is kept).
+- **Crossed-hands turns (most important):** sources say you turn toward the hand on
+  top, which conflicts with the draft. See [RESEARCH.md](RESEARCH.md).
+- **Other moves flagged `check`:** the crossed half turn into shadow (which cross
+  allows which direction?), the shadow exit turn (which hand is kept), and the
+  new crossed-hands outside turn (end hold).
+- **Unplaced moves to add once you know their holds:** copa, titanic, media
+  vuelta, matador pretzel.
 - **Shadow hold:** both versions exist, same hands (`shadow`) and hand on waist
   (`shadow_waist`). Which one is used in practice, and do they connect directly?
 - **Hand changes:** do they take their own 4 counts or happen inside a basic (0)?

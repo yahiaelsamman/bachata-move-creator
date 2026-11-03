@@ -111,7 +111,7 @@
   arms: hammerlock_follower_R
 
 - id: cuddle
-  name: Cuddle / wrap
+  name: Cuddle / wrap / sweetheart
   short: Cuddle
   orientation: side_by_side_R
   frame: closed

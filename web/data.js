@@ -103,7 +103,7 @@ window.BACHATA_DATA = {
   },
   {
    "id": "cuddle",
-   "name": "Cuddle / wrap",
+   "name": "Cuddle / wrap / sweetheart",
    "short": "Cuddle",
    "orientation": "side_by_side_R",
    "frame": "closed",
@@ -256,7 +256,8 @@ window.BACHATA_DATA = {
    ],
    "to": "same",
    "counts": 4,
-   "opposite": "follower-left-turn"
+   "opposite": "follower-left-turn",
+   "notes": "Also called the outside turn."
   },
   {
    "id": "follower-left-turn",
@@ -270,7 +271,8 @@ window.BACHATA_DATA = {
    ],
    "to": "same",
    "counts": 4,
-   "opposite": "follower-right-turn"
+   "opposite": "follower-right-turn",
+   "notes": "Also called the inside turn. Common timing: C-shaped prep with the lead hand on 1-4, turn on 5-8."
   },
   {
    "id": "follower-double-right-turn",
@@ -361,7 +363,7 @@ window.BACHATA_DATA = {
    "counts": 4,
    "opposite": "cross-left-turn",
    "notes": "Only possible with leader's left on top. With right on top the arms lock.",
-   "check": "Confirm the cross flips to right-over-left after the turn."
+   "check": "Conflicting sources: Library of Dance and a common rule of thumb say you turn toward the hand on top, i.e. the right turn is led from right-over-left. This draft follows your rule (left over right allows the right turn). Decide which is true for you."
   },
   {
    "id": "cross-left-turn",
@@ -371,7 +373,7 @@ window.BACHATA_DATA = {
    "to": "cross_Ltop",
    "counts": 4,
    "opposite": "cross-right-turn",
-   "check": "Confirm the cross flips to left-over-right after the turn."
+   "check": "See the crossed-hands right turn: sources suggest the turn from right-over-left is a right (outside) turn, not a left turn."
   },
   {
    "id": "cross-half-turn-shadow",
@@ -901,6 +903,25 @@ window.BACHATA_DATA = {
    ],
    "to": "apart",
    "counts": 4
+  },
+  {
+   "id": "crossed-outside-turn",
+   "name": "Crossed-hands outside turn (right over left)",
+   "kind": "move",
+   "from": "cross_Rtop",
+   "to": "cross_Ltop",
+   "counts": 4,
+   "notes": "From Library of Dance - from crossed hands, right over left, the follower takes an outside (right) turn led with the right hand.",
+   "check": "End hold not stated by the source; set by geometry (the cross flips)."
+  },
+  {
+   "id": "sombrero",
+   "name": "Sombrero",
+   "kind": "move",
+   "from": "double",
+   "to": "same",
+   "counts": 8,
+   "notes": "Leader arcs the joined hands over the follower's head and then his own, in one 8-count, from double hands."
   },
   {
    "id": "hand-change-lr-to-rl",
