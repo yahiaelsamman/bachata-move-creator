@@ -142,6 +142,16 @@ window.BACHATA_DATA = {
    "arms": "neutral"
   },
   {
+   "id": "leader_shadow",
+   "name": "Leader's shadow (leader in front, follower behind)",
+   "short": "Leader shadow",
+   "orientation": "reverse_shadow",
+   "frame": "closed",
+   "hands": "L>L,R>R",
+   "crossed": "none",
+   "arms": "neutral"
+  },
+  {
    "id": "apart",
    "name": "Apart (no connection)",
    "short": "Apart",
@@ -336,7 +346,8 @@ window.BACHATA_DATA = {
    "level": 1,
    "from": "open_LR",
    "to": "same",
-   "counts": 8
+   "counts": 8,
+   "notes": "Spanish: dile que no (Redance)."
   },
   {
    "id": "cbl-inside-turn",
@@ -358,7 +369,7 @@ window.BACHATA_DATA = {
    "weight": {
     "to": "parallel"
    },
-   "notes": "Leader raises left hand, follower turns left into the wrap."
+   "notes": "Leader raises left hand, follower turns left into the wrap. French: enroule (wikidanse.fr); Spanish: envoltura; Russian: obertka / konfetka. Also the first half of the pretzel."
   },
   {
    "id": "cuddle-unwrap",
@@ -443,7 +454,7 @@ window.BACHATA_DATA = {
    "from": "open_RR",
    "to": "hammerlock_R",
    "counts": 4,
-   "notes": "Follower turns left with the right hand kept low; leader picks up her left hand."
+   "notes": "Follower turns left with the right hand kept low; leader picks up her left hand. Spanish: candado; German: Brezel; Russian: arm breaker / hammerlock."
   },
   {
    "id": "hammerlock-exit",
@@ -691,7 +702,7 @@ window.BACHATA_DATA = {
    "weight": {
     "to": "parallel"
    },
-   "notes": "Follower turns right half way; leader's right hand slides to her waist."
+   "notes": "Leader pushes her right arm back and she makes a half turn to the left (wikidanse.fr). Spanish schools call this entry media de follower (Unibaila); in Russian, half-turn woman."
   },
   {
    "id": "shadow-entry-from-open",
@@ -1010,7 +1021,7 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "same",
    "counts": 8,
-   "notes": "Leader arcs the joined hands over the follower's head and then his own, in one 8-count, from double hands."
+   "notes": "From double hands the leader arcs the joined hands over her head and then his own, in one 8-count (Bailar). Redance describes a version from crossed hands; see Sombrero (from crossed hands)."
   },
   {
    "id": "hammerlock-left-entry",
@@ -1021,7 +1032,7 @@ window.BACHATA_DATA = {
    "to": "hammerlock_L",
    "counts": 4,
    "opposite": "hammerlock-left-unwind",
-   "notes": "Follower turns right while the leader keeps his right hand (her left) low, folding her arm behind her back."
+   "notes": "From double hands the leader raises his left arm and keeps the right at waist height; she turns right and her left arm ends behind her back. Same figure in French (tour espagnol fille, wikidanse.fr), German (Eindrehen in die Brezel, in-tanz.de) and Spanish (candado, Redance)."
   },
   {
    "id": "hammerlock-left-entry-from-rl",
@@ -1041,7 +1052,8 @@ window.BACHATA_DATA = {
    "from": "hammerlock_L",
    "to": "double",
    "counts": 4,
-   "opposite": "hammerlock-left-entry"
+   "opposite": "hammerlock-left-entry",
+   "notes": "She unwinds with a full left turn (deroule fille a gauche, wikidanse.fr; Ausdrehen aus der Brezel, in-tanz.de)."
   },
   {
    "id": "hammerlock-left-release",
@@ -1202,6 +1214,174 @@ window.BACHATA_DATA = {
    }
   },
   {
+   "id": "leader-shadow-entry",
+   "name": "Leader's shadow entry (leader half turn)",
+   "kind": "move",
+   "level": 3,
+   "from": "double",
+   "to": "leader_shadow",
+   "counts": 4,
+   "weight": {
+    "to": "parallel"
+   },
+   "notes": "The leader makes a half turn on 1 and ends in front of her, then changes feet with a step-tap; she slides her arms between his back and arms, forearms on his (Unibaila: media de lider).",
+   "check": "Which hold you start from is not stated by the sources."
+  },
+  {
+   "id": "leader-shadow-take-out",
+   "name": "Leader's shadow exit (sacala)",
+   "kind": "move",
+   "level": 3,
+   "from": "leader_shadow",
+   "to": "open_LR",
+   "counts": 4,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "From the leader's shadow, the leader turns outwards to take her out in front of him (Unibaila: sacala).",
+   "check": "End hold not stated by the source."
+  },
+  {
+   "id": "shadow-manton",
+   "name": "Shadow switch (manton, to leader's shadow)",
+   "kind": "move",
+   "level": 3,
+   "from": "shadow",
+   "to": "leader_shadow",
+   "counts": 4,
+   "opposite": "shadow-comeback",
+   "notes": "From the follower's shadow, pass with a turn into the leader's shadow; leave room for the full turn (Unibaila: manton)."
+  },
+  {
+   "id": "shadow-comeback",
+   "name": "Shadow switch (comeback, to follower's shadow)",
+   "kind": "move",
+   "level": 3,
+   "from": "leader_shadow",
+   "to": "shadow",
+   "counts": 4,
+   "opposite": "shadow-manton",
+   "notes": "The reverse of the manton; block so she stays in the follower's shadow (Unibaila: comeback)."
+  },
+  {
+   "id": "shadow-exit-half-turn-right",
+   "name": "Shadow exit (half turn under left arm)",
+   "kind": "move",
+   "level": 2,
+   "from": "shadow_waist",
+   "to": "open_LR",
+   "counts": 4,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "Follower makes a half turn to the right under the leader's left arm, back to facing (wikidanse.fr: enroule deux bras et shadow)."
+  },
+  {
+   "id": "shadow-exit-mill",
+   "name": "Shadow exit (mill)",
+   "kind": "move",
+   "level": 3,
+   "from": "shadow_waist",
+   "to": "open_LR",
+   "counts": 8,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "Named as an exit from shadow in Russian (melnitsa, bachatamap.ru) and Spanish (molino / helicoptero, Introvert Dance).",
+   "check": "Mechanics and end hold not described by the sources."
+  },
+  {
+   "id": "cuddle-throw-to-shadow",
+   "name": "Cuddle exit (throw the arms, into shadow)",
+   "kind": "move",
+   "level": 2,
+   "from": "cuddle",
+   "to": "shadow_waist",
+   "counts": 4,
+   "notes": "From the wrap the leader throws her arms out and keeps dancing behind her (wikidanse.fr: lancer bras fille, pas de base fille dos garcon)."
+  },
+  {
+   "id": "pretzel-leader-turn-out",
+   "name": "Pretzel exit (leader turns under the arms)",
+   "kind": "move",
+   "level": 3,
+   "from": "cuddle",
+   "to": "cross_Rtop",
+   "counts": 4,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "Second half of the pretzel: from the wrap the leader turns under the arms and you end face to face in a crossed grip (Redance).",
+   "check": "Which hand ends on top is not stated."
+  },
+  {
+   "id": "paseala",
+   "name": "Paseala (walk her out and back)",
+   "kind": "styling",
+   "level": 2,
+   "from": "closed",
+   "counts": 8,
+   "notes": "Right hand at her waist; on 1-3 she promenades out, on 5-7 she comes back (wikidanse.fr)."
+  },
+  {
+   "id": "couple-turn",
+   "name": "Couple turn",
+   "kind": "styling",
+   "level": 2,
+   "from": "closed",
+   "counts": 8,
+   "notes": "Prepare to the left on 1-3, turn together to the right on 5-7 (wikidanse.fr: tour en couple)."
+  },
+  {
+   "id": "forward-break",
+   "name": "Forward break",
+   "kind": "styling",
+   "level": 1,
+   "from": [
+    "closed",
+    "open_LR"
+   ],
+   "counts": 4,
+   "notes": "Leader steps forward with the left on 1 while she steps back with the right, back on 2, together on 3, tap on 4 (Redance)."
+  },
+  {
+   "id": "caricia",
+   "name": "Caress (caricia)",
+   "kind": "styling",
+   "level": 2,
+   "from": [
+    "closed",
+    "shadow_waist",
+    "cuddle",
+    "neck_wrap"
+   ],
+   "counts": 4,
+   "notes": "Hands slide over shoulder, neck, arms or waist without breaking the footwork (Redance; wikidanse.fr: caresse)."
+  },
+  {
+   "id": "elbows",
+   "name": "Elbows (coudes)",
+   "kind": "styling",
+   "level": 2,
+   "from": "double",
+   "counts": 4,
+   "notes": "The leader steps in and places his elbows over her arms (wikidanse.fr: coudes; Russian: elbows-in / gancho)."
+  },
+  {
+   "id": "sombrero-crossed",
+   "name": "Sombrero (from crossed hands)",
+   "kind": "move",
+   "level": 3,
+   "from": [
+    "cross_Rtop",
+    "cross_Ltop"
+   ],
+   "to": "double",
+   "counts": 8,
+   "notes": "On 1-4 an inside (left) turn from crossed hands; the leader lays both arms on her shoulders and dances the basic, then the hands slide down the arms to exit (Redance).",
+   "check": "End hold after sliding down is not stated."
+  },
+  {
    "id": "classic-opener",
    "name": "Classic opener",
    "kind": "compound",
@@ -1221,6 +1401,15 @@ window.BACHATA_DATA = {
     "cuddle-entry",
     "body-roll",
     "cuddle-release-spin"
+   ]
+  },
+  {
+   "id": "pretzel",
+   "name": "Pretzel",
+   "kind": "compound",
+   "sequence": [
+    "cuddle-entry",
+    "pretzel-leader-turn-out"
    ]
   }
  ]

@@ -146,6 +146,15 @@
   crossed: none
   arms: neutral
 
+- id: leader_shadow
+  name: Leader's shadow (leader in front, follower behind)
+  short: Leader shadow
+  orientation: reverse_shadow
+  frame: closed
+  hands: "L>L,R>R"
+  crossed: none
+  arms: neutral
+
 - id: apart
   name: Apart (no connection)
   short: Apart

@@ -89,6 +89,94 @@ holds, so the data is still mostly "physically possible", not canonical.
   not sourced.
 - **Titanic, media vuelta:** still no description of the holds; not added.
 
+## Round 3: sources in other languages
+
+Searched Spanish, French, German, Italian, Portuguese, Polish and Russian sources.
+
+### Confirmed by several languages
+
+- **Hammerlock from double hands.** The leader raises his left arm and keeps the
+  right at waist height; she turns **right** and her (left) arm ends behind her
+  back; she unwinds with a **left** turn. Sources:
+  - French: [wikidanse.fr, "Tour Espagnol Fille (Hammerlock)"](https://wikidanse.fr/danse-bachata-liste-figures.php)
+  - German: [in-tanz.de, "Brezel": Eindrehen with a full right turn, Ausdrehen with a full left turn](https://www.in-tanz.de/tanz/bachata-brezel.html)
+  - Spanish: [Redance, "candado"](https://redance.app/en/vocabulary/bachata/hammer-lock/)
+
+  This matches `hammerlock-left-entry` and `hammerlock-left-unwind`.
+- **Shadow entry from closed.** The leader pushes her right arm back and she makes
+  a half turn to the **left** (wikidanse.fr). The draft note said right and has
+  been corrected. Spanish schools call it *media de follower*
+  ([Unibaila](https://www.unibaila.com/blog-de-bachata-sensual/aprende-bachata-sensual-diez-tecnicas));
+  Russian lists call it *half-turn woman*
+  ([bachata-salsa-lessons.ru](https://bachata-salsa-lessons.ru/25-elementov-bachaty-dlya-nachinayushhih/)).
+- **Two shadows.** Besides the follower's shadow (her in front) there is a
+  **leader's shadow**: him in front, her arms sliding between his back and arms.
+  It appears in Spanish (Unibaila: *media de líder*, *sácala*, *mantón*,
+  *comeback*), French (*enroulé garçon devant fille*) and Russian (*half-turn
+  man*). Added as the position `leader_shadow` with an entry, an exit and the
+  two switches.
+- **Pretzel = wrap + leader turn.** The first half is the wrap (her back against
+  him, arms crossed on her chest); on 5–8 the leader turns under the arms and you
+  end face to face in a crossed grip
+  ([Redance](https://redance.app/es/vocabulary/bachata/); Russian *pod krylo* /
+  cradle / basket, [bachatamap.ru](https://bachatamap.ru/theory/positions/pretzel/)).
+  Added as a compound move `pretzel`.
+
+### New figures added
+
+| Figure | Hold | Source |
+|---|---|---|
+| Paséala (walk her out and back) | closed, right hand at her waist | wikidanse.fr |
+| Couple turn (tour en couple) | closed | wikidanse.fr |
+| Forward break | closed or open | Redance, wikidanse.fr |
+| Caress (caricia, caresse) | closed, shadow, cuddle, neck wrap | Redance, wikidanse.fr |
+| Elbows (coudes; Russian *elbows-in*, *gancho*) | double hands | wikidanse.fr, bachata-salsa-lessons.ru |
+| Sombrero from crossed hands | crossed hands | Redance |
+| Shadow exit, half turn under left arm | shadow | wikidanse.fr |
+| Shadow exit, mill (*melnitsa*, *molino*, *helicóptero*) | shadow | bachatamap.ru, Introvert Dance (mechanics not described, flagged) |
+| Cuddle exit, throw the arms into shadow | cuddle | wikidanse.fr |
+
+### Levels from a real curriculum
+
+[Introvert Dance's sensual pensum](https://introvertdance.com/wp-content/uploads/2023/11/Bachata-sensual-pensum-de-Introvert-Dance-lista-de-pasos-completa.pdf)
+(Spanish):
+- **Básico 2:** hammerlock and pretzel.
+- **Básico 3:** shadow posture, back to back and reverse turn.
+- **Básico 4:** molino (helicopter), Madrid step.
+- **Intermedio 2:** shadow exits with 1½, double and triple turns, and the
+  *sentada de sombra*.
+
+That broadly supports the draft levels: hammerlock and shadow intermediate,
+mill and shadow exits with multiple turns advanced.
+
+### Still open
+
+- **Crossed hands:** no source in any language says which hand on top allows
+  which turn. Note that the Spanish "Bachata cruzados" series
+  ([Mucho Más Que Baile](https://www.muchomasquebaile.es/bachata-cruzados/)) is
+  about crossed *footwork*, not hands. The same series consistently enters
+  two-hand figures with a counter-clockwise turn and exits to the embrace with a
+  clockwise one.
+- **Back to back** (*espalda con espalda*, *dos à dos*) is a named position in
+  the Spanish and French sources, but no source describes how the hands connect,
+  so it is not added yet.
+- **Titanic:** named after the shape of her arms in the turn (Spanish video
+  descriptions); no hold described.
+- **Italian figures** (elastico, elicottero, sospensione laterale) are named
+  only ([ballobachata.it](https://www.ballobachata.it/figure-bachata-facili-1839.html)).
+
+### Name glossary
+
+| English | Spanish | French | German | Russian |
+|---|---|---|---|---|
+| Hammerlock | candado | tour espagnol (hammerlock) | Brezel | хаммерлок / arm breaker |
+| Wrap / cuddle | envoltura | enroulé | – | обёртка, конфетка |
+| Pretzel | pretzel | enroulé promenade | Brezel (sometimes) | крендель, под крыло |
+| Shadow | sombra | shadow / ombre | Schatten | теневая позиция |
+| Cross body lead | dile que no | – | – | – |
+| Mill | molino, helicóptero | – | – | мельница |
+| Caress | caricia | caresse | – | – |
+
 ## Prior art (for later)
 
 | Project | What it is |

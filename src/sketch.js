@@ -138,15 +138,16 @@
     const title = opts.title ? `<title>${escapeXml(opts.title)}</title>` : '';
     // Fixed scale, cropped to the content: close positions get a shorter picture,
     // not bigger dancers, so distances stay comparable between sketches.
+    const behind = L.follower.c[1] > L.leader.c[1] + 5; // follower behind the leader
     const ys = [L.follower.c[1] - 34, L.leader.c[1] - 70, ...L.arms.map((a) => a.to[1] - 8)];
     const top = Math.max(0, Math.min(...ys));
-    const bottom = L.leader.c[1] + 36;
+    const bottom = Math.max(L.leader.c[1] + 36, L.follower.c[1] + 36);
     const x0 = 15;
     const vw = W - 30;
     return `<svg viewBox="${x0} ${r1(top)} ${vw} ${r1(bottom - top)}" class="sketch" role="img" xmlns="http://www.w3.org/2000/svg">${title}
   <path d="${fov}" class="sk-fov"/>
-  ${dancer(L.follower, 'follower', 'her', false)}
-  ${dancer(L.leader, 'leader', 'you', true)}
+  ${dancer(L.follower, 'follower', 'her', behind)}
+  ${dancer(L.leader, 'leader', 'you', !behind)}
   ${arms}
 </svg>`;
   }

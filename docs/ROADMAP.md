@@ -13,7 +13,8 @@
   (`shadow_waist`). Which one is used in practice, and do they connect directly?
 - **Hand changes:** do they take their own 4 counts or happen inside a basic (0)?
 - **Weight:** are shadow and cuddle really parallel weight?
-- **Missing positions:** hammerlock on the left arm, side-by-side
+- **Missing positions:** back to back (named in Spanish and French sources, hold
+  not described), side-by-side
   (Dominican), and a one-hand cuddle (left-to-right with her arm wrapped).
 - **Thin positions** (fewer than 3 ways in or out): open R-L, neck wrap,
   hammerlock, shadow. `npm run build` prints the current list.
