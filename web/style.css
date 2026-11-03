@@ -70,7 +70,8 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
 }
 .toolbar label { display: flex; gap: 6px; align-items: center; color: var(--muted); min-width: 0; }
 .toolbar select { min-width: 0; max-width: 100%; }
-#start-pos { width: 260px; }
+#start-pos { width: 210px; }
+.btn-group { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 .spacer { flex: 1; }
 
 .errors {
@@ -117,7 +118,7 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
 }
 
 .domino {
-  width: 160px;
+  width: 172px;
   text-align: left;
   padding: 0;
   overflow: hidden;
@@ -139,7 +140,7 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
   font-size: 0.75rem;
   color: var(--muted);
 }
-.halves span { padding: 4px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.halves span { padding: 4px 6px; line-height: 1.2; overflow-wrap: anywhere; }
 .halves span + span { border-left: 1px solid var(--line); }
 .domino .name { padding: 6px 8px 2px; font-weight: 600; line-height: 1.25; }
 .domino .meta { padding: 0 8px 6px; font-size: 0.78rem; color: var(--muted); }

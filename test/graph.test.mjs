@@ -129,3 +129,17 @@ test('weight is soft and carried along the strip', () => {
   assert.equal(r.items[0].weightWarn, true);
   assert.equal(r.items[0].broken, false);
 });
+
+test('random combos come back to where they started', () => {
+  const g = MG.compile(loadData());
+  let seed = 7;
+  const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (const p of g.positions) {
+    for (let i = 0; i < 20; i++) {
+      const ids = MG.randomCombo(g, p.id, { steps: 4, rng });
+      const r = MG.evaluateStrip(g, p.id, 'mirrored', ids);
+      assert.ok(r.items.every((it) => !it.broken), `broken combo from ${p.id}`);
+      assert.equal(r.end, p.id, `combo from ${p.id} did not return: ${ids.join(' > ')}`);
+    }
+  }
+});

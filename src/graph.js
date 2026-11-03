@@ -329,6 +329,16 @@
     return ids;
   }
 
+  /** Random combo that, when possible, finds its way back to the start position. */
+  function randomCombo(g, start, { steps = 5, home = true, rng = Math.random } = {}) {
+    const ids = randomWalk(g, start, steps, rng);
+    if (!home) return ids;
+    const end = evaluateStrip(g, start, 'mirrored', ids).end;
+    if (end === start) return ids;
+    const back = findBridges(g, end, start, { limit: 1 })[0];
+    return back ? ids.concat(back) : ids;
+  }
+
   const ORIENTATION_ABBR = {
     facing: 'FEO', shadow: 'SHD', reverse_shadow: 'RSHD', side_by_side_L: 'SBS-L',
     side_by_side_R: 'SBS-R', hip_to_hip: 'H2H', back_to_back: 'B2B',
@@ -345,6 +355,6 @@
 
   return {
     ATTRS, KINDS, canonHands, positionKey, matchPattern, compile, evaluateStrip,
-    nextMoves, alternatives, findBridges, randomWalk, notation,
+    nextMoves, alternatives, findBridges, randomWalk, randomCombo, notation,
   };
 });

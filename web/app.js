@@ -539,7 +539,7 @@
 
     $('btn-clear').addEventListener('click', () => { state.strip = []; state.selected = null; update(); });
     $('btn-random').addEventListener('click', () => {
-      state.strip = MG.randomWalk(g, state.startPos, 5);
+      state.strip = MG.randomCombo(g, state.startPos, { steps: 4 });
       state.selected = null;
       update();
     });
