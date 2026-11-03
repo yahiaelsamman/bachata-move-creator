@@ -1,0 +1,92 @@
+name: Suggest a move
+description: Propose a bachata move for the map. No coding needed.
+title: "Move: "
+labels: ["new move"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for adding to the map. Every move starts in one position and ends in another,
+        like a domino. If you're not sure about a field, leave a note at the bottom.
+  - type: input
+    id: name
+    attributes:
+      label: Move name
+      description: "Family first, then the variant in brackets, e.g. Hammerlock entry (left arm)"
+    validations:
+      required: true
+  - type: dropdown
+    id: from
+    attributes:
+      label: Starts in
+      description: Pick every position the move can start from.
+      multiple: true
+      options:
+        - "Open, left-to-right (open_LR)"
+        - "Handshake (right-to-right) (open_RR)"
+        - "Open, left-to-left (open_LL)"
+        - "Open, right-to-left (open_RL)"
+        - "Double hands (double)"
+        - "Crossed hands, right over left (cross_Rtop)"
+        - "Crossed hands, left over right (cross_Ltop)"
+        - "Closed position (closed)"
+        - "Follower's hand behind leader's neck (neck_wrap)"
+        - "Hammerlock (follower's right arm behind her back) (hammerlock_R)"
+        - "Hammerlock, left arm (follower's left arm behind her back) (hammerlock_L)"
+        - "Cuddle / wrap / sweetheart (cuddle)"
+        - "Shadow (leader behind, same hands) (shadow)"
+        - "Shadow, hand on waist (shadow_waist)"
+        - "Apart (no connection) (apart)"
+        - "Another position (describe below)"
+    validations:
+      required: true
+  - type: dropdown
+    id: to
+    attributes:
+      label: Ends in
+      options:
+        - "Same position it started in (styling)"
+        - "Open, left-to-right (open_LR)"
+        - "Handshake (right-to-right) (open_RR)"
+        - "Open, left-to-left (open_LL)"
+        - "Open, right-to-left (open_RL)"
+        - "Double hands (double)"
+        - "Crossed hands, right over left (cross_Rtop)"
+        - "Crossed hands, left over right (cross_Ltop)"
+        - "Closed position (closed)"
+        - "Follower's hand behind leader's neck (neck_wrap)"
+        - "Hammerlock (follower's right arm behind her back) (hammerlock_R)"
+        - "Hammerlock, left arm (follower's left arm behind her back) (hammerlock_L)"
+        - "Cuddle / wrap / sweetheart (cuddle)"
+        - "Shadow (leader behind, same hands) (shadow)"
+        - "Shadow, hand on waist (shadow_waist)"
+        - "Apart (no connection) (apart)"
+        - "Another position (describe below)"
+    validations:
+      required: true
+  - type: input
+    id: counts
+    attributes:
+      label: Counts
+      description: "How many counts it takes (4, 8, ... or 0 if it happens on the fly)"
+  - type: dropdown
+    id: level
+    attributes:
+      label: Level
+      options:
+        - beginner
+        - intermediate
+        - advanced
+  - type: textarea
+    id: lead
+    attributes:
+      label: How to lead it
+      description: Hands, turn direction, timing, anything that makes it work.
+  - type: input
+    id: video
+    attributes:
+      label: Video or source (optional)
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else

@@ -114,6 +114,12 @@ in or out, which shows where to add moves next.
 
 ### Adding a move
 
+Not a coder? See [docs/ADDING_MOVES.md](docs/ADDING_MOVES.md), or
+[suggest a move](https://github.com/yahiaelsamman/bachata-move-creator/issues/new?template=new-move.yml)
+with a form.
+
+From the repository:
+
 1. Add an entry to `data/moves.yaml` (see the field list at the top of that file).
 2. Run `npm run build`. It reports unknown positions, moves that can't start
    anywhere, changes that land on no known position, and broken compounds.

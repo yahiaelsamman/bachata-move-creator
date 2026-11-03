@@ -186,3 +186,8 @@ test('weight: entering a same-direction hold sets parallel, leaving it sets mirr
     if (sameDir(e.from) && !sameDir(e.to) && g.posById[e.to].frame !== 'apart') assert.equal(w.to, 'mirrored', `${m.id} (${e.from} -> ${e.to})`);
   }
 });
+
+test('the "Suggest a move" issue form lists every position', () => {
+  const form = readFileSync(new URL('../.github/ISSUE_TEMPLATE/new-move.yml', import.meta.url), 'utf8');
+  for (const p of loadData().positions) assert.ok(form.includes(`(${p.id})`), `${p.id} missing from the issue form`);
+});
