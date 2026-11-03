@@ -116,6 +116,16 @@ test('bridges find the shortest reconnection', () => {
   assert.deepEqual(MG.findBridges(g, 'open', 'open'), [[]]);
 });
 
+test('transitions change position; loops stay in place; compounds are neither', () => {
+  const g = MG.compile(tiny());
+  const edge = (move, from) => g.edgesByMove[move].find((e) => e.from === from);
+  assert.ok(MG.isTransition(g, edge('close', 'open')));
+  assert.ok(!MG.isTransition(g, edge('basic', 'open')));
+  assert.ok(!MG.isTransition(g, edge('combo', 'open')));
+  assert.deepEqual(MG.loopMoves(g, 'open').sort(), ['basic', 'turn']);
+  assert.deepEqual(g.health.find((h) => h.id === 'closed'), { id: 'closed', in: 1, out: 1, thin: true });
+});
+
 test('alternatives are parallel edges', () => {
   const g = MG.compile(tiny());
   assert.deepEqual(MG.alternatives(g, 'open', 'open', 'turn'), ['basic']);

@@ -408,24 +408,23 @@
     const id = state.mapSelected;
     if (!id || !g.posById[id]) {
       box.replaceChildren(h('p', { class: 'muted' },
-        `${g.positions.length} positions, ${g.edges.filter((e) => e.from !== e.to && g.moveById[e.move].kind !== 'compound').length} position-changing connections. ` +
+        `${g.positions.length} positions, ${g.edges.filter((e) => MG.isTransition(g, e)).length} position-changing connections. ` +
         'Pick a position on the map to see its ways in and out.'));
       return;
     }
     const group = (edges, key) => {
       const by = {};
       for (const e of edges) {
-        if (e.from === e.to || g.moveById[e.move].kind === 'compound') continue;
+        if (!MG.isTransition(g, e)) continue;
         (by[e[key]] = by[e[key]] || new Set()).add(g.moveById[e.move].name);
       }
       return Object.entries(by).sort((a, b) => posName(a[0]).localeCompare(posName(b[0])));
     };
     const link = state.mapLink && state.mapLink.from === id ? state.mapLink : null;
-    const linkMoves = link ? [...new Set(g.outgoing[id].filter((e) => e.to === link.to && e.from !== e.to &&
-      g.moveById[e.move].kind !== 'compound').map((e) => e.move))] : [];
+    const linkMoves = link ? [...new Set(g.outgoing[id].filter((e) => e.to === link.to && MG.isTransition(g, e)).map((e) => e.move))] : [];
     const outs = group(g.outgoing[id], 'to');
     const ins = group(g.incoming[id], 'from');
-    const loops = [...new Set(g.outgoing[id].filter((e) => e.to === id && g.moveById[e.move].kind !== 'compound').map((e) => g.moveById[e.move].name))].sort();
+    const loops = MG.loopMoves(g, id).map((m) => g.moveById[m].name).sort();
     const list = (rows, arrow) => rows.length
       ? h('ul', { class: 'map-list' }, rows.map(([pid, names]) => h('li', {},
         h('button', { type: 'button', class: 'link', onclick: () => { state.mapSelected = pid; render(); } }, arrow + ' ' + short(pid)),
