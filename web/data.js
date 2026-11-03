@@ -9,7 +9,12 @@ window.BACHATA_DATA = {
    "frame": "open",
    "hands": "L>R",
    "crossed": "none",
-   "arms": "neutral"
+   "arms": "neutral",
+   "notes": "The normal open hold: facing at arm's length, the leader's left hand holds the follower's right.",
+   "aka": [
+    "open position",
+    "otkrytaya pozitsiya (Russian)"
+   ]
   },
   {
    "id": "open_RR",
@@ -19,7 +24,11 @@ window.BACHATA_DATA = {
    "frame": "open",
    "hands": "R>R",
    "crossed": "none",
-   "arms": "neutral"
+   "arms": "neutral",
+   "aka": [
+    "right-to-right",
+    "hello position (Russian: khelou pozishn)"
+   ]
   },
   {
    "id": "open_LL",
@@ -29,7 +38,10 @@ window.BACHATA_DATA = {
    "frame": "open",
    "hands": "L>L",
    "crossed": "none",
-   "arms": "neutral"
+   "arms": "neutral",
+   "aka": [
+    "hello position (Russian: khelou pozishn)"
+   ]
   },
   {
    "id": "open_RL",
@@ -49,7 +61,29 @@ window.BACHATA_DATA = {
    "frame": "open",
    "hands": "L>R,R>L",
    "crossed": "none",
-   "arms": "neutral"
+   "arms": "neutral",
+   "notes": "Both hands held, not crossed. Use a loose hook grip (fingers, no thumbs) so the hands can rotate.",
+   "aka": [
+    "two hands",
+    "otkrytaya pozitsiya (Russian)"
+   ]
+  },
+  {
+   "id": "double_braided",
+   "name": "Double hands, twisted (braid)",
+   "short": "Braid",
+   "orientation": "facing",
+   "frame": "semi",
+   "hands": "L>R,R>L",
+   "crossed": "braid",
+   "arms": "neutral",
+   "notes": "Both hands still held left-to-right and right-to-left, but the two arm pairs are twisted round each other. Where a two-hand turn without a halo and the pretzel turn-out land; one more turn the same way untwists it.",
+   "aka": [
+    "crossed grip",
+    "braided hands",
+    "kosichka (Russian, 'plait')"
+   ],
+   "source": "Redance (pretzel 'crossed grip'); bachatamap.ru (fonarik, krest v rukakh)"
   },
   {
    "id": "cross_Rtop",
@@ -59,7 +93,12 @@ window.BACHATA_DATA = {
    "frame": "open",
    "hands": "L>L,R>R",
    "crossed": "leader_R_over_L",
-   "arms": "neutral"
+   "arms": "neutral",
+   "notes": "Left-to-left and right-to-right, the right hands on top. The follower's free turn from here is to the left.",
+   "aka": [
+    "cross hand",
+    "krest v rukakh (Russian)"
+   ]
   },
   {
    "id": "cross_Ltop",
@@ -69,7 +108,12 @@ window.BACHATA_DATA = {
    "frame": "open",
    "hands": "L>L,R>R",
    "crossed": "leader_L_over_R",
-   "arms": "neutral"
+   "arms": "neutral",
+   "notes": "Left-to-left and right-to-right, the left hands on top. The follower's free turn from here is to the right.",
+   "aka": [
+    "cross hand",
+    "krest v rukakh (Russian)"
+   ]
   },
   {
    "id": "closed",
@@ -79,7 +123,28 @@ window.BACHATA_DATA = {
    "frame": "closed",
    "hands": "L>R,R>back",
    "crossed": "none",
-   "arms": "neutral"
+   "arms": "neutral",
+   "notes": "The leader's right hand on the follower's upper back, the left holding the follower's right hand; the follower's left hand rests on the leader's shoulder.",
+   "aka": [
+    "embrace",
+    "zakrytaya pozitsiya (Russian)"
+   ]
+  },
+  {
+   "id": "full_contact",
+   "name": "Full contact (both hands on her back)",
+   "short": "Full contact",
+   "orientation": "facing",
+   "frame": "closed",
+   "hands": "L>back,R>back",
+   "crossed": "none",
+   "arms": "neutral",
+   "notes": "Sensual closed hold: both of the leader's palms on the follower's shoulder blades, the follower's hands on the leader's shoulders, chests close.",
+   "aka": [
+    "polnyy kontakt (Russian)",
+    "zakrytaya (Russian sensual closed)"
+   ],
+   "source": "bachatamap.ru/theory/positions/full-contact-position/"
   },
   {
    "id": "neck_wrap",
@@ -89,7 +154,11 @@ window.BACHATA_DATA = {
    "frame": "closed",
    "hands": "R>back",
    "crossed": "none",
-   "arms": "follower_R_behind_leader_neck"
+   "arms": "follower_R_behind_leader_neck",
+   "notes": "Closed, but the follower's right hand rests behind the leader's neck; the leader's right hand on the follower's back, the left is free.",
+   "aka": [
+    "na zatylke partnera (Russian)"
+   ]
   },
   {
    "id": "hammerlock_R",
@@ -99,7 +168,13 @@ window.BACHATA_DATA = {
    "frame": "semi",
    "hands": "L>L,R>R",
    "crossed": "none",
-   "arms": "hammerlock_follower_R"
+   "arms": "hammerlock_follower_R",
+   "notes": "The follower's right hand is held at the hip behind the back, never pushed up; left hands joined in front.",
+   "aka": [
+    "candado (Spanish)",
+    "Brezel (German)",
+    "khamerlok / setenta (Russian)"
+   ]
   },
   {
    "id": "hammerlock_L",
@@ -109,17 +184,59 @@ window.BACHATA_DATA = {
    "frame": "semi",
    "hands": "L>R,R>L",
    "crossed": "none",
-   "arms": "hammerlock_follower_L"
+   "arms": "hammerlock_follower_L",
+   "notes": "The follower's left hand is held at the hip behind the back; the leader's left holds the follower's right in front.",
+   "aka": [
+    "tour espagnol (French)",
+    "khamerlok devushki (Russian)"
+   ]
+  },
+  {
+   "id": "hammerlock_leader_L",
+   "name": "Leader's hammerlock (his left arm behind his back)",
+   "short": "Leader hammerlock",
+   "orientation": "facing",
+   "frame": "semi",
+   "hands": "L>R,R>L",
+   "crossed": "none",
+   "arms": "hammerlock_leader_L",
+   "notes": "Double hands, but the leader's own left arm (holding the follower's right hand) is behind the leader's back after a right turn.",
+   "aka": [
+    "khamerlok muzhchiny / setenta (Russian)",
+    "hamlet inverso (Spanish)"
+   ],
+   "source": "bachatamap.ru/moderna/rotations/turns/hamerlok-muzhchiny/"
   },
   {
    "id": "cuddle",
-   "name": "Cuddle / wrap / sweetheart",
+   "name": "Cuddle / wrap (side)",
    "short": "Cuddle",
    "orientation": "side_by_side_R",
    "frame": "closed",
    "hands": "L>R,R>L",
    "crossed": "none",
-   "arms": "wrap"
+   "arms": "wrap",
+   "notes": "The follower stands at the leader's right side, arms crossed in front, both hands still held.",
+   "aka": [
+    "wrap",
+    "envoltura (Spanish)",
+    "enroule (French)",
+    "pod krylo, krendel, kolybel, konfetka, obyortka (Russian)"
+   ]
+  },
+  {
+   "id": "wrap_R",
+   "name": "One-hand wrap",
+   "short": "Wrap",
+   "orientation": "side_by_side_R",
+   "frame": "closed",
+   "hands": "L>R,R>back",
+   "crossed": "none",
+   "arms": "wrap_follower_R",
+   "notes": "The follower is at the leader's right side; the follower's right arm crosses the waist, held by the leader's left, and the leader's right hand is on the follower's back.",
+   "aka": [
+    "one-hand cuddle"
+   ]
   },
   {
    "id": "shadow",
@@ -129,7 +246,13 @@ window.BACHATA_DATA = {
    "frame": "closed",
    "hands": "L>L,R>R",
    "crossed": "none",
-   "arms": "neutral"
+   "arms": "neutral",
+   "notes": "The leader is behind the follower, slightly to the follower's left, holding left-to-left and right-to-right.",
+   "aka": [
+    "sombra (Spanish)",
+    "Schatten (German)",
+    "tenevaya pozitsiya (Russian)"
+   ]
   },
   {
    "id": "shadow_waist",
@@ -139,7 +262,38 @@ window.BACHATA_DATA = {
    "frame": "closed",
    "hands": "L>R,R>waist",
    "crossed": "none",
-   "arms": "neutral"
+   "arms": "neutral",
+   "notes": "The leader is behind, the right hand on the follower's waist or stomach. The follower's right arm lies across the waist in front, and the leader's left arm reaches around the follower's left side to hold that hand at the left hip.",
+   "aka": [
+    "sombra (Spanish)",
+    "tenevaya pozitsiya (Russian)"
+   ]
+  },
+  {
+   "id": "shadow_neck",
+   "name": "Shadow, her hand behind your neck",
+   "short": "Shadow neck",
+   "orientation": "shadow",
+   "frame": "closed",
+   "hands": "R>waist",
+   "crossed": "none",
+   "arms": "follower_R_behind_leader_neck",
+   "notes": "Shadow with the follower's right hand reaching back to the leader's neck; the leader's right hand on the follower's waist, the left free on the follower's arm or side."
+  },
+  {
+   "id": "shadow_wrap",
+   "name": "Sweetheart (wrapped, leader behind)",
+   "short": "Sweetheart",
+   "orientation": "shadow",
+   "frame": "closed",
+   "hands": "L>R,R>L",
+   "crossed": "none",
+   "arms": "wrap",
+   "notes": "The leader is right behind the follower, both hands held, the follower's arms crossed on the waist and the leader's arms around them.",
+   "aka": [
+    "sweetheart",
+    "wrap from behind"
+   ]
   },
   {
    "id": "leader_shadow",
@@ -149,7 +303,12 @@ window.BACHATA_DATA = {
    "frame": "closed",
    "hands": "L>L,R>R",
    "crossed": "none",
-   "arms": "neutral"
+   "arms": "neutral",
+   "notes": "The leader is in front facing away; the follower's arms slide under the leader's, forearms resting on the leader's.",
+   "aka": [
+    "sombra de lider (Spanish)",
+    "tenevaya muzhskaya, obratnaya tenevaya, manto (Russian)"
+   ]
   },
   {
    "id": "apart",
@@ -169,19 +328,37 @@ window.BACHATA_DATA = {
    "kind": "styling",
    "level": 1,
    "from": "any",
-   "counts": 4
+   "counts": 4,
+   "notes": "Step-together-step to the side on 1-2-3, tap on 4 (and back on 5-6-7, tap 8). The leader starts to the left, the follower to the right; soft knees, let the hips follow the weight."
   },
   {
-   "id": "box-step",
-   "name": "Box step",
+   "id": "basic-forward-back",
+   "name": "Basic (forward and back)",
    "kind": "styling",
-   "level": 2,
+   "level": 1,
    "from": [
     "closed",
     "open_LR",
     "double"
    ],
-   "counts": 8
+   "counts": 8,
+   "notes": "The leader steps forward on 1-2-3 and taps 4, back on 5-6-7 and taps 8; the follower mirrors. Lead it from the frame, not by pushing the arms."
+  },
+  {
+   "id": "box-step",
+   "name": "Box step",
+   "kind": "styling",
+   "level": 1,
+   "from": [
+    "closed",
+    "open_LR",
+    "double"
+   ],
+   "counts": 8,
+   "notes": "Trace a square: side-together-forward, tap, then side-together-back, tap. The leader goes forward with the left foot; the follower mirrors backwards with the right.",
+   "aka": [
+    "cuadro (Spanish)"
+   ]
   },
   {
    "id": "tap-and-hold",
@@ -190,7 +367,7 @@ window.BACHATA_DATA = {
    "level": 1,
    "from": "any",
    "counts": 4,
-   "notes": "Musical pause / freeze on a break in the music."
+   "notes": "A musical pause: both tap and freeze on a break in the music, keeping the connection alive, then pick up the basic again."
   },
   {
    "id": "body-roll",
@@ -200,7 +377,27 @@ window.BACHATA_DATA = {
    "from": {
     "frame": "closed"
    },
-   "counts": 4
+   "counts": 4,
+   "notes": "Both roll the body from chest to hips over 4 counts. The leader starts it with the chest and keeps the contact soft so the follower can follow."
+  },
+  {
+   "id": "body-wave-led",
+   "name": "Body wave (follower, led)",
+   "kind": "styling",
+   "level": 2,
+   "from": [
+    "double",
+    "open_LR",
+    "shadow_waist",
+    "closed",
+    "full_contact"
+   ],
+   "counts": 4,
+   "notes": "The leader gives a small push-pull through the frame or the hand on the follower's upper back; the follower rolls from head to hips. The leader can mirror it or stay still.",
+   "aka": [
+    "onda",
+    "sensual wave"
+   ]
   },
   {
    "id": "head-roll",
@@ -209,9 +406,14 @@ window.BACHATA_DATA = {
    "level": 3,
    "from": [
     "closed",
-    "neck_wrap"
+    "neck_wrap",
+    "full_contact"
    ],
-   "counts": 4
+   "counts": 4,
+   "notes": "The leader leads from the follower's upper back or shoulder blade, never by pushing the head or neck; slow, and the follower may decline. Safety: not for a first dance with someone new.",
+   "aka": [
+    "khed roll (Russian)"
+   ]
   },
   {
    "id": "hip-circle",
@@ -221,9 +423,19 @@ window.BACHATA_DATA = {
    "from": [
     "closed",
     "shadow",
-    "cuddle"
+    "shadow_waist",
+    "shadow_neck",
+    "shadow_wrap",
+    "cuddle",
+    "wrap_R"
    ],
-   "counts": 4
+   "counts": 4,
+   "notes": "Both circle the hips over 4 counts with small steps. In shadow the leader's hands on the follower's hips or waist guide the circle.",
+   "aka": [
+    "culito",
+    "contra de cadera (Spanish)",
+    "kulito, mandarinka (Russian)"
+   ]
   },
   {
    "id": "dominican-footwork",
@@ -235,18 +447,25 @@ window.BACHATA_DATA = {
     "double",
     "open_LR"
    ],
-   "counts": 4
+   "counts": 4,
+   "notes": "Small, quick steps in place or forward and back (syncopations, taps) while the frame stays steady; keep it light and close to the floor."
   },
   {
    "id": "dip",
-   "name": "Dip",
+   "name": "Dip (simple, closed)",
    "kind": "styling",
-   "level": 3,
+   "level": 2,
    "from": [
     "closed",
-    "neck_wrap"
+    "neck_wrap",
+    "full_contact"
    ],
-   "counts": 4
+   "counts": 4,
+   "notes": "On 8 the leader steps back with the right foot, bends the knees and supports high on the follower's back; up again on the next 1. Safety: only as far as the follower offers, never let go, never press the neck, not on a crowded floor.",
+   "aka": [
+    "caida (Spanish)",
+    "kaida, progib (Russian)"
+   ]
   },
   {
    "id": "shadow-walk",
@@ -257,7 +476,8 @@ window.BACHATA_DATA = {
    "counts": 4,
    "weight": {
     "from": "parallel"
-   }
+   },
+   "notes": "Walk or do the basic together on the same foot, the leader right behind; the joined hands steer the direction."
   },
   {
    "id": "hammerlock-walkaround",
@@ -265,7 +485,8 @@ window.BACHATA_DATA = {
    "kind": "styling",
    "level": 2,
    "from": "hammerlock_R",
-   "counts": 8
+   "counts": 8,
+   "notes": "Walk around each other on 1-8 with the follower's arm behind the back. Safety: keep that hand at hip height, never push it up the back, and let go at the first resistance."
   },
   {
    "id": "free-spin",
@@ -273,7 +494,39 @@ window.BACHATA_DATA = {
    "kind": "styling",
    "level": 2,
    "from": "apart",
-   "counts": 4
+   "counts": 4,
+   "notes": "After the release the follower spins alone and finishes facing the leader on 4; the leader stays in place, ready to reconnect.",
+   "aka": [
+    "svobodnoe vrashchenie (Russian)"
+   ]
+  },
+  {
+   "id": "titanic",
+   "name": "Titanic (arms open in shadow)",
+   "kind": "styling",
+   "level": 2,
+   "from": "shadow",
+   "counts": 4,
+   "weight": {
+    "from": "parallel"
+   },
+   "notes": "Both joined hands open wide to the sides at shoulder height while the couple keeps the basic together; bring them back in on the tap."
+  },
+  {
+   "id": "cambre",
+   "name": "Cambre (back bend)",
+   "kind": "styling",
+   "level": 3,
+   "from": [
+    "closed",
+    "neck_wrap",
+    "full_contact"
+   ],
+   "counts": 4,
+   "notes": "The leader's right hand goes high on the follower's back between the shoulder blades and the leader steps in with the right; the follower arches back only as far as they offer. Safety: never drop the support, not on a crowded floor.",
+   "aka": [
+    "backbend"
+   ]
   },
   {
    "id": "follower-right-turn",
@@ -289,7 +542,12 @@ window.BACHATA_DATA = {
    "to": "same",
    "counts": 4,
    "opposite": "follower-left-turn",
-   "notes": "Also called the outside turn."
+   "notes": "Prep on the previous 4; on 1 the leader raises the joined hand above the follower's forehead and draws a small clockwise halo. The follower turns right on 1-2-3 and taps 4; keep the hand light.",
+   "aka": [
+    "outside turn",
+    "vneshniy / obratnyy povorot (Russian)",
+    "revuelta (Spanish)"
+   ]
   },
   {
    "id": "follower-left-turn",
@@ -305,7 +563,13 @@ window.BACHATA_DATA = {
    "to": "same",
    "counts": 4,
    "opposite": "follower-right-turn",
-   "notes": "Also called the inside turn. Common timing: C-shaped prep with the lead hand on 1-4, turn on 5-8."
+   "notes": "The turn takes 4 counts; prep it during the previous 4 with a small C-shape to the leader's right. On 1 the leader raises the hand and circles counter-clockwise; the follower turns left and taps 4.",
+   "aka": [
+    "inside turn",
+    "basic turn",
+    "bazovyy / vnutrenniy povorot (Russian)"
+   ],
+   "source": "torontodancesalsa.ca/blog/bachata-how-to-lead/; bachatamap.ru/moderna/rotations/turns/base-turn/"
   },
   {
    "id": "follower-double-right-turn",
@@ -317,37 +581,94 @@ window.BACHATA_DATA = {
     "open_RR"
    ],
    "to": "same",
-   "counts": 4
+   "counts": 4,
+   "notes": "Same prep as the right turn but a bigger, quicker halo for two rotations on 1-2-3; tap 4. The follower keeps one axis and spots.",
+   "aka": [
+    "double spin",
+    "dvoynoy povorot (Russian)"
+   ]
+  },
+  {
+   "id": "follower-delayed-turn",
+   "name": "Follower turn (delayed, on 3)",
+   "kind": "move",
+   "level": 2,
+   "from": [
+    "open_LR",
+    "open_RR",
+    "open_LL",
+    "open_RL"
+   ],
+   "to": "same",
+   "counts": 4,
+   "notes": "Dance 1 and prep on 2, then the leader leads a quick one-foot turn on 3 instead of a three-step turn; tap 4. Either direction works.",
+   "aka": [
+    "turn on 3",
+    "delay turn",
+    "povorot na 3, zaderzhannyy povorot (Russian)"
+   ],
+   "source": "bachata-salsa-lessons.ru (list part 2); bachatamap.ru/moderna/rotations/turns/delayed-turn/",
+   "check": "Holds inferred from the plain follower turns."
   },
   {
    "id": "leader-right-turn",
    "name": "Leader right turn",
    "kind": "move",
-   "level": 2,
-   "from": "open_LR",
+   "level": 1,
+   "from": [
+    "open_LR",
+    "open_RR",
+    "double",
+    "apart"
+   ],
    "to": "same",
    "counts": 4,
-   "opposite": "leader-left-turn"
+   "opposite": "leader-left-turn",
+   "notes": "The leader preps their own body (no pressure on the follower) and turns right on 1-2-3 under the joined hands; tap 4. From double hands both hands pass over the leader's head.",
+   "aka": [
+    "man's turn",
+    "muzhskoy povorot (Russian)",
+    "giro de chico (Spanish)"
+   ]
   },
   {
    "id": "leader-left-turn",
    "name": "Leader left turn",
    "kind": "move",
    "level": 2,
-   "from": "open_LR",
+   "from": [
+    "open_LR",
+    "open_RR",
+    "double",
+    "apart"
+   ],
    "to": "same",
    "counts": 4,
-   "opposite": "leader-right-turn"
+   "opposite": "leader-right-turn",
+   "notes": "The leader turns left on 1-2-3 under the joined hands, arm soft; tap 4. The follower keeps the basic in place.",
+   "aka": [
+    "man's turn",
+    "muzhskoy povorot (Russian)"
+   ]
   },
   {
    "id": "cross-body-lead",
    "name": "Cross body lead",
    "kind": "move",
    "level": 1,
-   "from": "open_LR",
-   "to": "same",
+   "from": [
+    "open_LR",
+    "closed"
+   ],
+   "to": "open_LR",
    "counts": 8,
-   "notes": "Spanish: dile que no (Redance)."
+   "notes": "On 1-3 the leader steps back and opens a quarter turn to the left to clear the line; on 5-7 the left hand leads the follower across past the leader's right side, and the follower turns to face on 8.",
+   "aka": [
+    "CBL",
+    "dile que no (Spanish)",
+    "smena, perekhod (Russian)"
+   ],
+   "source": "redance.app; bachatamap.ru/steps/change-positions/"
   },
   {
    "id": "cbl-inside-turn",
@@ -356,124 +677,90 @@ window.BACHATA_DATA = {
    "level": 2,
    "from": "open_LR",
    "to": "same",
-   "counts": 8
+   "counts": 8,
+   "notes": "Open the way on 1-3 as for the cross body lead; as the follower passes on 5 the leader raises the left hand and the follower turns left on 6-7, tap 8.",
+   "aka": [
+    "enchufla",
+    "smena s povorotom (Russian)"
+   ],
+   "source": "bachata-salsa-lessons.ru (list part 2)"
   },
   {
-   "id": "cuddle-entry",
-   "name": "Cuddle entry",
+   "id": "cbl-outside-turn",
+   "name": "Cross body lead (with outside turn)",
+   "kind": "move",
+   "level": 2,
+   "from": "open_LR",
+   "to": "same",
+   "counts": 8,
+   "notes": "Open the way on 1-3; as the follower passes on 5 the leader lifts the left hand and the follower turns right on 6-7, tap 8."
+  },
+  {
+   "id": "two-hand-turn",
+   "name": "Two-hand turn",
+   "kind": "move",
+   "level": 1,
+   "from": "double",
+   "to": "same",
+   "counts": 4,
+   "notes": "The leader raises the left, keeps the right low and circles both hands over the follower's head (a halo) while the follower turns right on 1-2-3; tap 4. Without the halo the arms wind up (see the braid version).",
+   "aka": [
+    "double-hand turn",
+    "fonarik, povorot za dve ruki (Russian)"
+   ]
+  },
+  {
+   "id": "two-hand-turn-braid",
+   "name": "Two-hand turn (into the braid)",
    "kind": "move",
    "level": 2,
    "from": "double",
-   "to": "cuddle",
+   "to": "double_braided",
    "counts": 4,
-   "weight": {
-    "to": "parallel"
-   },
-   "notes": "Leader raises left hand, follower turns left into the wrap. French: enroule (wikidanse.fr); Spanish: envoltura; Russian: obertka / konfetka. Also the first half of the pretzel."
+   "notes": "Both hands rise and come together, then the leader leads the turn on 1-2 without circling over the follower's head, so the arms end twisted into a braid; basic on 3-4.",
+   "aka": [
+    "fonarik (Russian, 'little lantern')"
+   ],
+   "source": "bachatamap.ru/moderna/rotations/turns/two-hands-turn/",
+   "check": "Turn direction not stated by the source."
   },
   {
-   "id": "cuddle-unwrap",
-   "name": "Cuddle exit (unwrap)",
-   "kind": "move",
-   "level": 2,
-   "from": "cuddle",
-   "to": "double",
-   "counts": 4,
-   "weight": {
-    "to": "mirrored"
-   }
-  },
-  {
-   "id": "cuddle-release-spin",
-   "name": "Cuddle exit (release spin)",
-   "kind": "move",
-   "level": 2,
-   "from": "cuddle",
-   "to": "open_LR",
-   "counts": 4,
-   "weight": {
-    "to": "mirrored"
-   },
-   "notes": "Release the right hand, follower unwinds to her right."
-  },
-  {
-   "id": "cross-right-turn",
-   "name": "Crossed hands right turn",
-   "kind": "move",
-   "level": 2,
-   "from": "cross_Ltop",
-   "to": "cross_Rtop",
-   "counts": 4,
-   "opposite": "cross-left-turn",
-   "notes": "Only possible with leader's left on top. With right on top the arms lock.",
-   "check": "Conflicting sources: Library of Dance and a common rule of thumb say you turn toward the hand on top, i.e. the right turn is led from right-over-left. This draft follows your rule (left over right allows the right turn). Decide which is true for you."
-  },
-  {
-   "id": "cross-left-turn",
-   "name": "Crossed hands left turn",
-   "kind": "move",
-   "level": 2,
-   "from": "cross_Rtop",
-   "to": "cross_Ltop",
-   "counts": 4,
-   "opposite": "cross-right-turn",
-   "check": "See the crossed-hands right turn: sources suggest the turn from right-over-left is a right (outside) turn, not a left turn."
-  },
-  {
-   "id": "cross-half-turn-shadow",
-   "name": "Crossed hands half turn into shadow",
-   "kind": "move",
-   "level": 2,
-   "from": "cross_Ltop",
-   "to": "shadow",
-   "counts": 4,
-   "weight": {
-    "to": "parallel"
-   },
-   "opposite": "cross-half-turn-shadow-left",
-   "check": "Direction of the half turn and which cross allows it."
-  },
-  {
-   "id": "shadow-exit",
-   "name": "Shadow exit (turn, to L-L)",
-   "kind": "move",
-   "level": 2,
-   "from": "shadow",
-   "to": "open_LL",
-   "counts": 4,
-   "weight": {
-    "to": "mirrored"
-   },
-   "check": "Which hand is kept after the exit."
-  },
-  {
-   "id": "hammerlock-entry",
-   "name": "Hammerlock entry",
-   "kind": "move",
-   "level": 2,
-   "from": "open_RR",
-   "to": "hammerlock_R",
-   "counts": 4,
-   "notes": "Follower turns left with the right hand kept low; leader picks up her left hand. Spanish: candado; German: Brezel; Russian: arm breaker / hammerlock."
-  },
-  {
-   "id": "hammerlock-exit",
-   "name": "Hammerlock exit",
-   "kind": "move",
-   "level": 2,
-   "from": "hammerlock_R",
-   "to": "open_RR",
-   "counts": 4
-  },
-  {
-   "id": "neck-slide",
-   "name": "Neck wrap exit (slide to L-R)",
+   "id": "mill-turn",
+   "name": "Mill turn (windmill)",
    "kind": "move",
    "level": 3,
-   "from": "neck_wrap",
-   "to": "open_LR",
+   "from": "double",
+   "to": "same",
    "counts": 4,
-   "notes": "Follower's hand slides down the leader's arm, leader catches it with his left."
+   "notes": "On 5 the arms swap (the leader's left goes up in front of the follower, the right goes down behind) as the follower turns; on 6-7-8 the arm positions keep swapping like windmill sails. Long elbows, low shoulders.",
+   "aka": [
+    "windmill turn",
+    "propeller",
+    "melnitsa (Russian)"
+   ],
+   "source": "bachatamap.ru/moderna/rotations/turns/mill/",
+   "check": "End hold assumed double hands; direction of her turn not stated."
+  },
+  {
+   "id": "dishrag",
+   "name": "Dishrag",
+   "kind": "move",
+   "level": 2,
+   "from": "double",
+   "to": "same",
+   "counts": 8,
+   "notes": "Both turn back to back under the joined hands and come out facing again. Use a loose hook grip so the hands can rotate."
+  },
+  {
+   "id": "sombrero",
+   "name": "Sombrero",
+   "kind": "move",
+   "level": 2,
+   "from": "double",
+   "to": "same",
+   "counts": 8,
+   "notes": "On 1-4 the leader arcs the joined hands over the follower's head into a wrap, on 5-8 over the leader's own head, and lets them slide down the follower's arms back to double hands.",
+   "source": "Bailar glossary"
   },
   {
    "id": "hand-change-to-handshake",
@@ -483,7 +770,8 @@ window.BACHATA_DATA = {
    "from": "open_LR",
    "to": "open_RR",
    "counts": 4,
-   "opposite": "hand-change-to-open"
+   "opposite": "hand-change-to-open",
+   "notes": "During a basic the leader brings the right hand under the joined hands, takes the follower's right hand, then lets go with the left. The follower keeps the hand relaxed so it can be picked up."
   },
   {
    "id": "hand-change-to-open",
@@ -493,7 +781,8 @@ window.BACHATA_DATA = {
    "from": "open_RR",
    "to": "open_LR",
    "counts": 4,
-   "opposite": "hand-change-to-handshake"
+   "opposite": "hand-change-to-handshake",
+   "notes": "The reverse: the leader's left hand comes under the handshake, takes the follower's right hand, then the right lets go."
   },
   {
    "id": "hand-change-ll-to-lr",
@@ -502,7 +791,66 @@ window.BACHATA_DATA = {
    "level": 1,
    "from": "open_LL",
    "to": "open_LR",
-   "counts": 4
+   "counts": 4,
+   "opposite": "hand-change-lr-to-ll",
+   "notes": "The follower offers the right hand during the basic; the leader lets go of the follower's left and takes the right with the left hand."
+  },
+  {
+   "id": "hand-change-lr-to-ll",
+   "name": "Hand change (L-R to L-L)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "open_LR",
+   "to": "open_LL",
+   "counts": 4,
+   "opposite": "hand-change-ll-to-lr",
+   "notes": "The follower offers the left hand during the basic; the leader lets go of the follower's right and takes the left with the left hand. Often the set-up for crossed hands."
+  },
+  {
+   "id": "hand-change-lr-to-rl",
+   "name": "Hand change (L-R to R-L)",
+   "kind": "adjuster",
+   "level": 1,
+   "from": "open_LR",
+   "to": "open_RL",
+   "counts": 4,
+   "opposite": "hand-change-rl-to-lr",
+   "notes": "The follower offers the left hand; the leader takes it with the right, then lets go with the left."
+  },
+  {
+   "id": "hand-change-rl-to-lr",
+   "name": "Hand change (R-L to L-R)",
+   "kind": "adjuster",
+   "level": 1,
+   "from": "open_RL",
+   "to": "open_LR",
+   "counts": 4,
+   "opposite": "hand-change-lr-to-rl",
+   "notes": "The follower offers the right hand; the leader takes it with the left, then lets go with the right."
+  },
+  {
+   "id": "behind-back-to-crossed",
+   "name": "Hand change (behind the back, L-R to handshake)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "open_LR",
+   "to": "open_RR",
+   "counts": 4,
+   "notes": "On 1-2 the leader brings the follower's right hand behind the leader's own back and passes it to the right hand; tap 4. Often danced with a leader right turn over 8 counts; regrip to crossed hands afterwards if wanted.",
+   "aka": [
+    "behind-the-back hand change"
+   ]
+  },
+  {
+   "id": "inside-turn-hand-change",
+   "name": "Follower left turn (with hand change)",
+   "kind": "move",
+   "level": 1,
+   "from": "open_LR",
+   "to": "open_RR",
+   "counts": 4,
+   "notes": "The leader leads a left turn with the left hand and catches the follower's right hand with the right on the way out, then lets go with the left. Ends in a handshake.",
+   "source": "bachatahub.com/en/academy/term/hand-change"
   },
   {
    "id": "catch-second-hand",
@@ -511,7 +859,8 @@ window.BACHATA_DATA = {
    "level": 1,
    "from": "open_LR",
    "to": "double",
-   "counts": 0
+   "counts": 0,
+   "notes": "The leader takes the follower's free left hand with the right, usually on 4 or 8; the follower offers it at waist height."
   },
   {
    "id": "catch-left-hand",
@@ -520,7 +869,8 @@ window.BACHATA_DATA = {
    "level": 1,
    "from": "open_RL",
    "to": "double",
-   "counts": 0
+   "counts": 0,
+   "notes": "The leader takes the follower's free right hand with the left, usually on 4 or 8."
   },
   {
    "id": "release-right",
@@ -529,7 +879,8 @@ window.BACHATA_DATA = {
    "level": 1,
    "from": "double",
    "to": "open_LR",
-   "counts": 0
+   "counts": 0,
+   "notes": "Let go of the right hands smoothly at the end of a figure, without throwing the follower's arm."
   },
   {
    "id": "release-left",
@@ -538,45 +889,8 @@ window.BACHATA_DATA = {
    "level": 1,
    "from": "double",
    "to": "open_RL",
-   "counts": 0
-  },
-  {
-   "id": "regrip-cross-r-over-l",
-   "name": "Crossed hands regrip (right over left)",
-   "kind": "adjuster",
-   "level": 2,
-   "from": "open_RR",
-   "to": "cross_Rtop",
    "counts": 0,
-   "notes": "Keep the handshake on top, catch left-to-left underneath."
-  },
-  {
-   "id": "regrip-cross-l-over-r",
-   "name": "Crossed hands regrip (left over right)",
-   "kind": "adjuster",
-   "level": 2,
-   "from": "open_LL",
-   "to": "cross_Ltop",
-   "counts": 0,
-   "notes": "Keep left-to-left on top, catch right-to-right underneath."
-  },
-  {
-   "id": "release-cross-to-handshake",
-   "name": "Crossed hands release (to handshake)",
-   "kind": "adjuster",
-   "level": 2,
-   "from": "cross_Rtop",
-   "to": "open_RR",
-   "counts": 0
-  },
-  {
-   "id": "release-cross-to-ll",
-   "name": "Crossed hands release (to L-L)",
-   "kind": "adjuster",
-   "level": 2,
-   "from": "cross_Ltop",
-   "to": "open_LL",
-   "counts": 0
+   "notes": "The leader lets go with the left hand smoothly at the end of a figure, keeping right-to-left."
   },
   {
    "id": "close-frame",
@@ -585,7 +899,8 @@ window.BACHATA_DATA = {
    "level": 1,
    "from": "open_LR",
    "to": "closed",
-   "counts": 4
+   "counts": 4,
+   "notes": "On 1-3 the leader draws the follower in with the left hand and places the right hand on the follower's upper back; the follower rests the left hand on the leader's shoulder. Light pressure, no leaning."
   },
   {
    "id": "open-frame",
@@ -594,27 +909,42 @@ window.BACHATA_DATA = {
    "level": 1,
    "from": "closed",
    "to": "open_LR",
-   "counts": 4
+   "counts": 4,
+   "notes": "The leader releases the right hand from the follower's back and steps back with a gentle push through the frame; both end at arm's length, left to right."
   },
   {
-   "id": "hand-to-neck",
-   "name": "Neck wrap entry (hand to neck)",
+   "id": "full-contact-close",
+   "name": "Close frame (to full contact)",
    "kind": "adjuster",
-   "level": 3,
+   "level": 2,
    "from": "closed",
-   "to": {
-    "hands": "R>back",
-    "arms": "follower_R_behind_leader_neck"
-   },
-   "counts": 4,
-   "notes": "Leader places the follower's right hand behind his neck."
+   "to": "full_contact",
+   "counts": 0,
+   "opposite": "full-contact-open",
+   "notes": "The leader lets go of the follower's right hand and brings the left palm to the follower's shoulder blade too; the follower rests both hands on the leader's shoulders.",
+   "aka": [
+    "polnyy kontakt (Russian)"
+   ],
+   "source": "bachatamap.ru/theory/positions/close-position/"
+  },
+  {
+   "id": "full-contact-open",
+   "name": "Close frame (from full contact to hand held)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "full_contact",
+   "to": "closed",
+   "counts": 0,
+   "opposite": "full-contact-close",
+   "notes": "The leader's left hand slides down the follower's arm and takes the right hand; the leader's right stays on the follower's back."
   },
   {
    "id": "release-all",
    "name": "Release (both hands)",
    "kind": "adjuster",
-   "level": 2,
+   "level": 1,
    "from": {
+    "orientation": "facing",
     "frame": [
      "closed",
      "semi",
@@ -622,19 +952,60 @@ window.BACHATA_DATA = {
     ]
    },
    "to": "apart",
-   "counts": 0
+   "counts": 0,
+   "notes": "Let go of everything while facing each other, usually for a spin or to dance apart; give a clear, soft finish rather than a drop."
   },
   {
    "id": "reconnect",
    "name": "Reconnect (to L-R)",
    "kind": "adjuster",
-   "level": 2,
+   "level": 1,
    "from": "apart",
    "to": "open_LR",
    "counts": 0,
    "weight": {
     "to": "mirrored"
-   }
+   },
+   "notes": "The leader offers the left hand at waist height on the 1; the follower takes it with the right."
+  },
+  {
+   "id": "reconnect-closed",
+   "name": "Reconnect (to closed)",
+   "kind": "adjuster",
+   "level": 1,
+   "from": "apart",
+   "to": "closed",
+   "counts": 0,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "The leader steps in, offers the left hand and places the right on the follower's upper back as the follower arrives."
+  },
+  {
+   "id": "reconnect-double",
+   "name": "Reconnect (to double hands)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "apart",
+   "to": "double",
+   "counts": 0,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "The leader offers both hands, palms up, at waist height."
+  },
+  {
+   "id": "reconnect-handshake",
+   "name": "Reconnect (to handshake)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "apart",
+   "to": "open_RR",
+   "counts": 0,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "The leader offers the right hand to the follower's right, like a handshake."
   },
   {
    "id": "left-turn-into-closed",
@@ -644,7 +1015,26 @@ window.BACHATA_DATA = {
    "from": "open_LR",
    "to": "closed",
    "counts": 4,
-   "notes": "Follower turns left; leader's right hand meets her back as she finishes."
+   "notes": "The leader leads a left turn on 1-3 and keeps the arm low as the follower finishes, so the leader's right hand lands on the follower's back; the follower finishes close, left hand on the leader's shoulder."
+  },
+  {
+   "id": "forward-break",
+   "name": "Forward break",
+   "kind": "styling",
+   "level": 1,
+   "from": [
+    "closed",
+    "open_LR"
+   ],
+   "counts": 4,
+   "notes": "The leader steps forward with the left on 1 while the follower steps back with the right, back on 2, together on 3, tap on 4.",
+   "aka": [
+    "rompe delante (Spanish)",
+    "seducela",
+    "in and out",
+    "rompo delante, shag ataka (Russian)"
+   ],
+   "source": "redance.app; bachatamap.ru/steps/rompo-adelanto/"
   },
   {
    "id": "madrid-step",
@@ -655,7 +1045,15 @@ window.BACHATA_DATA = {
     "closed",
     "shadow_waist"
    ],
-   "counts": 4
+   "counts": 4,
+   "notes": "A crossing step with a twist of the upper body, danced as a variation of the basic; a common prep for a turn, a hip circle or a head roll on the next 4.",
+   "aka": [
+    "twist step",
+    "Spanish cross",
+    "madridskiy shag (Russian)"
+   ],
+   "source": "Introvert Dance sensual curriculum; bachatamap.ru/steps/madrid/",
+   "check": "Mechanics paraphrased from short descriptions; confirm how your scene dances it."
   },
   {
    "id": "double-slide",
@@ -667,7 +1065,8 @@ window.BACHATA_DATA = {
     "shadow_waist",
     "shadow"
    ],
-   "counts": 4
+   "counts": 4,
+   "notes": "Two sliding side steps instead of the three-step basic: slide on 1-2, slide on 3, tap 4; keep the frame and the connection still."
   },
   {
    "id": "forward-forward-back-back",
@@ -676,9 +1075,12 @@ window.BACHATA_DATA = {
    "level": 2,
    "from": [
     "closed",
-    "cuddle"
+    "cuddle",
+    "wrap_R",
+    "shadow_wrap"
    ],
-   "counts": 8
+   "counts": 8,
+   "notes": "Two steps forward with a tap on 1-4, two steps back with a tap on 5-8, both on the same line; lead it from the body."
   },
   {
    "id": "chest-isolation",
@@ -689,7 +1091,150 @@ window.BACHATA_DATA = {
     "closed",
     "shadow_waist"
    ],
-   "counts": 4
+   "counts": 4,
+   "notes": "Small chest circles or side-to-side isolations while the feet keep the basic; the leader starts it and keeps the hand on the follower's back soft."
+  },
+  {
+   "id": "paseala",
+   "name": "Paseala (walk her out and back)",
+   "kind": "styling",
+   "level": 2,
+   "from": "closed",
+   "counts": 8,
+   "notes": "With the right hand at the follower's waist, the leader sends the follower out to the leader's right side on 1-3 and back in front on 5-7; start it on 1.",
+   "aka": [
+    "promenade out and back",
+    "pasela, progulka (Russian)"
+   ],
+   "source": "wikidanse.fr"
+  },
+  {
+   "id": "couple-turn",
+   "name": "Couple turn",
+   "kind": "styling",
+   "level": 1,
+   "from": [
+    "closed",
+    "shadow_waist",
+    "cuddle"
+   ],
+   "counts": 8,
+   "notes": "Prepare to the left on 1-3, then pivot together to the right on 5-7, staying on each other's axis; start it on 1.",
+   "aka": [
+    "tour en couple (French)",
+    "completo",
+    "vrashchenie v pare, kompleto (Russian)"
+   ],
+   "source": "wikidanse.fr; bachatamap.ru/steps/rotation-in-pair/"
+  },
+  {
+   "id": "caricia",
+   "name": "Caress (caricia)",
+   "kind": "styling",
+   "level": 2,
+   "from": [
+    "closed",
+    "shadow_waist",
+    "shadow_neck",
+    "cuddle",
+    "neck_wrap"
+   ],
+   "counts": 4,
+   "notes": "The leader's free hand slides over the follower's shoulder, arm or waist without breaking the footwork; keep it respectful and above the waist.",
+   "aka": [
+    "caresse (French)"
+   ],
+   "source": "redance.app; wikidanse.fr. Note: in Russian sources 'caricia' is the arm thrown over the follower's head, which is the face loop (hair brush) here."
+  },
+  {
+   "id": "fall-forward",
+   "name": "Fall forward",
+   "kind": "styling",
+   "level": 3,
+   "from": [
+    "closed",
+    "neck_wrap",
+    "full_contact"
+   ],
+   "counts": 4,
+   "notes": "The follower leans the chest weight toward the leader while the leader steps back and holds the counterbalance. Safety: firm frame, small at first, never let go.",
+   "source": "Bailar glossary"
+  },
+  {
+   "id": "fall-sit",
+   "name": "Fall (sit down)",
+   "kind": "styling",
+   "level": 2,
+   "from": [
+    "full_contact",
+    "closed"
+   ],
+   "counts": 4,
+   "notes": "The leader gives a small upward impulse on 8, then on 1 relaxes so the follower sinks into a sit while the hands slide along the follower's arms; pause on 2, up on 3, tap 4. Safety: the follower controls the depth.",
+   "aka": [
+    "prised, padenie (Russian)"
+   ],
+   "source": "bachatamap.ru/moderna/fall/"
+  },
+  {
+   "id": "impulso",
+   "name": "Impulso (send-out)",
+   "kind": "styling",
+   "level": 2,
+   "from": [
+    "closed",
+    "full_contact"
+   ],
+   "counts": 4,
+   "notes": "On 4-and the leader shifts the body left so the follower travels away, both step apart on 5, pause on 6, and come back toward each other on 7-8. Lead with the body, not the arms.",
+   "aka": [
+    "impulso, shtorki, zanaveski (Russian, 'curtains')"
+   ],
+   "source": "bachatamap.ru/moderna/impulso/",
+   "check": "Whether the couple re-closes on 7-8 or ends open is not stated."
+  },
+  {
+   "id": "hand-to-neck",
+   "name": "Neck wrap entry (hand to neck)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "closed",
+   "to": {
+    "hands": "R>back",
+    "arms": "follower_R_behind_leader_neck"
+   },
+   "counts": 4,
+   "notes": "The leader lifts the follower's right hand over the leader's head, places it on the back of the leader's neck and lets go; the leader's left hand is now free. Safety: never pull on the arm or the neck."
+  },
+  {
+   "id": "arm-drape-to-neck",
+   "name": "Neck wrap entry (arm drape)",
+   "kind": "move",
+   "level": 2,
+   "from": "open_LR",
+   "to": "neck_wrap",
+   "counts": 4,
+   "notes": "The leader lifts the follower's right hand over the leader's head to the neck as the follower steps in, and brings the right hand to the follower's back."
+  },
+  {
+   "id": "neck-slide",
+   "name": "Neck wrap exit (slide to L-R)",
+   "kind": "move",
+   "level": 2,
+   "from": "neck_wrap",
+   "to": "open_LR",
+   "counts": 4,
+   "notes": "The leader steps back; the follower's hand slides down the leader's arm and the leader's left hand catches it at the end."
+  },
+  {
+   "id": "neck-slide-to-closed",
+   "name": "Neck wrap exit (slide to closed)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "neck_wrap",
+   "to": "closed",
+   "counts": 4,
+   "notes": "The follower's hand slides down from the neck along the leader's arm and the leader's left hand takes it; the right stays on the follower's back."
   },
   {
    "id": "half-turn-into-shadow",
@@ -702,11 +1247,17 @@ window.BACHATA_DATA = {
    "weight": {
     "to": "parallel"
    },
-   "notes": "Leader pushes her right arm back and she makes a half turn to the left (wikidanse.fr). Spanish schools call this entry media de follower (Unibaila); in Russian, half-turn woman."
+   "notes": "The leader gently opens the follower's right arm back; the follower makes a half turn to the left and the leader's left lowers the hand in front of the follower's waist. The leader changes feet (step-tap).",
+   "aka": [
+    "media vuelta",
+    "media de follower (Spanish)",
+    "half-turn woman, mediya (Russian)"
+   ],
+   "source": "wikidanse.fr; unibaila.com; bachata-salsa-lessons.ru"
   },
   {
    "id": "shadow-entry-from-open",
-   "name": "Shadow entry (from open)",
+   "name": "Shadow entry (half left turn, from open)",
    "kind": "move",
    "level": 2,
    "from": "open_LR",
@@ -715,7 +1266,29 @@ window.BACHATA_DATA = {
    "weight": {
     "to": "parallel"
    },
-   "notes": "Leader steps behind on a check step while the follower keeps her basic."
+   "notes": "On 5 the leader raises the left hand and the follower makes a half turn to the left under it; on 7 the leader's right hand lands on the follower's waist as the left lowers. The leader changes feet (step-tap).",
+   "aka": [
+    "povorot na 180, pol-oborota, vkhod v tenevuyu (Russian)"
+   ],
+   "source": "bachatamap.ru/moderna/rotations/turns/half-turn/"
+  },
+  {
+   "id": "pinza-into-shadow",
+   "name": "Shadow entry (from pinza, walk around her)",
+   "kind": "move",
+   "level": 3,
+   "from": "closed",
+   "to": "shadow_waist",
+   "counts": 4,
+   "weight": {
+    "to": "parallel"
+   },
+   "notes": "The leader blocks low and lets the follower's upper body circle (the pinza), then walks around behind on 3-4 and lands with the right hand on the follower's waist.",
+   "aka": [
+    "pinsa (Russian)"
+   ],
+   "source": "bachata-salsa-lessons.ru (Oleg Loginov)",
+   "check": "End hold inferred."
   },
   {
    "id": "shadow-push-out",
@@ -727,31 +1300,22 @@ window.BACHATA_DATA = {
    "counts": 4,
    "weight": {
     "to": "mirrored"
-   }
+   },
+   "notes": "On 1 a gentle push from the leader's right hand on the waist sends the follower forward; the follower walks out and turns to face on 3-4, ending left to right."
   },
   {
-   "id": "shadow-lateral-exit",
-   "name": "Shadow exit (lateral)",
+   "id": "shadow-exit-half-turn-right",
+   "name": "Shadow exit (half turn under left arm)",
    "kind": "move",
-   "level": 3,
+   "level": 2,
    "from": "shadow_waist",
    "to": "open_LR",
-   "counts": 8,
+   "counts": 4,
    "weight": {
     "to": "mirrored"
-   }
-  },
-  {
-   "id": "shadow-slingshot-exit",
-   "name": "Shadow exit (slingshot)",
-   "kind": "move",
-   "level": 3,
-   "from": "shadow_waist",
-   "to": "open_LR",
-   "counts": 8,
-   "weight": {
-    "to": "mirrored"
-   }
+   },
+   "notes": "The leader raises the left hand; the follower makes a half turn to the right under it to face the leader, and the leader's right hand leaves the waist.",
+   "source": "wikidanse.fr"
   },
   {
    "id": "shadow-turn-to-closed",
@@ -763,15 +1327,69 @@ window.BACHATA_DATA = {
    "counts": 4,
    "weight": {
     "to": "mirrored"
-   }
+   },
+   "notes": "The follower makes a half turn to the right back to face the leader; the leader's right hand slides from the waist to the follower's back."
+  },
+  {
+   "id": "shadow-lateral-exit",
+   "name": "Shadow exit (lateral)",
+   "kind": "move",
+   "level": 3,
+   "from": "shadow_waist",
+   "to": "open_LR",
+   "counts": 8,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "The leader steps out to the side on 1-3 so the follower can travel forward; on 5-7 the leader's left hand leads the follower around to face, tap 8."
+  },
+  {
+   "id": "shadow-slingshot-exit",
+   "name": "Shadow exit (slingshot)",
+   "kind": "move",
+   "level": 3,
+   "from": "shadow_waist",
+   "to": "open_LR",
+   "counts": 8,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "The leader draws the follower back on 1-3 to load the stretch, then releases forward on 5 and turns the follower to face by 8."
+  },
+  {
+   "id": "shadow-exit-mill",
+   "name": "Shadow exit (mill)",
+   "kind": "move",
+   "level": 3,
+   "from": "shadow_waist",
+   "to": "open_LR",
+   "counts": 8,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "The follower turns out of shadow while the arms swap up and down like windmill sails; on the spot, or travelling while the leader step-points.",
+   "aka": [
+    "molino",
+    "helicoptero (Spanish)",
+    "melnitsa (Russian)"
+   ],
+   "source": "bachatamap.ru/moderna/rotations/turns/mill-exit-from-shadow/; Introvert Dance",
+   "check": "Mechanics and end hold only partly described by the sources."
   },
   {
    "id": "shadow-head-roll",
    "name": "Shadow head roll",
    "kind": "styling",
    "level": 3,
-   "from": "shadow_waist",
-   "counts": 4
+   "from": [
+    "shadow_waist",
+    "shadow_neck"
+   ],
+   "counts": 4,
+   "notes": "The leader leads with the body from the follower's upper back or shoulder, never by pushing the head; slow, and the follower may decline. Safety: not for a first dance with someone new.",
+   "aka": [
+    "khed roll v tenevoy (Russian)"
+   ]
   },
   {
    "id": "shadow-waist-walk",
@@ -782,20 +1400,93 @@ window.BACHATA_DATA = {
    "counts": 4,
    "weight": {
     "from": "parallel"
-   }
+   },
+   "notes": "Walk or basic together on the same foot; the leader's right hand on the follower's waist guides the direction."
   },
   {
-   "id": "cross-half-turn-shadow-left",
-   "name": "Crossed hands half turn into shadow (left)",
+   "id": "shadow-take-both-hands",
+   "name": "Shadow hand switch (take both hands)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "shadow_waist",
+   "to": "shadow",
+   "counts": 0,
+   "opposite": "shadow-hand-to-waist",
+   "notes": "The leader's left hand passes the follower's right hand to the leader's right, then the left picks up the follower's left."
+  },
+  {
+   "id": "shadow-hand-to-waist",
+   "name": "Shadow hand switch (hand to waist)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "shadow",
+   "to": "shadow_waist",
+   "counts": 0,
+   "opposite": "shadow-take-both-hands",
+   "notes": "The leader lets go of the left hands, passes the follower's right hand to the left hand and puts the right hand on the follower's waist."
+  },
+  {
+   "id": "shadow-hand-to-neck",
+   "name": "Shadow neck entry (her hand to your neck)",
    "kind": "move",
    "level": 2,
-   "from": "cross_Rtop",
-   "to": "shadow",
+   "from": "shadow_waist",
+   "to": "shadow_neck",
+   "counts": 4,
+   "opposite": "shadow-neck-slide",
+   "notes": "The leader lifts the follower's right hand over the follower's head to the back of the leader's neck, then slides the left hand down the inside of the follower's arm to the side. Safety: never pull on the arm or the neck."
+  },
+  {
+   "id": "shadow-neck-slide",
+   "name": "Shadow neck exit (slide down)",
+   "kind": "move",
+   "level": 2,
+   "from": "shadow_neck",
+   "to": "shadow_waist",
+   "counts": 4,
+   "opposite": "shadow-hand-to-neck",
+   "notes": "The leader's left hand slides up the follower's arm, takes the hand from the neck and brings it down in front of the follower's waist."
+  },
+  {
+   "id": "shadow-neck-turn-to-neck-wrap",
+   "name": "Shadow neck exit (turn to face, to neck wrap)",
+   "kind": "move",
+   "level": 3,
+   "from": "shadow_neck",
+   "to": "neck_wrap",
    "counts": 4,
    "weight": {
-    "to": "parallel"
+    "to": "mirrored"
    },
-   "opposite": "cross-half-turn-shadow"
+   "notes": "The follower's hand stays on the leader's neck during a half turn to the right to face the leader; the leader's right hand slides from the waist to the follower's back."
+  },
+  {
+   "id": "shadow-exit",
+   "name": "Shadow exit (left turn, keep left hand)",
+   "kind": "move",
+   "level": 2,
+   "from": "shadow",
+   "to": "open_LL",
+   "counts": 4,
+   "weight": {
+    "to": "mirrored"
+   },
+   "opposite": "shadow-exit-keep-right",
+   "notes": "Let go of the right hands; the follower turns left to face the leader with no arm overhead, and left-to-left stays."
+  },
+  {
+   "id": "shadow-exit-keep-right",
+   "name": "Shadow exit (right turn, keep right hand)",
+   "kind": "move",
+   "level": 2,
+   "from": "shadow",
+   "to": "open_RR",
+   "counts": 4,
+   "weight": {
+    "to": "mirrored"
+   },
+   "opposite": "shadow-exit",
+   "notes": "Let go of the left hands; the follower turns right to face the leader and the handshake stays."
   },
   {
    "id": "shadow-turn-back-l-over-r",
@@ -809,7 +1500,7 @@ window.BACHATA_DATA = {
     "to": "mirrored"
    },
    "opposite": "shadow-turn-back-r-over-l",
-   "notes": "Follower turns back to face; the hands cross again."
+   "notes": "Both hands lift; the follower makes a half turn to the LEFT to face the leader and the hands come out left over right."
   },
   {
    "id": "shadow-turn-back-r-over-l",
@@ -822,7 +1513,83 @@ window.BACHATA_DATA = {
    "weight": {
     "to": "mirrored"
    },
-   "opposite": "shadow-turn-back-l-over-r"
+   "opposite": "shadow-turn-back-l-over-r",
+   "notes": "Both hands lift; the follower makes a half turn to the RIGHT to face the leader and the hands come out right over left."
+  },
+  {
+   "id": "sweetheart-entry",
+   "name": "Sweetheart entry (half left turn, from double hands)",
+   "kind": "move",
+   "level": 2,
+   "from": "double",
+   "to": "shadow_wrap",
+   "counts": 4,
+   "weight": {
+    "to": "parallel"
+   },
+   "opposite": "sweetheart-exit",
+   "notes": "The leader lifts the left hand and keeps the right low; the follower makes a half turn to the left and both hands come down crossed on the follower's waist, the leader right behind. The leader changes feet."
+  },
+  {
+   "id": "sweetheart-exit",
+   "name": "Sweetheart exit (unwind to double hands)",
+   "kind": "move",
+   "level": 2,
+   "from": "shadow_wrap",
+   "to": "double",
+   "counts": 4,
+   "weight": {
+    "to": "mirrored"
+   },
+   "opposite": "sweetheart-entry",
+   "notes": "The leader lifts the left hand; the follower makes a half turn to the right back to face, both hands still held."
+  },
+  {
+   "id": "cuddle-to-sweetheart",
+   "name": "Cuddle slide (into sweetheart)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "cuddle",
+   "to": "shadow_wrap",
+   "counts": 4,
+   "notes": "Keep both hands; the leader steps behind the follower (or the follower steps across in front)."
+  },
+  {
+   "id": "sweetheart-release-to-shadow",
+   "name": "Sweetheart release (to shadow, hand on waist)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "shadow_wrap",
+   "to": "shadow_waist",
+   "counts": 0,
+   "notes": "The leader lets go of the follower's left hand; the leader's right hand stays on the follower's waist."
+  },
+  {
+   "id": "hammerlock-entry",
+   "name": "Hammerlock entry",
+   "kind": "move",
+   "level": 2,
+   "from": "open_RR",
+   "to": "hammerlock_R",
+   "counts": 4,
+   "notes": "From the handshake the leader leads the follower's right hand low across the waist into a left turn; the arm folds behind the back and the leader's left picks up the follower's left. Safety: keep the hand at hip height, never push it up the back.",
+   "aka": [
+    "candado (Spanish)",
+    "Brezel (German)",
+    "khamerlok, setenta (Russian)",
+    "arm breaker"
+   ],
+   "source": "redance.app; in-tanz.de; bachatamap.ru"
+  },
+  {
+   "id": "hammerlock-exit",
+   "name": "Hammerlock exit",
+   "kind": "move",
+   "level": 2,
+   "from": "hammerlock_R",
+   "to": "open_RR",
+   "counts": 4,
+   "notes": "Let go of the left hands; the leader leads the follower to unwind with a right turn, keeping the handshake, and the arm comes back out in front."
   },
   {
    "id": "crossed-hammerlock-entry",
@@ -832,7 +1599,11 @@ window.BACHATA_DATA = {
    "from": "cross_Rtop",
    "to": "hammerlock_R",
    "counts": 4,
-   "notes": "Follower turns left with the right hand kept low, folding behind her back."
+   "notes": "The leader leads the follower's left turn with the right hands kept low, so the follower's right arm folds behind the back. Safety: keep the hand at hip height, never push it up.",
+   "aka": [
+    "drop za spinu (Russian, throw behind the back)"
+   ],
+   "source": "bachatamap.ru/moderna/decorations/drop-behind-the-back/"
   },
   {
    "id": "hammerlock-unwind-to-cross",
@@ -841,46 +1612,190 @@ window.BACHATA_DATA = {
    "level": 2,
    "from": "hammerlock_R",
    "to": "cross_Rtop",
-   "counts": 4
+   "counts": 4,
+   "notes": "The left hands lift and the leader leads a right turn so the follower's arm comes out from behind the back; the hands end right over left."
   },
   {
    "id": "hammerlock-release-to-ll",
    "name": "Hammerlock release (to L-L)",
-   "kind": "move",
+   "kind": "adjuster",
    "level": 2,
    "from": "hammerlock_R",
    "to": "open_LL",
-   "counts": 4,
-   "notes": "Release the right hand behind her back; she unwinds while you keep left-to-left."
+   "counts": 0,
+   "notes": "The leader lets go of the hand behind the follower's back; the arm simply comes back and left-to-left stays."
   },
   {
    "id": "hammerlock-hip-roll",
    "name": "Hammerlock hip roll",
    "kind": "styling",
-   "level": 2,
+   "level": 3,
    "from": "hammerlock_R",
-   "counts": 4
+   "counts": 4,
+   "notes": "Stay close in the hammerlock and roll the hips together over 4 counts. Safety: keep the follower's hand at the hip, no pull on the arm."
   },
   {
-   "id": "left-turn-into-cuddle",
-   "name": "Cuddle entry (from left turn)",
+   "id": "hammerlock-left-entry",
+   "name": "Hammerlock entry (left arm)",
    "kind": "move",
    "level": 2,
-   "from": "open_LR",
+   "from": "double",
+   "to": "hammerlock_L",
+   "counts": 4,
+   "opposite": "hammerlock-left-unwind",
+   "notes": "The leader raises the left arm and keeps the right at waist height; the follower turns right and the follower's left arm ends behind the back. Safety: keep the hand at the hip, never push it up.",
+   "aka": [
+    "tour espagnol fille (French)",
+    "Eindrehen in die Brezel (German)",
+    "candado (Spanish)",
+    "khamerlok devushki (Russian)"
+   ],
+   "source": "wikidanse.fr; in-tanz.de; redance.app; bachatamap.ru/moderna/rotations/turns/hammerlock-girls/"
+  },
+  {
+   "id": "hammerlock-left-entry-from-rl",
+   "name": "Hammerlock entry (left arm, from R-L)",
+   "kind": "move",
+   "level": 2,
+   "from": "open_RL",
+   "to": "hammerlock_L",
+   "counts": 4,
+   "notes": "The leader turns the follower right with the right hand low, so the follower's left arm folds behind the back, and catches the follower's right hand with the left. Safety: no force on the arm."
+  },
+  {
+   "id": "hammerlock-left-unwind",
+   "name": "Hammerlock unwind (left arm)",
+   "kind": "move",
+   "level": 2,
+   "from": "hammerlock_L",
+   "to": "double",
+   "counts": 4,
+   "opposite": "hammerlock-left-entry",
+   "notes": "The leader lifts the left hand; the follower unwinds with a full left turn and both hands come back in front.",
+   "aka": [
+    "deroule fille a gauche (French)",
+    "Ausdrehen aus der Brezel (German)"
+   ]
+  },
+  {
+   "id": "hammerlock-left-release",
+   "name": "Hammerlock release (left arm)",
+   "kind": "move",
+   "level": 2,
+   "from": "hammerlock_L",
+   "to": "open_LR",
+   "counts": 4,
+   "notes": "The leader lets go of the hand behind the follower's back; the follower unwinds while left-to-right stays."
+  },
+  {
+   "id": "leader-hammerlock-entry",
+   "name": "Leader's hammerlock entry",
+   "kind": "move",
+   "level": 2,
+   "from": "double",
+   "to": "hammerlock_leader_L",
+   "counts": 4,
+   "opposite": "leader-hammerlock-dive-exit",
+   "notes": "The leader raises the right hand to make a window and turns right on 1-2-3 under it; the leader's left hand travels down and ends behind the leader's own back, tap 4. Hook grip, no squeezing.",
+   "aka": [
+    "khamerlok muzhchiny, setenta (Russian)",
+    "hamlet inverso (Spanish)",
+    "arm break"
+   ],
+   "source": "bachatamap.ru/moderna/rotations/turns/hamerlok-muzhchiny/",
+   "check": "Start hold inferred as double hands (the source moves both arms but does not name the hold)."
+  },
+  {
+   "id": "leader-hammerlock-dive-exit",
+   "name": "Leader's hammerlock exit (dive under the arm)",
+   "kind": "move",
+   "level": 2,
+   "from": "hammerlock_leader_L",
+   "to": "double",
+   "counts": 4,
+   "opposite": "leader-hammerlock-entry",
+   "notes": "The leader ducks under the joined right hands and turns back left, so the left arm comes out from behind the leader's back.",
+   "aka": [
+    "nyrok pod ruku (Russian)"
+   ],
+   "source": "bachatamap.ru/moderna/sensual_popular_combos/hammerlock-dive-under-hand/",
+   "check": "Named only: direction, counts and end hold inferred."
+  },
+  {
+   "id": "cuddle-entry",
+   "name": "Cuddle entry",
+   "kind": "move",
+   "level": 1,
+   "from": "double",
    "to": "cuddle",
    "counts": 4,
    "weight": {
     "to": "parallel"
    },
-   "notes": "Left turn with the connection kept; leader catches her left hand as she wraps."
+   "opposite": "cuddle-unwrap",
+   "notes": "On 1 the leader raises the left hand and keeps the right low; the follower makes a half turn to the left into the leader's right side, the right arm folding across the body. The leader changes feet.",
+   "aka": [
+    "wrap",
+    "envoltura (Spanish)",
+    "enroule (French)",
+    "konfetka, obyortka, pod krylo (Russian)",
+    "tornillo"
+   ],
+   "source": "wikidanse.fr; bachatamap.ru/moderna/rotations/turns/wrap/"
+  },
+  {
+   "id": "cuddle-unwrap",
+   "name": "Cuddle exit (unwrap)",
+   "kind": "move",
+   "level": 1,
+   "from": "cuddle",
+   "to": "double",
+   "counts": 4,
+   "weight": {
+    "to": "mirrored"
+   },
+   "opposite": "cuddle-entry",
+   "notes": "The leader raises the left hand and leads a half turn to the right on 1-3; the follower ends facing the leader, both hands still held."
+  },
+  {
+   "id": "cuddle-release-spin",
+   "name": "Cuddle exit (release spin)",
+   "kind": "move",
+   "level": 2,
+   "from": "cuddle",
+   "to": "open_LR",
+   "counts": 4,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "The leader lets go with the right hand and lifts the left; the follower unwinds to the right and ends facing, left to right."
   },
   {
    "id": "cuddle-walk",
    "name": "Cuddle walk (forward and back)",
    "kind": "styling",
+   "level": 1,
+   "from": "cuddle",
+   "counts": 8,
+   "notes": "Walk forward 1-2-3 tap, back 5-6-7 tap, side by side on the same foot.",
+   "aka": [
+    "kolybel (Russian, 'cradle')"
+   ],
+   "source": "bachatamap.ru/moderna/sensual_combos/cradle/"
+  },
+  {
+   "id": "cuddle-ocho",
+   "name": "Ocho (in the cuddle)",
+   "kind": "styling",
    "level": 2,
    "from": "cuddle",
-   "counts": 8
+   "counts": 4,
+   "notes": "With the right forearm across the follower's shoulder blades, the leader steps left and pulls lightly with the left hand so the follower pivots on the right foot; repeat to the other side every 2 counts, led by the leader's weight changes.",
+   "aka": [
+    "ocho v krendele (Russian, ocho in the pretzel)"
+   ],
+   "source": "bachatamap.ru/steps/ocho-in-pretzel/",
+   "check": "Mapped the source's pretzel hold (pod krylo) to the cuddle."
   },
   {
    "id": "cuddle-unwrap-to-closed",
@@ -893,7 +1808,7 @@ window.BACHATA_DATA = {
    "weight": {
     "to": "mirrored"
    },
-   "notes": "Follower unwinds to face; leader lets go of her left hand and takes her back."
+   "notes": "The follower unwinds to the right to face the leader; the leader lets go of the follower's left hand and puts the right hand on the follower's back."
   },
   {
    "id": "cuddle-slide-to-shadow",
@@ -904,7 +1819,7 @@ window.BACHATA_DATA = {
    "to": "shadow_waist",
    "counts": 4,
    "opposite": "shadow-wrap-into-cuddle",
-   "notes": "Leader lets go of her left hand, steps behind, right hand to her waist."
+   "notes": "The leader lets go of the follower's left hand, steps behind and brings the right hand to the follower's waist; the left keeps the follower's right hand in front of the waist."
   },
   {
    "id": "shadow-wrap-into-cuddle",
@@ -915,36 +1830,287 @@ window.BACHATA_DATA = {
    "to": "cuddle",
    "counts": 4,
    "opposite": "cuddle-slide-to-shadow",
-   "notes": "Leader's right hand takes her left across her front."
+   "notes": "The leader's right hand takes the follower's left across the front as the leader steps to the follower's left side."
   },
   {
-   "id": "arm-drape-to-neck",
-   "name": "Neck wrap entry (arm drape)",
+   "id": "cuddle-throw-to-shadow",
+   "name": "Cuddle exit (throw the arms, into shadow)",
    "kind": "move",
-   "level": 3,
-   "from": "open_LR",
-   "to": "neck_wrap",
+   "level": 2,
+   "from": "cuddle",
+   "to": "shadow_waist",
    "counts": 4,
-   "notes": "Leader lifts her right hand over his head to his neck as she steps in; right hand to her back."
+   "notes": "The leader throws the follower's arms out to open the wrap and keeps dancing behind, then puts the right hand on the follower's waist and catches the follower's right hand with the left.",
+   "aka": [
+    "lancer bras fille (French)"
+   ],
+   "source": "wikidanse.fr"
   },
   {
-   "id": "neck-slide-to-closed",
-   "name": "Neck wrap exit (slide to closed)",
-   "kind": "adjuster",
-   "level": 3,
-   "from": "neck_wrap",
-   "to": "closed",
+   "id": "pretzel-leader-turn-out",
+   "name": "Pretzel exit (leader turns under the arms)",
+   "kind": "move",
+   "level": 2,
+   "from": "cuddle",
+   "to": "double_braided",
    "counts": 4,
-   "notes": "Her hand slides down from the neck and the leader's left catches it."
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "Second half of the pretzel: from the wrap the leader turns under the joined arms and ends face to face, both hands still held but twisted.",
+   "aka": [
+    "pretzel",
+    "krendel, pod krylo (Russian)"
+   ],
+   "source": "redance.app; bachatamap.ru/theory/positions/pretzel/"
   },
   {
-   "id": "behind-back-to-crossed",
-   "name": "Crossed hands entry (behind-the-back hand change)",
+   "id": "left-turn-into-cuddle",
+   "name": "Wrap entry (left turn, one hand)",
    "kind": "move",
    "level": 2,
    "from": "open_LR",
+   "to": "wrap_R",
+   "counts": 4,
+   "weight": {
+    "to": "parallel"
+   },
+   "opposite": "wrap-exit",
+   "notes": "On 1 the leader lifts the left hand and the follower turns left about three-quarters under it; the hand comes down in front of the follower's waist so the right arm crosses the body, and the leader's right hand meets the follower's back on 3. The leader changes feet."
+  },
+  {
+   "id": "wrap-exit",
+   "name": "Wrap exit (unwind to L-R)",
+   "kind": "move",
+   "level": 2,
+   "from": "wrap_R",
+   "to": "open_LR",
+   "counts": 4,
+   "weight": {
+    "to": "mirrored"
+   },
+   "opposite": "left-turn-into-cuddle",
+   "notes": "The leader lifts the left hand and pushes gently with the right; the follower unwinds with a right turn back to face."
+  },
+  {
+   "id": "wrap-exit-to-closed",
+   "name": "Wrap exit (unwind to closed)",
+   "kind": "move",
+   "level": 2,
+   "from": "wrap_R",
+   "to": "closed",
+   "counts": 4,
+   "weight": {
+    "to": "mirrored"
+   },
+   "notes": "Same unwind, but the leader's right hand stays on the follower's back so the couple lands in closed position."
+  },
+  {
+   "id": "wrap-catch-left",
+   "name": "Catch (her left hand, in the wrap)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "wrap_R",
+   "to": "cuddle",
+   "counts": 0,
+   "notes": "The follower offers the left hand at the right hip; the leader's right hand leaves the back and takes it."
+  },
+  {
+   "id": "pretzel-unwind",
+   "name": "Braid unwind (back to double hands)",
+   "kind": "move",
+   "level": 2,
+   "from": "double_braided",
+   "to": "double",
+   "counts": 4,
+   "notes": "Both hands lift and one partner turns once more in the same direction as the turn that twisted the arms, so they come apart.",
+   "aka": [
+    "pretzel exit"
+   ]
+  },
+  {
+   "id": "braid-whip",
+   "name": "Whip (from the braid)",
+   "kind": "move",
+   "level": 2,
+   "from": "double_braided",
+   "to": "open_RL",
+   "counts": 4,
+   "notes": "The leader lets go of the follower's right hand: it swings down in a circle on 5 and back up into the follower's own styling during the basic, keeping right-to-left.",
+   "aka": [
+    "flips",
+    "khlyst, vybros ruki (Russian)"
+   ],
+   "source": "bachatamap.ru/moderna/decorations/whip/",
+   "check": "End hold inferred. If the source's kosichka means crossed hands, this is the hand toss (right on top)."
+  },
+  {
+   "id": "hair-brush",
+   "name": "Face loop (outside, hair brush)",
+   "kind": "styling",
+   "level": 2,
+   "from": [
+    "double",
+    "open_RL"
+   ],
+   "counts": 4,
+   "notes": "The leader lifts the follower's left hand up on an outside circle, passes it behind the follower's head and brings it down to the right shoulder; soft arms, no tug on the hair.",
+   "aka": [
+    "hair brush",
+    "alardo",
+    "shapochka, vneshnyaya petelka, caricia (Russian)"
+   ],
+   "source": "bachatamap.ru/moderna/decorations/outside-faceloop/",
+   "check": "Start holds and counts inferred."
+  },
+  {
+   "id": "inside-face-loop",
+   "name": "Face loop (inside, scarf)",
+   "kind": "styling",
+   "level": 2,
+   "from": [
+    "double",
+    "open_RL"
+   ],
+   "counts": 4,
+   "notes": "The leader leads the follower's left hand up from below, lifts the elbow and drops the loop over the follower's head like a scarf; follow it with a turn or a head roll.",
+   "aka": [
+    "inside face loop",
+    "sharfik, khomutik, petelka (Russian)"
+   ],
+   "source": "bachatamap.ru/moderna/decorations/inside-faceloop/",
+   "check": "Start holds and counts inferred."
+  },
+  {
+   "id": "elbows",
+   "name": "Elbows (coudes)",
+   "kind": "styling",
+   "level": 2,
+   "from": "double",
+   "counts": 4,
+   "notes": "The leader steps in and lays the forearms over the follower's, elbows on top, keeping both hands; dance the basic close, then step back out.",
+   "aka": [
+    "coudes (French)",
+    "elbous-in (Russian)"
+   ],
+   "source": "wikidanse.fr"
+  },
+  {
+   "id": "regrip-cross-r-over-l",
+   "name": "Crossed hands regrip (right over left)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "open_RR",
    "to": "cross_Rtop",
-   "counts": 8
+   "counts": 0,
+   "notes": "Keep the handshake on top and catch left-to-left underneath."
+  },
+  {
+   "id": "regrip-cross-l-over-r",
+   "name": "Crossed hands regrip (left over right)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "open_LL",
+   "to": "cross_Ltop",
+   "counts": 0,
+   "notes": "Keep left-to-left on top and catch right-to-right underneath."
+  },
+  {
+   "id": "regrip-double-to-cross",
+   "name": "Crossed hands regrip (from double hands)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "double",
+   "to": "cross_Rtop",
+   "counts": 0,
+   "notes": "Swap both hands on the fly: the leader lets go of the follower's left and takes the right hand with the right, then takes the left hand with the left underneath."
+  },
+  {
+   "id": "release-cross-to-handshake",
+   "name": "Crossed hands release (to handshake)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "cross_Rtop",
+   "to": "open_RR",
+   "counts": 0,
+   "notes": "Let go of the bottom (left) hands; the handshake stays."
+  },
+  {
+   "id": "release-cross-to-ll",
+   "name": "Crossed hands release (to L-L)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "cross_Ltop",
+   "to": "open_LL",
+   "counts": 0,
+   "notes": "Let go of the bottom (right) hands; left-to-left stays."
+  },
+  {
+   "id": "cross-right-turn",
+   "name": "Crossed hands right turn",
+   "kind": "move",
+   "level": 2,
+   "from": "cross_Ltop",
+   "to": "cross_Rtop",
+   "counts": 4,
+   "opposite": "cross-left-turn",
+   "notes": "Left over right is the free direction for a right turn: both hands lift, the follower turns right and the hands come out right over left. Loose hook grip."
+  },
+  {
+   "id": "cross-left-turn",
+   "name": "Crossed hands left turn",
+   "kind": "move",
+   "level": 2,
+   "from": "cross_Rtop",
+   "to": "cross_Ltop",
+   "counts": 4,
+   "opposite": "cross-right-turn",
+   "notes": "Right over left is the free direction for a left turn: both hands lift, the follower turns left and the hands come out left over right. Loose hook grip."
+  },
+  {
+   "id": "crossed-outside-turn",
+   "name": "Crossed hands outside turn (release left)",
+   "kind": "move",
+   "level": 2,
+   "from": "cross_Rtop",
+   "to": "open_RR",
+   "counts": 4,
+   "notes": "Let go of the bottom (left) hands on 1 and lead a right turn with the handshake; finish in a handshake. Turning right with both hands kept would lock the follower's arms.",
+   "source": "libraryofdance.org (Bachata guide)"
+  },
+  {
+   "id": "cross-half-turn-shadow",
+   "name": "Crossed hands half turn into shadow (right)",
+   "kind": "move",
+   "level": 2,
+   "from": "cross_Ltop",
+   "to": "shadow",
+   "counts": 4,
+   "weight": {
+    "to": "parallel"
+   },
+   "opposite": "cross-half-turn-shadow-left",
+   "notes": "From left over right the follower makes a half turn to the right; the hands uncross and the leader ends behind. The leader changes feet.",
+   "aka": [
+    "v tenevuyu cherez krest (Russian)"
+   ]
+  },
+  {
+   "id": "cross-half-turn-shadow-left",
+   "name": "Crossed hands half turn into shadow (left)",
+   "kind": "move",
+   "level": 2,
+   "from": "cross_Rtop",
+   "to": "shadow",
+   "counts": 4,
+   "weight": {
+    "to": "parallel"
+   },
+   "opposite": "cross-half-turn-shadow",
+   "notes": "From right over left the follower makes a half turn to the left; the hands uncross and the leader ends behind. The leader changes feet.",
+   "aka": [
+    "v tenevuyu cherez krest (Russian)"
+   ]
   },
   {
    "id": "crossed-matador",
@@ -956,7 +2122,9 @@ window.BACHATA_DATA = {
     "cross_Ltop"
    ],
    "to": "same",
-   "counts": 8
+   "counts": 8,
+   "notes": "The right hands lead the follower's turn while the left hands stay low, the arms framing the follower like a cape. Use a loose hook grip (fingers, no thumbs).",
+   "source": "libraryofdance.org (Crossed-Hand Matador)"
   },
   {
    "id": "crossed-double-face-loop",
@@ -968,7 +2136,8 @@ window.BACHATA_DATA = {
     "cross_Ltop"
    ],
    "to": "same",
-   "counts": 8
+   "counts": 8,
+   "notes": "The top hands pass over the follower's head, then the bottom hands, like two face loops, back to the same cross. Use a loose hook grip (fingers, no thumbs)."
   },
   {
    "id": "hand-toss-top-r",
@@ -978,7 +2147,10 @@ window.BACHATA_DATA = {
    "from": "cross_Rtop",
    "to": "open_LL",
    "counts": 4,
-   "notes": "Toss away the top right hand, keep left-to-left."
+   "notes": "Toss away the top (right) hands with a small swing and keep left-to-left.",
+   "aka": [
+    "khlyst (Russian, whip)"
+   ]
   },
   {
    "id": "hand-toss-top-l",
@@ -988,7 +2160,7 @@ window.BACHATA_DATA = {
    "from": "cross_Ltop",
    "to": "open_RR",
    "counts": 4,
-   "notes": "Toss away the top left hand, keep the handshake."
+   "notes": "Toss away the top (left) hands with a small swing and keep the handshake."
   },
   {
    "id": "double-hand-toss",
@@ -1000,174 +2172,45 @@ window.BACHATA_DATA = {
     "cross_Ltop"
    ],
    "to": "apart",
-   "counts": 4
-  },
-  {
-   "id": "crossed-outside-turn",
-   "name": "Crossed hands outside turn (right over left)",
-   "kind": "move",
-   "level": 2,
-   "from": "cross_Rtop",
-   "to": "cross_Ltop",
    "counts": 4,
-   "notes": "From Library of Dance - from crossed hands, right over left, the follower takes an outside (right) turn led with the right hand.",
-   "check": "End hold not stated by the source; set by geometry (the cross flips)."
-  },
-  {
-   "id": "sombrero",
-   "name": "Sombrero",
-   "kind": "move",
-   "level": 3,
-   "from": "double",
-   "to": "same",
-   "counts": 8,
-   "notes": "From double hands the leader arcs the joined hands over her head and then his own, in one 8-count (Bailar). Redance describes a version from crossed hands; see Sombrero (from crossed hands)."
-  },
-  {
-   "id": "hammerlock-left-entry",
-   "name": "Hammerlock entry (left arm)",
-   "kind": "move",
-   "level": 2,
-   "from": "double",
-   "to": "hammerlock_L",
-   "counts": 4,
-   "opposite": "hammerlock-left-unwind",
-   "notes": "From double hands the leader raises his left arm and keeps the right at waist height; she turns right and her left arm ends behind her back. Same figure in French (tour espagnol fille, wikidanse.fr), German (Eindrehen in die Brezel, in-tanz.de) and Spanish (candado, Redance)."
-  },
-  {
-   "id": "hammerlock-left-entry-from-rl",
-   "name": "Hammerlock entry (left arm, from R-L)",
-   "kind": "move",
-   "level": 2,
-   "from": "open_RL",
-   "to": "hammerlock_L",
-   "counts": 4,
-   "notes": "Turn her right with your right hand low so her left arm folds behind her back; catch her right hand with your left."
-  },
-  {
-   "id": "hammerlock-left-unwind",
-   "name": "Hammerlock unwind (left arm)",
-   "kind": "move",
-   "level": 2,
-   "from": "hammerlock_L",
-   "to": "double",
-   "counts": 4,
-   "opposite": "hammerlock-left-entry",
-   "notes": "She unwinds with a full left turn (deroule fille a gauche, wikidanse.fr; Ausdrehen aus der Brezel, in-tanz.de)."
-  },
-  {
-   "id": "hammerlock-left-release",
-   "name": "Hammerlock release (left arm)",
-   "kind": "move",
-   "level": 2,
-   "from": "hammerlock_L",
-   "to": "open_LR",
-   "counts": 4,
-   "notes": "Let go of the hand behind her back; she unwinds while you keep left-to-right."
-  },
-  {
-   "id": "two-hand-turn",
-   "name": "Two-hand turn",
-   "kind": "move",
-   "level": 2,
-   "from": "double",
-   "to": "same",
-   "counts": 4,
-   "notes": "Both hands stay joined through a full outside (clockwise) turn in place, resolving on the tap of 4."
-  },
-  {
-   "id": "fall-forward",
-   "name": "Fall forward",
-   "kind": "styling",
-   "level": 3,
-   "from": [
-    "closed",
-    "neck_wrap"
-   ],
-   "counts": 4,
-   "notes": "She transfers her chest weight towards the leader's frame while he steps back to hold the counterbalance."
+   "notes": "Swing both crossed hands down and let go, so both dance apart; reconnect on a clear 1."
   },
   {
    "id": "copa",
    "name": "Copa",
    "kind": "move",
-   "level": 2,
-   "from": "cross_Ltop",
-   "to": "cross_Rtop",
+   "level": 3,
+   "from": "cross_Rtop",
+   "to": "cross_Ltop",
    "counts": 8,
-   "notes": "From salsa descriptions - start from left-over-right double hands; she steps forward on 5 and turns left on 6-7.",
-   "check": "Described for salsa; bachata timing and end hold not confirmed."
+   "notes": "From right over left the follower steps forward on 5 and turns left on 6-7 (the free direction), and the hands come out left over right.",
+   "source": "dance-forums.com (salsa)",
+   "check": "Described for salsa; bachata timing not confirmed and few bachata dancers use the name."
   },
   {
-   "id": "inside-turn-hand-change",
-   "name": "Follower left turn (with hand change)",
+   "id": "sombrero-crossed",
+   "name": "Sombrero (from crossed hands)",
    "kind": "move",
-   "level": 2,
-   "from": "open_LR",
-   "to": "open_RR",
-   "counts": 4,
-   "notes": "From BachataHub - lead an inside turn with your left hand and catch her hand with your right on the exit."
-  },
-  {
-   "id": "shadow-take-both-hands",
-   "name": "Shadow hand switch (take both hands)",
-   "kind": "adjuster",
-   "level": 2,
-   "from": "shadow_waist",
-   "to": "shadow",
-   "counts": 0,
-   "opposite": "shadow-hand-to-waist",
-   "notes": "Your left hand passes her right hand to your right while your left picks up her left."
-  },
-  {
-   "id": "shadow-hand-to-waist",
-   "name": "Shadow hand switch (hand to waist)",
-   "kind": "adjuster",
-   "level": 2,
-   "from": "shadow",
-   "to": "shadow_waist",
-   "counts": 0,
-   "opposite": "shadow-take-both-hands",
-   "notes": "Let go of her right hand with your right and place it on her waist; pass her right hand to your left."
-  },
-  {
-   "id": "hand-change-lr-to-rl",
-   "name": "Hand change (L-R to R-L)",
-   "kind": "adjuster",
-   "level": 1,
-   "from": "open_LR",
-   "to": "open_RL",
-   "counts": 4,
-   "opposite": "hand-change-rl-to-lr",
-   "notes": "Right hand comes in, overlap, left releases."
-  },
-  {
-   "id": "hand-change-rl-to-lr",
-   "name": "Hand change (R-L to L-R)",
-   "kind": "adjuster",
-   "level": 1,
-   "from": "open_RL",
-   "to": "open_LR",
-   "counts": 4,
-   "opposite": "hand-change-lr-to-rl"
-  },
-  {
-   "id": "dishrag",
-   "name": "Dishrag",
-   "kind": "move",
-   "level": 2,
-   "from": "double",
-   "to": "same",
-   "counts": 8
+   "level": 3,
+   "from": "cross_Rtop",
+   "to": "double",
+   "counts": 8,
+   "notes": "On 1-4 the leader leads a left turn and lays both arms on the follower's shoulders; dance the basic, then slide the hands down the follower's arms and regrip into double hands.",
+   "source": "redance.app"
   },
   {
    "id": "rollaway",
-   "name": "Rollaway",
+   "name": "Send-out (release turn)",
    "kind": "move",
    "level": 2,
    "from": "open_LR",
    "to": "apart",
-   "counts": 4
+   "counts": 4,
+   "notes": "The leader sends the follower out with a turn and lets go on 1-2; the follower spins and finishes facing at a distance by 4.",
+   "aka": [
+    "rollaway",
+    "release turn"
+   ]
   },
   {
    "id": "tandem-free-spins",
@@ -1175,57 +2218,31 @@ window.BACHATA_DATA = {
    "kind": "styling",
    "level": 2,
    "from": "apart",
-   "counts": 4
-  },
-  {
-   "id": "reconnect-closed",
-   "name": "Reconnect (to closed)",
-   "kind": "adjuster",
-   "level": 2,
-   "from": "apart",
-   "to": "closed",
-   "counts": 0,
-   "weight": {
-    "to": "mirrored"
-   }
-  },
-  {
-   "id": "reconnect-double",
-   "name": "Reconnect (to double hands)",
-   "kind": "adjuster",
-   "level": 2,
-   "from": "apart",
-   "to": "double",
-   "counts": 0,
-   "weight": {
-    "to": "mirrored"
-   }
-  },
-  {
-   "id": "reconnect-handshake",
-   "name": "Reconnect (to handshake)",
-   "kind": "adjuster",
-   "level": 2,
-   "from": "apart",
-   "to": "open_RR",
-   "counts": 0,
-   "weight": {
-    "to": "mirrored"
-   }
+   "counts": 4,
+   "notes": "Both spin alone at the same time, the same or opposite direction, and finish facing on 4.",
+   "aka": [
+    "vrashchenie odnovremennoe (Russian)"
+   ],
+   "source": "bachatamap.ru/moderna/rotations/rotation-simultaneous/"
   },
   {
    "id": "leader-shadow-entry",
-   "name": "Leader's shadow entry (leader half turn)",
+   "name": "Leader's shadow entry (leader half turn left, from crossed hands)",
    "kind": "move",
    "level": 3,
-   "from": "double",
+   "from": "cross_Rtop",
    "to": "leader_shadow",
    "counts": 4,
    "weight": {
     "to": "parallel"
    },
-   "notes": "The leader makes a half turn on 1 and ends in front of her, then changes feet with a step-tap; she slides her arms between his back and arms, forearms on his (Unibaila: media de lider).",
-   "check": "Which hold you start from is not stated by the sources."
+   "notes": "From right over left the leader makes a half turn to the left and ends in front; the hands uncross and the follower's arms slide under the leader's. The leader changes feet with a step-tap.",
+   "aka": [
+    "media de lider (Spanish)",
+    "enroule garcon devant fille (French)",
+    "half-turn man (Russian)"
+   ],
+   "source": "unibaila.com; wikidanse.fr; bachata-salsa-lessons.ru"
   },
   {
    "id": "leader-shadow-take-out",
@@ -1233,13 +2250,17 @@ window.BACHATA_DATA = {
    "kind": "move",
    "level": 3,
    "from": "leader_shadow",
-   "to": "open_LR",
+   "to": "open_LL",
    "counts": 4,
    "weight": {
     "to": "mirrored"
    },
-   "notes": "From the leader's shadow, the leader turns outwards to take her out in front of him (Unibaila: sacala).",
-   "check": "End hold not stated by the source."
+   "notes": "Let go of the right hands; the leader turns out to the right and the follower comes around to face, holding left-to-left.",
+   "aka": [
+    "sacala (Spanish)",
+    "salida (Russian)"
+   ],
+   "source": "unibaila.com"
   },
   {
    "id": "shadow-manton",
@@ -1250,7 +2271,12 @@ window.BACHATA_DATA = {
    "to": "leader_shadow",
    "counts": 4,
    "opposite": "shadow-comeback",
-   "notes": "From the follower's shadow, pass with a turn into the leader's shadow; leave room for the full turn (Unibaila: manton)."
+   "notes": "From the follower's shadow the leader passes in front with a turn, ending in front with the follower behind; leave room for the full turn.",
+   "aka": [
+    "manton (Spanish)",
+    "manto (Russian)"
+   ],
+   "source": "unibaila.com"
   },
   {
    "id": "shadow-comeback",
@@ -1261,136 +2287,25 @@ window.BACHATA_DATA = {
    "to": "shadow",
    "counts": 4,
    "opposite": "shadow-manton",
-   "notes": "The reverse of the manton; block so she stays in the follower's shadow (Unibaila: comeback)."
-  },
-  {
-   "id": "shadow-exit-half-turn-right",
-   "name": "Shadow exit (half turn under left arm)",
-   "kind": "move",
-   "level": 2,
-   "from": "shadow_waist",
-   "to": "open_LR",
-   "counts": 4,
-   "weight": {
-    "to": "mirrored"
-   },
-   "notes": "Follower makes a half turn to the right under the leader's left arm, back to facing (wikidanse.fr: enroule deux bras et shadow)."
-  },
-  {
-   "id": "shadow-exit-mill",
-   "name": "Shadow exit (mill)",
-   "kind": "move",
-   "level": 3,
-   "from": "shadow_waist",
-   "to": "open_LR",
-   "counts": 8,
-   "weight": {
-    "to": "mirrored"
-   },
-   "notes": "Named as an exit from shadow in Russian (melnitsa, bachatamap.ru) and Spanish (molino / helicoptero, Introvert Dance).",
-   "check": "Mechanics and end hold not described by the sources."
-  },
-  {
-   "id": "cuddle-throw-to-shadow",
-   "name": "Cuddle exit (throw the arms, into shadow)",
-   "kind": "move",
-   "level": 2,
-   "from": "cuddle",
-   "to": "shadow_waist",
-   "counts": 4,
-   "notes": "From the wrap the leader throws her arms out and keeps dancing behind her (wikidanse.fr: lancer bras fille, pas de base fille dos garcon)."
-  },
-  {
-   "id": "pretzel-leader-turn-out",
-   "name": "Pretzel exit (leader turns under the arms)",
-   "kind": "move",
-   "level": 3,
-   "from": "cuddle",
-   "to": "cross_Rtop",
-   "counts": 4,
-   "weight": {
-    "to": "mirrored"
-   },
-   "notes": "Second half of the pretzel: from the wrap the leader turns under the arms and you end face to face in a crossed grip (Redance).",
-   "check": "Which hand ends on top is not stated."
-  },
-  {
-   "id": "paseala",
-   "name": "Paseala (walk her out and back)",
-   "kind": "styling",
-   "level": 2,
-   "from": "closed",
-   "counts": 8,
-   "notes": "Right hand at her waist; on 1-3 she promenades out, on 5-7 she comes back (wikidanse.fr)."
-  },
-  {
-   "id": "couple-turn",
-   "name": "Couple turn",
-   "kind": "styling",
-   "level": 2,
-   "from": "closed",
-   "counts": 8,
-   "notes": "Prepare to the left on 1-3, turn together to the right on 5-7 (wikidanse.fr: tour en couple)."
-  },
-  {
-   "id": "forward-break",
-   "name": "Forward break",
-   "kind": "styling",
-   "level": 1,
-   "from": [
-    "closed",
-    "open_LR"
+   "notes": "The reverse of the manton: the follower passes in front with a turn and the leader blocks so the follower stays in front.",
+   "aka": [
+    "comeback (Spanish)"
    ],
-   "counts": 4,
-   "notes": "Leader steps forward with the left on 1 while she steps back with the right, back on 2, together on 3, tap on 4 (Redance)."
-  },
-  {
-   "id": "caricia",
-   "name": "Caress (caricia)",
-   "kind": "styling",
-   "level": 2,
-   "from": [
-    "closed",
-    "shadow_waist",
-    "cuddle",
-    "neck_wrap"
-   ],
-   "counts": 4,
-   "notes": "Hands slide over shoulder, neck, arms or waist without breaking the footwork (Redance; wikidanse.fr: caresse)."
-  },
-  {
-   "id": "elbows",
-   "name": "Elbows (coudes)",
-   "kind": "styling",
-   "level": 2,
-   "from": "double",
-   "counts": 4,
-   "notes": "The leader steps in and places his elbows over her arms (wikidanse.fr: coudes; Russian: elbows-in / gancho)."
-  },
-  {
-   "id": "sombrero-crossed",
-   "name": "Sombrero (from crossed hands)",
-   "kind": "move",
-   "level": 3,
-   "from": [
-    "cross_Rtop",
-    "cross_Ltop"
-   ],
-   "to": "double",
-   "counts": 8,
-   "notes": "On 1-4 an inside (left) turn from crossed hands; the leader lays both arms on her shoulders and dances the basic, then the hands slide down the arms to exit (Redance).",
-   "check": "End hold after sliding down is not stated."
+   "source": "unibaila.com"
   },
   {
    "id": "classic-opener",
-   "name": "Classic opener",
+   "name": "Classic opener (CBL and turns, to closed)",
    "kind": "compound",
    "sequence": [
     "cross-body-lead",
     "follower-right-turn",
+    "follower-left-turn",
+    "cross-body-lead",
     "close-frame",
-    "dip"
-   ]
+    "basic"
+   ],
+   "notes": "A beginner combo of exactly four 8-counts: each cross body lead starts on 1, and it ends in closed position."
   },
   {
    "id": "cuddle-combo",
@@ -1399,9 +2314,25 @@ window.BACHATA_DATA = {
    "sequence": [
     "catch-second-hand",
     "cuddle-entry",
-    "body-roll",
+    "cuddle-walk",
     "cuddle-release-spin"
-   ]
+   ],
+   "notes": "Catch the second hand, wrap the follower, walk forward and back, and send the follower out with a release spin; two 8-counts."
+  },
+  {
+   "id": "sensual-loop",
+   "name": "Closed, shadow and cuddle loop",
+   "kind": "compound",
+   "sequence": [
+    "left-turn-into-closed",
+    "body-roll",
+    "half-turn-into-shadow",
+    "shadow-wrap-into-cuddle",
+    "cuddle-walk",
+    "cuddle-release-spin",
+    "basic"
+   ],
+   "notes": "An intermediate sensual loop of exactly four 8-counts: into closed, half turn into shadow, slide into the cuddle, walk it on 1-8, then send the follower out back to open, left to right."
   },
   {
    "id": "pretzel",
@@ -1409,7 +2340,13 @@ window.BACHATA_DATA = {
    "kind": "compound",
    "sequence": [
     "cuddle-entry",
-    "pretzel-leader-turn-out"
+    "pretzel-leader-turn-out",
+    "pretzel-unwind"
+   ],
+   "notes": "Wrap the follower, the leader turns under the arms to face with the hands twisted, then untwist back to double hands.",
+   "aka": [
+    "Brezel (German)",
+    "krendel (Russian)"
    ]
   }
  ]

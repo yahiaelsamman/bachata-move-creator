@@ -11,11 +11,19 @@
 #   hands:       comma-separated connections, written leader-hand > follower-contact
 #                  L>R      leader's left holds follower's right hand
 #                  R>back   leader's right hand on follower's back
-#                  (contact points: L / R hand, back, waist)
+#                  (contact points: L / R hand, back, waist, shoulder)
 #                "" means no connection. Order does not matter.
 #   crossed:     none | leader_R_over_L | leader_L_over_R
+#                | braid (double hands with the two arm pairs twisted round each other)
 #   arms:        neutral | hammerlock_follower_R | hammerlock_follower_L | wrap
+#                | wrap_follower_R (her right arm across her waist, one-hand wrap)
+#                | hammerlock_leader_L (the leader's left arm behind his own back)
 #                | follower_R_behind_leader_neck
+#
+# Optional, for people (not part of the node's identity):
+#   notes:       what the hold looks like, in plain words
+#   aka:         other names, including other languages
+#   source:      where the hold is described
 #
 # Weight (mirrored / parallel) and timing are NOT part of a position: they are
 # soft and tracked along the strip instead.
@@ -28,6 +36,8 @@
   hands: "L>R"
   crossed: none
   arms: neutral
+  notes: "The normal open hold: facing at arm's length, the leader's left hand holds the follower's right."
+  aka: [open position, "otkrytaya pozitsiya (Russian)"]
 
 - id: open_RR
   name: Handshake (right-to-right)
@@ -37,6 +47,7 @@
   hands: "R>R"
   crossed: none
   arms: neutral
+  aka: [right-to-right, "hello position (Russian: khelou pozishn)"]
 
 - id: open_LL
   name: Open, left-to-left
@@ -46,6 +57,7 @@
   hands: "L>L"
   crossed: none
   arms: neutral
+  aka: ["hello position (Russian: khelou pozishn)"]
 
 - id: open_RL
   name: Open, right-to-left
@@ -64,6 +76,20 @@
   hands: "L>R,R>L"
   crossed: none
   arms: neutral
+  notes: "Both hands held, not crossed. Use a loose hook grip (fingers, no thumbs) so the hands can rotate."
+  aka: [two hands, "otkrytaya pozitsiya (Russian)"]
+
+- id: double_braided
+  name: Double hands, twisted (braid)
+  short: Braid
+  orientation: facing
+  frame: semi
+  hands: "L>R,R>L"
+  crossed: braid
+  arms: neutral
+  notes: "Both hands still held left-to-right and right-to-left, but the two arm pairs are twisted round each other. Where a two-hand turn without a halo and the pretzel turn-out land; one more turn the same way untwists it."
+  aka: [crossed grip, braided hands, "kosichka (Russian, 'plait')"]
+  source: "Redance (pretzel 'crossed grip'); bachatamap.ru (fonarik, krest v rukakh)"
 
 - id: cross_Rtop
   name: Crossed hands, right over left
@@ -73,6 +99,8 @@
   hands: "L>L,R>R"
   crossed: leader_R_over_L
   arms: neutral
+  notes: "Left-to-left and right-to-right, the right hands on top. The follower's free turn from here is to the left."
+  aka: [cross hand, "krest v rukakh (Russian)"]
 
 - id: cross_Ltop
   name: Crossed hands, left over right
@@ -82,6 +110,8 @@
   hands: "L>L,R>R"
   crossed: leader_L_over_R
   arms: neutral
+  notes: "Left-to-left and right-to-right, the left hands on top. The follower's free turn from here is to the right."
+  aka: [cross hand, "krest v rukakh (Russian)"]
 
 - id: closed
   name: Closed position
@@ -91,6 +121,20 @@
   hands: "L>R,R>back"
   crossed: none
   arms: neutral
+  notes: "The leader's right hand on the follower's upper back, the left holding the follower's right hand; the follower's left hand rests on the leader's shoulder."
+  aka: [embrace, "zakrytaya pozitsiya (Russian)"]
+
+- id: full_contact
+  name: Full contact (both hands on her back)
+  short: Full contact
+  orientation: facing
+  frame: closed
+  hands: "L>back,R>back"
+  crossed: none
+  arms: neutral
+  notes: "Sensual closed hold: both of the leader's palms on the follower's shoulder blades, the follower's hands on the leader's shoulders, chests close."
+  aka: ["polnyy kontakt (Russian)", "zakrytaya (Russian sensual closed)"]
+  source: bachatamap.ru/theory/positions/full-contact-position/
 
 - id: neck_wrap
   name: Follower's hand behind leader's neck
@@ -100,6 +144,8 @@
   hands: "R>back"
   crossed: none
   arms: follower_R_behind_leader_neck
+  notes: "Closed, but the follower's right hand rests behind the leader's neck; the leader's right hand on the follower's back, the left is free."
+  aka: ["na zatylke partnera (Russian)"]
 
 - id: hammerlock_R
   name: Hammerlock (follower's right arm behind her back)
@@ -109,6 +155,8 @@
   hands: "L>L,R>R"
   crossed: none
   arms: hammerlock_follower_R
+  notes: "The follower's right hand is held at the hip behind the back, never pushed up; left hands joined in front."
+  aka: [candado (Spanish), Brezel (German), "khamerlok / setenta (Russian)"]
 
 - id: hammerlock_L
   name: Hammerlock, left arm (follower's left arm behind her back)
@@ -118,15 +166,42 @@
   hands: "L>R,R>L"
   crossed: none
   arms: hammerlock_follower_L
+  notes: "The follower's left hand is held at the hip behind the back; the leader's left holds the follower's right in front."
+  aka: [tour espagnol (French), "khamerlok devushki (Russian)"]
+
+- id: hammerlock_leader_L
+  name: Leader's hammerlock (his left arm behind his back)
+  short: Leader hammerlock
+  orientation: facing
+  frame: semi
+  hands: "L>R,R>L"
+  crossed: none
+  arms: hammerlock_leader_L
+  notes: "Double hands, but the leader's own left arm (holding the follower's right hand) is behind the leader's back after a right turn."
+  aka: ["khamerlok muzhchiny / setenta (Russian)", hamlet inverso (Spanish)]
+  source: bachatamap.ru/moderna/rotations/turns/hamerlok-muzhchiny/
 
 - id: cuddle
-  name: Cuddle / wrap / sweetheart
+  name: Cuddle / wrap (side)
   short: Cuddle
   orientation: side_by_side_R
   frame: closed
   hands: "L>R,R>L"
   crossed: none
   arms: wrap
+  notes: "The follower stands at the leader's right side, arms crossed in front, both hands still held."
+  aka: [wrap, envoltura (Spanish), enroule (French), "pod krylo, krendel, kolybel, konfetka, obyortka (Russian)"]
+
+- id: wrap_R
+  name: One-hand wrap
+  short: Wrap
+  orientation: side_by_side_R
+  frame: closed
+  hands: "L>R,R>back"
+  crossed: none
+  arms: wrap_follower_R
+  notes: "The follower is at the leader's right side; the follower's right arm crosses the waist, held by the leader's left, and the leader's right hand is on the follower's back."
+  aka: [one-hand cuddle]
 
 - id: shadow
   name: Shadow (leader behind, same hands)
@@ -136,6 +211,8 @@
   hands: "L>L,R>R"
   crossed: none
   arms: neutral
+  notes: "The leader is behind the follower, slightly to the follower's left, holding left-to-left and right-to-right."
+  aka: [sombra (Spanish), Schatten (German), "tenevaya pozitsiya (Russian)"]
 
 - id: shadow_waist
   name: Shadow, hand on waist
@@ -145,6 +222,29 @@
   hands: "L>R,R>waist"
   crossed: none
   arms: neutral
+  notes: "The leader is behind, the right hand on the follower's waist or stomach. The follower's right arm lies across the waist in front, and the leader's left arm reaches around the follower's left side to hold that hand at the left hip."
+  aka: [sombra (Spanish), "tenevaya pozitsiya (Russian)"]
+
+- id: shadow_neck
+  name: Shadow, her hand behind your neck
+  short: Shadow neck
+  orientation: shadow
+  frame: closed
+  hands: "R>waist"
+  crossed: none
+  arms: follower_R_behind_leader_neck
+  notes: "Shadow with the follower's right hand reaching back to the leader's neck; the leader's right hand on the follower's waist, the left free on the follower's arm or side."
+
+- id: shadow_wrap
+  name: Sweetheart (wrapped, leader behind)
+  short: Sweetheart
+  orientation: shadow
+  frame: closed
+  hands: "L>R,R>L"
+  crossed: none
+  arms: wrap
+  notes: "The leader is right behind the follower, both hands held, the follower's arms crossed on the waist and the leader's arms around them."
+  aka: [sweetheart, wrap from behind]
 
 - id: leader_shadow
   name: Leader's shadow (leader in front, follower behind)
@@ -154,6 +254,8 @@
   hands: "L>L,R>R"
   crossed: none
   arms: neutral
+  notes: "The leader is in front facing away; the follower's arms slide under the leader's, forearms resting on the leader's."
+  aka: [sombra de lider (Spanish), "tenevaya muzhskaya, obratnaya tenevaya, manto (Russian)"]
 
 - id: apart
   name: Apart (no connection)
