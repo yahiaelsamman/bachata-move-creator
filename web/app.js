@@ -512,6 +512,12 @@
     ws.addEventListener('change', () => { state.startWeight = ws.value; update(); });
 
     $('btn-undo').addEventListener('click', undo);
+    $('btn-practice').addEventListener('click', () => {
+      const result = MG.evaluateStrip(g, state.startPos, state.startWeight, state.strip);
+      if (!result.items.length) return alert('Add some moves first.');
+      if (result.items.some((it) => it.broken)) return alert('Fix the breaks first (click a red "bridge").');
+      window.Practice.open(result.items, { posName, sketchSVG: SK.sketchSVG, positions: g.posById });
+    });
     $('btn-share').addEventListener('click', (ev) => {
       const url = location.href.split('#')[0] + shareHash();
       const done = (msg) => { ev.target.textContent = msg; setTimeout(() => { ev.target.textContent = 'Share link'; }, 1800); };
@@ -519,6 +525,7 @@
         .then(() => done('Link copied'), () => { prompt('Copy this link:', url); });
     });
     document.addEventListener('keydown', (ev) => {
+      if (document.querySelector('dialog[open]')) return;
       const tag = (ev.target.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
       if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') { ev.preventDefault(); undo(); return; }

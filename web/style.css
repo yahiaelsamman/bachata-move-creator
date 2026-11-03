@@ -318,3 +318,43 @@ button.link {
 @media (max-width: 720px) {
   .map-grid { grid-template-columns: 1fr; }
 }
+
+/* ---------------------------------------------------------------- practice mode */
+dialog.practice {
+  width: min(560px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 16px 18px;
+}
+dialog.practice::backdrop { background: rgba(0, 0, 0, 0.45); }
+.pr-top { display: flex; align-items: center; gap: 10px; }
+.pr-top .pr-progress { flex: 1; color: var(--muted); }
+.pr-name { font-size: 1.9rem; line-height: 1.15; margin: 12px 0 4px; }
+.pr-meta { margin: 0 0 8px; color: var(--muted); }
+.pr-extra { margin: 6px 0; color: var(--adjuster); font-weight: 600; }
+.pr-notes { margin: 6px 0; }
+.pr-sketches { display: flex; gap: 12px; margin-top: 8px; }
+.pr-sketches figure { margin: 0; flex: 1; max-width: 200px; }
+.pr-sketches figcaption { font-size: 0.8rem; color: var(--muted); }
+.pr-beats { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin: 14px 0 6px; }
+.pr-beats span {
+  text-align: center;
+  padding: 10px 0;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.pr-beats span.in { background: var(--accent-soft); color: var(--ink); border-color: var(--accent); }
+.pr-beats span.now { background: var(--accent); color: #fff; transform: scale(1.06); }
+.pr-next { margin: 4px 0 12px; }
+.pr-controls { display: flex; gap: 8px; }
+.pr-controls button { flex: 1; padding: 10px; font-size: 1rem; }
+.pr-settings { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 12px; color: var(--muted); font-size: 0.9rem; }
+.pr-settings label { display: flex; align-items: center; gap: 6px; }
+.pr-settings input[type="range"] { padding: 0; width: 120px; }
+.pr-settings input { accent-color: var(--accent); }

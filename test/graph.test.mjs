@@ -143,3 +143,16 @@ test('random combos come back to where they started', () => {
     }
   }
 });
+
+test('practice steps fold 0-count moves into their neighbours', async () => {
+  // practice.js is browser-only; load it with a minimal window shim.
+  const { readFileSync: rf } = await import('node:fs');
+  const win = {};
+  new Function('window', 'localStorage', rf(new URL('../web/practice.js', import.meta.url), 'utf8'))(win, { getItem: () => null, setItem() {} });
+  const g = MG.compile(loadData());
+  const r = MG.evaluateStrip(g, 'open_LR', 'mirrored', ['cross-body-lead', 'catch-second-hand', 'cuddle-entry', 'release-all']);
+  const steps = win.Practice._buildSteps(r.items);
+  assert.equal(steps.length, 2);
+  assert.deepEqual(steps[1].extras.map((x) => x.id), ['catch-second-hand']);
+  assert.deepEqual(steps[1].after.map((x) => x.id), ['release-all']);
+});
