@@ -64,13 +64,10 @@
     return m;
   }
 
-  function compile(data) {
-    const errors = [];
-    const warnings = [];
-    const positions = data.positions || [];
+  /** Index positions by id and by attributes, reporting missing fields and duplicates. */
+  function indexPositions(positions, errors) {
     const posById = {};
     const posByKey = {};
-
     for (const p of positions) {
       if (!p.id) { errors.push('A position has no id.'); continue; }
       if (posById[p.id]) errors.push(`Duplicate position id "${p.id}".`);
@@ -82,8 +79,11 @@
       if (posByKey[key]) errors.push(`Positions "${posByKey[key].id}" and "${p.id}" have identical attributes (same node).`);
       else posByKey[key] = p;
     }
+    return { posById, posByKey };
+  }
 
-    const moves = (data.moves || []).map(normalizeMove);
+  /** Index moves by id, reporting duplicates and invalid kind, counts, level or weight. */
+  function indexMoves(moves, errors) {
     const moveById = {};
     for (const m of moves) {
       if (!m.id) { errors.push('A move has no id.'); continue; }
@@ -99,6 +99,17 @@
         if (w !== undefined && !WEIGHTS.includes(w)) errors.push(`Move "${m.id}" has unknown weight.${side} "${w}".`);
       }
     }
+    return moveById;
+  }
+
+  /** Data -> graph: index positions and moves, expand moves into edges, derive weight and level, check opposites. */
+  function compile(data) {
+    const errors = [];
+    const warnings = [];
+    const positions = data.positions || [];
+    const { posById, posByKey } = indexPositions(positions, errors);
+    const moves = (data.moves || []).map(normalizeMove);
+    const moveById = indexMoves(moves, errors);
 
     const edgesByMove = {};
     const weightByMove = {};
@@ -220,19 +231,32 @@
       if (incoming[e.to]) incoming[e.to].push(e);
     }
 
-    // "Three ways in, three ways out": vocabulary health per position (ignores styling loops).
-    const health = positions.map((p) => {
-      const isReal = (e) => e.from !== e.to && moveById[e.move].kind !== 'compound';
-      const ins = new Set(incoming[p.id].filter(isReal).map((e) => e.move)).size;
-      const outs = new Set(outgoing[p.id].filter(isReal).map((e) => e.move)).size;
-      return { id: p.id, in: ins, out: outs, thin: ins < 3 || outs < 3 };
-    });
-
-    return {
+    const g = {
       positions, posById, moves, moveById, edges, edgesByMove, outgoing, incoming,
       weightOf: (id) => weightByMove[id] || {},
-      errors, warnings, health,
+      errors, warnings,
     };
+    g.health = positions.map((p) => vocabularyHealth(g, p.id));
+    return g;
+  }
+
+  /** A move that changes position: not an in-place move, not a compound. */
+  function isTransition(g, e) {
+    return e.from !== e.to && g.moveById[e.move].kind !== 'compound';
+  }
+
+  /** Ids of the in-place moves (no compounds) at a position. */
+  function loopMoves(g, posId) {
+    const loops = (g.outgoing[posId] || []).filter((e) => e.to === posId && g.moveById[e.move].kind !== 'compound');
+    return [...new Set(loops.map((e) => e.move))];
+  }
+
+  /** "Three ways in, three ways out": distinct position-changing moves into and out of a position. */
+  function vocabularyHealth(g, posId) {
+    const count = (edges) => new Set(edges.filter((e) => isTransition(g, e)).map((e) => e.move)).size;
+    const ins = count(g.incoming[posId]);
+    const outs = count(g.outgoing[posId]);
+    return { id: posId, in: ins, out: outs, thin: ins < 3 || outs < 3 };
   }
 
   /** Walk a strip of move ids and report positions, counts and soft warnings. */
@@ -270,7 +294,7 @@
     return { items, end: cur, weight, totalCounts: count };
   }
 
-  /** Moves that can follow position `posId`, one entry per move. */
+  /** Moves that can follow position `posId`: one edge per move, sorted by name. */
   function nextMoves(g, posId) {
     const seen = new Map();
     for (const e of g.outgoing[posId] || []) if (!seen.has(e.move)) seen.set(e.move, e);
@@ -290,7 +314,7 @@
   /** Shortest ways to get from one position to another (no styling loops, no compounds). */
   function findBridges(g, from, to, { maxDepth = 3, limit = 6, maxLevel = 3 } = {}) {
     if (from === to) return [[]];
-    const usable = (e) => e.from !== e.to && g.moveById[e.move].kind !== 'compound' && g.moveById[e.move].level <= maxLevel;
+    const usable = (e) => isTransition(g, e) && g.moveById[e.move].level <= maxLevel;
     const results = [];
     const seen = new Set();
     for (let depth = 1; depth <= maxDepth && results.length < limit; depth++) {
@@ -365,7 +389,7 @@
   }
 
   return {
-    ATTRS, KINDS, canonHands, positionKey, matchPattern, compile, evaluateStrip,
+    ATTRS, KINDS, canonHands, positionKey, matchPattern, compile, evaluateStrip, isTransition, loopMoves,
     nextMoves, alternatives, findBridges, randomWalk, randomCombo, notation,
   };
 });

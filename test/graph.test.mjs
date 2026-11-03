@@ -7,6 +7,9 @@ import { loadData } from '../scripts/build.mjs';
 const require = createRequire(import.meta.url);
 const MG = require('../src/graph.js');
 
+/** Deterministic random numbers for repeatable tests. */
+const seeded = (seed) => () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+
 const P = (id, attrs = {}) => ({
   id, name: id, orientation: 'facing', frame: 'open', hands: 'L>R', crossed: 'none', arms: 'neutral', ...attrs,
 });
@@ -100,20 +103,28 @@ test('strip evaluation tracks position, counts and breaks', () => {
 });
 
 test('timing is a soft warning, not a break', () => {
-  const g = MG.compile(tiny());
   const d = tiny();
   d.moves.push({ id: 'two', name: 'Two', kind: 'styling', from: 'any', counts: 2 });
   const g2 = MG.compile(d);
   const r = MG.evaluateStrip(g2, 'open', 'mirrored', ['two', 'turn']);
   assert.equal(r.items[1].broken, false);
   assert.equal(r.items[1].timingWarn, true);
-  assert.ok(g);
 });
 
 test('bridges find the shortest reconnection', () => {
   const g = MG.compile(tiny());
   assert.deepEqual(MG.findBridges(g, 'open', 'neck'), [['close', 'neck']]);
   assert.deepEqual(MG.findBridges(g, 'open', 'open'), [[]]);
+});
+
+test('transitions change position; loops stay in place; compounds are neither', () => {
+  const g = MG.compile(tiny());
+  const edge = (move, from) => g.edgesByMove[move].find((e) => e.from === from);
+  assert.ok(MG.isTransition(g, edge('close', 'open')));
+  assert.ok(!MG.isTransition(g, edge('basic', 'open')));
+  assert.ok(!MG.isTransition(g, edge('combo', 'open')));
+  assert.deepEqual(MG.loopMoves(g, 'open').sort(), ['basic', 'turn']);
+  assert.deepEqual(g.health.find((h) => h.id === 'closed'), { id: 'closed', in: 1, out: 1, thin: true });
 });
 
 test('alternatives are parallel edges', () => {
@@ -132,8 +143,7 @@ test('weight is soft and carried along the strip', () => {
 
 test('random combos come back to where they started', () => {
   const g = MG.compile(loadData());
-  let seed = 7;
-  const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const rng = seeded(7);
   for (const p of g.positions) {
     for (let i = 0; i < 20; i++) {
       const ids = MG.randomCombo(g, p.id, { steps: 4, rng });
@@ -144,11 +154,10 @@ test('random combos come back to where they started', () => {
   }
 });
 
-test('practice steps fold 0-count moves into their neighbours', async () => {
+test('practice steps fold 0-count moves into their neighbours', () => {
   // practice.js is browser-only; load it with a minimal window shim.
-  const { readFileSync: rf } = await import('node:fs');
   const win = {};
-  new Function('window', 'localStorage', rf(new URL('../web/practice.js', import.meta.url), 'utf8'))(win, { getItem: () => null, setItem() {} });
+  new Function('window', 'localStorage', readFileSync(new URL('../web/practice.js', import.meta.url), 'utf8'))(win, { getItem: () => null, setItem() {} });
   const g = MG.compile(loadData());
   const r = MG.evaluateStrip(g, 'open_LR', 'mirrored', ['cross-body-lead', 'catch-second-hand', 'cuddle-entry', 'release-all']);
   const steps = win.Practice._buildSteps(r.items);
@@ -161,8 +170,7 @@ test('levels: compounds take their hardest part, beginner combos stay beginner',
   const g = MG.compile(loadData());
   assert.equal(g.moveById['cuddle-combo'].level, 2); // cuddle entry is intermediate
   assert.ok(g.moves.every((m) => [1, 2, 3].includes(m.level)));
-  let seed = 11;
-  const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const rng = seeded(11);
   for (let i = 0; i < 50; i++) {
     const ids = MG.randomCombo(g, 'open_LR', { steps: 4, rng, maxLevel: 1 });
     assert.ok(ids.every((id) => g.moveById[id].level === 1), ids.join(' > '));
