@@ -60,6 +60,17 @@ npm test
   slider, optional click, loop). Catches and releases show on the card they
   happen in.
 
+**Levels**
+- Every move has a draft level (beginner, intermediate, advanced; compounds take
+  their hardest part). The **Level** filter hides harder moves everywhere,
+  including random combos and bridges.
+
+**Add your own moves**
+- **My moves and compounds → Add a move:** name, kind, level, counts, where it can
+  start, where it ends. It's checked like the build would check it and works
+  right away in this browser. **Copy YAML** gives the lines to paste into
+  `data/moves.yaml` to make it permanent.
+
 **Keep and share**
 - **Share link:** the combo lives in the URL, so a link opens the same combo
   anywhere.

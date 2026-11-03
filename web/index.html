@@ -66,8 +66,36 @@
     <div id="positions"></div>
   </details>
 
-  <details class="ref">
-    <summary>My compound moves</summary>
+  <details class="ref" id="my-section">
+    <summary>My moves and compounds</summary>
+    <form id="move-form" class="move-form" autocomplete="off">
+      <h3>Add a move</h3>
+      <p class="muted small">Moves you add work right away in this browser. To keep them for good (and for everyone), copy their YAML into <code>data/moves.yaml</code>.</p>
+      <div class="form-grid">
+        <label>Name <input name="name" required maxlength="60" placeholder="e.g. Hair comb"></label>
+        <label>Kind <select name="kind">
+          <option value="move">move</option>
+          <option value="styling">styling (same start and end)</option>
+          <option value="adjuster">adjuster (small connector)</option>
+        </select></label>
+        <label>Level <select name="level">
+          <option value="1">1 · beginner</option>
+          <option value="2" selected>2 · intermediate</option>
+          <option value="3">3 · advanced</option>
+        </select></label>
+        <label>Counts <input name="counts" type="number" min="0" max="32" step="1" value="4"></label>
+        <label>Ends in <select name="to"></select></label>
+        <label class="wide">Notes <input name="notes" maxlength="200" placeholder="How to lead it (optional)"></label>
+      </div>
+      <fieldset class="mf-from-wrap">
+        <legend>Can start from</legend>
+        <div id="mf-from" class="mf-from"></div>
+      </fieldset>
+      <p id="mf-status" class="small" role="status"></p>
+      <button type="submit" class="primary">Save move</button>
+    </form>
+    <div id="my-moves"></div>
+    <h3>Compound moves</h3>
     <div id="compounds"></div>
   </details>
 

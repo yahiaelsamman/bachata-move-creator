@@ -370,3 +370,26 @@ dialog.practice::backdrop { background: rgba(0, 0, 0, 0.45); }
 .thumb .sketch { width: 64px; border-radius: 6px; }
 td .small { font-size: 0.8rem; }
 .lvl { letter-spacing: 1px; font-size: 0.7rem; color: var(--accent); margin-left: 2px; }
+
+/* ---------------------------------------------------------------- add a move */
+#my-section h3 { font-size: 1rem; margin: 18px 0 6px; }
+.move-form {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 4px 16px 14px;
+  margin-top: 8px;
+}
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px 14px; }
+.form-grid label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 0.85rem; }
+.form-grid .wide { grid-column: 1 / -1; }
+.form-grid input, .form-grid select { width: 100%; color: var(--ink); }
+.mf-from-wrap { border: 1px solid var(--line); border-radius: 8px; margin: 12px 0 0; padding: 8px 10px 10px; }
+.mf-from-wrap legend { color: var(--muted); font-size: 0.85rem; padding: 0 4px; }
+.mf-from { display: flex; flex-wrap: wrap; gap: 6px; }
+.mf-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 0.85rem; cursor: pointer;
+}
+.mf-chip:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); }
+.mf-chip input { accent-color: var(--accent); margin: 0; }

@@ -44,15 +44,16 @@
   let lastSnap = null;
   const snapshot = () => JSON.stringify({ startPos: state.startPos, startWeight: state.startWeight, strip: state.strip });
   let myCompounds = store.get('bmc.compounds', []);
+  let myMoves = store.get('bmc.moves', []);
   let g;
   let dataErrors = [];   // problems in data/*.yaml
   let myErrors = {};     // compound id -> problems with compounds saved in this browser
 
   function recompile() {
-    g = MG.compile({ positions: BASE.positions, moves: [...BASE.moves, ...myCompounds] });
+    g = MG.compile({ positions: BASE.positions, moves: [...BASE.moves, ...myMoves, ...myCompounds] });
     myErrors = {};
     dataErrors = g.errors.filter((e) => {
-      const own = myCompounds.find((c) => e.includes(`"${c.id}"`));
+      const own = [...myMoves, ...myCompounds].find((c) => e.includes(`"${c.id}"`));
       if (own) (myErrors[own.id] = myErrors[own.id] || []).push(e);
       return !own;
     });
@@ -129,6 +130,7 @@
     renderMap(result);
     renderPositions();
     renderCompounds();
+    renderMyMoves();
     $('btn-undo').disabled = undoStack.length === 0;
     $('btn-practice').disabled = state.strip.length === 0;
     $('btn-clear').disabled = state.strip.length === 0;
@@ -483,7 +485,96 @@
   }
 
   function compoundYaml(c) {
-    return `- id: ${c.id}\n  name: ${c.name}\n  kind: compound\n  sequence: [${c.sequence.join(', ')}]\n`;
+    return `- id: ${c.id}\n  name: ${JSON.stringify(c.name)}\n  kind: compound\n  sequence: [${c.sequence.join(', ')}]\n`;
+  }
+
+  function moveYaml(m) {
+    return `- id: ${m.id}\n  name: ${JSON.stringify(m.name)}\n  kind: ${m.kind}\n  level: ${m.level}\n` +
+      `  from: [${m.from.join(', ')}]\n  to: ${m.to}\n  counts: ${m.counts}\n` +
+      (m.notes ? `  notes: ${JSON.stringify(m.notes)}\n` : '');
+  }
+
+  function copyButton(label, text) {
+    return h('button', {
+      type: 'button',
+      onclick: (ev) => {
+        (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+          .then(() => { ev.target.textContent = 'Copied'; }, () => { ev.target.textContent = 'Copy failed: select the text above'; });
+      },
+    }, label);
+  }
+
+  function renderMyMoves() {
+    const box = $('my-moves');
+    if (!myMoves.length) { box.replaceChildren(); return; }
+    const broken = myMoves.filter((m) => myErrors[m.id]);
+    box.replaceChildren(h('div', {},
+      h('h3', {}, `Your moves (${myMoves.length})`),
+      broken.length ? h('div', { class: 'errors' }, broken.map((m) => myErrors[m.id].join('\n')).join('\n')) : null,
+      h('pre', {}, myMoves.map(moveYaml).join('\n')),
+      h('div', { class: 'actions' },
+        copyButton('Copy YAML', myMoves.map(moveYaml).join('\n')),
+        myMoves.map((m) => h('button', {
+          type: 'button',
+          class: 'ghost',
+          onclick: () => {
+            if (myCompounds.some((c) => c.sequence.includes(m.id)) && !confirm(`"${m.name}" is used in a compound move, which will break. Delete anyway?`)) return;
+            myMoves = myMoves.filter((x) => x.id !== m.id);
+            store.set('bmc.moves', myMoves);
+            recompile();
+            render();
+          },
+        }, `Delete "${m.name}"`)))));
+  }
+
+  function initMoveForm() {
+    const form = $('move-form');
+    const to = form.elements.to;
+    to.append(h('option', { value: 'same' }, 'same position it started in'));
+    for (const p of g.positions) to.append(h('option', { value: p.id }, p.name));
+    const fromBox = $('mf-from');
+    for (const p of g.positions) {
+      fromBox.append(h('label', { class: 'mf-chip' }, h('input', { type: 'checkbox', value: p.id }), ' ', p.short || p.name));
+    }
+    const status = $('mf-status');
+    const syncKind = () => {
+      const styling = form.elements.kind.value === 'styling';
+      if (styling) to.value = 'same';
+      to.disabled = styling;
+    };
+    form.elements.kind.addEventListener('change', syncKind);
+    syncKind();
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const name = form.elements.name.value.trim();
+      const from = [...fromBox.querySelectorAll('input:checked')].map((i) => i.value);
+      const counts = Number(form.elements.counts.value);
+      const fail = (msg) => { status.textContent = msg; status.className = 'small flag bad'; };
+      if (!name) return fail('Give the move a name.');
+      if (!from.length) return fail('Tick at least one position it can start from.');
+      if (!Number.isInteger(counts) || counts < 0) return fail('Counts must be a whole number, 0 or more.');
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'move';
+      let id = 'my-' + slug;
+      for (let n = 2; g.moveById[id]; n++) id = `my-${slug}-${n}`;
+      const move = {
+        id, name, kind: form.elements.kind.value, level: Number(form.elements.level.value),
+        from, to: form.elements.kind.value === 'styling' ? 'same' : to.value, counts,
+      };
+      const notes = form.elements.notes.value.trim();
+      if (notes) move.notes = notes;
+      const test = MG.compile({ positions: BASE.positions, moves: [...BASE.moves, ...myMoves, move] });
+      const problems = test.errors.filter((e) => e.includes(`"${id}"`));
+      if (problems.length) return fail(problems.join(' '));
+      myMoves.push(move);
+      store.set('bmc.moves', myMoves);
+      recompile();
+      render();
+      form.reset();
+      fromBox.querySelectorAll('input').forEach((i) => { i.checked = false; });
+      syncKind();
+      status.className = 'small';
+      status.textContent = `Saved "${name}". It now appears under "what can follow" for ${from.map(short).join(', ')}.`;
+    });
   }
 
   function renderCompounds() {
@@ -596,6 +687,7 @@
   recompile();
   initToolbar();
   initMap();
+  initMoveForm();
   lastSnap = snapshot();
   persist();
   render();
