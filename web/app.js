@@ -1,4 +1,4 @@
-/* Domino-strip UI. Depends on window.BACHATA_DATA (data.js) and window.MoveGraph (graph.js). */
+/* Domino-strip UI. Depends on data.js, graph.js, sketch.js, map.js, share.js and practice.js. */
 (function () {
   'use strict';
   const MG = window.MoveGraph;
@@ -6,64 +6,11 @@
   const PM = window.PositionMap;
   const Share = window.ComboShare;
   const BASE = window.BACHATA_DATA;
-  const KIND_LABEL = { move: 'move', styling: 'styling', adjuster: 'adjuster', compound: 'compound' };
 
-  // ------------------------------------------------------------ storage (per-browser convenience)
-  const store = {
-    get(key, fallback) {
-      try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
-    },
-    set(key, value) {
-      try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage unavailable */ }
-    },
-  };
+  // ------------------------------------------------------------ dom helpers
+  const $ = (id) => document.getElementById(id);
 
-  const saved = Share.parseHash(location.hash) || store.get('bmc.state', {});
-  const state = {
-    startPos: saved.startPos || 'open_LR',
-    startWeight: saved.startWeight === 'parallel' ? 'parallel' : 'mirrored',
-    strip: Array.isArray(saved.strip) ? saved.strip : [],
-    selected: null, // index into strip, or null = "what comes next"
-    kindFilter: 'all',
-    search: '',
-    showAllInsert: false,
-    mapSelected: null,
-    mapLink: null,
-    maxLevel: [1, 2, 3].includes(store.get('bmc.maxLevel', 3)) ? store.get('bmc.maxLevel', 3) : 3,
-  };
-  let mapLayout = null;
-  const undoStack = [];
-  let lastSnap = null;
-  const snapshot = () => JSON.stringify({ startPos: state.startPos, startWeight: state.startWeight, strip: state.strip });
-  let myCompounds = store.get('bmc.compounds', []);
-  let myMoves = store.get('bmc.moves', []);
-  let importedNote = '';
-  function importShared(custom) {
-    const fresh = (custom || []).filter((m) => !myMoves.some((x) => x.id === m.id));
-    if (!fresh.length) return;
-    myMoves = myMoves.concat(fresh);
-    store.set('bmc.moves', myMoves);
-    importedNote = `Added ${fresh.length} move${fresh.length > 1 ? 's' : ''} from the shared link: ${fresh.map((m) => m.name).join(', ')}. They're under "My moves".`;
-  }
-  importShared(saved.custom);
-  let g;
-  let dataErrors = [];   // problems in data/*.yaml
-  let myErrors = {};     // compound id -> problems with compounds saved in this browser
-
-  function recompile() {
-    g = MG.compile({ positions: BASE.positions, moves: [...BASE.moves, ...myMoves, ...myCompounds] });
-    myErrors = {};
-    dataErrors = g.errors.filter((e) => {
-      const own = [...myMoves, ...myCompounds].find((c) => e.includes(`"${c.id}"`));
-      if (own) (myErrors[own.id] = myErrors[own.id] || []).push(e);
-      return !own;
-    });
-    if (!g.posById[state.startPos]) state.startPos = BASE.positions[0].id;
-    mapLayout = PM ? PM.layoutMap(g) : null;
-    state.strip = state.strip.filter((id) => g.moveById[id]);
-  }
-
-  // ------------------------------------------------------------ helpers
+  /** Build an element: h('p', { class: 'muted', onclick }, 'text', child, [more children]). */
   function h(tag, attrs, ...children) {
     const el = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs || {})) {
@@ -75,15 +22,104 @@
     for (const c of children.flat()) if (c !== null && c !== undefined && c !== false) el.append(c);
     return el;
   }
-  const short = (id) => (g.posById[id] ? g.posById[id].short || g.posById[id].name : '?');
-  const posName = (id) => (g.posById[id] ? g.posById[id].name : '?');
-  const badge = (kind) => h('span', { class: `badge k-${kind}` }, KIND_LABEL[kind] || kind);
-  const LEVEL_NAME = { 1: 'beginner', 2: 'intermediate', 3: 'advanced' };
-  const dots = (lvl) => h('span', { class: 'lvl', title: LEVEL_NAME[lvl] || '' }, '●'.repeat(lvl) + '○'.repeat(3 - lvl));
-  const allowed = (id) => (g.moveById[id] ? g.moveById[id].level <= state.maxLevel : false);
-  const $ = (id) => document.getElementById(id);
 
-  /** Share link: compounds saved only in this browser are spelled out into their parts. */
+  const button = (label, onclick, attrs = {}) => h('button', { type: 'button', onclick, ...attrs }, label);
+
+  /** A grid of option buttons. Each row: { label, sub, onclick, disabled, title }. */
+  const optionList = (rows) => h('ul', { class: 'options' }, rows.map((r) => h('li', {},
+    button([h('span', {}, r.label), h('span', { class: 'to' }, r.sub)], r.onclick, { disabled: r.disabled, title: r.title }))));
+
+  const LEVEL_NAME = { 1: 'beginner', 2: 'intermediate', 3: 'advanced' };
+  const badge = (kind) => h('span', { class: `badge k-${kind}` }, kind);
+  const levelDots = (lvl) => h('span', { class: 'lvl', title: LEVEL_NAME[lvl] || '' }, '●'.repeat(lvl) + '○'.repeat(3 - lvl));
+  const moveLabel = (m) => [m.name, ' ', badge(m.kind)];
+  const shortName = (id) => (g.posById[id] ? g.posById[id].short || g.posById[id].name : '?');
+  const posName = (id) => (g.posById[id] ? g.posById[id].name : '?');
+
+  /** Copy text to the clipboard and say so on the button for a moment; if that fails, show it to copy by hand. */
+  function copyText(text, el, okLabel = 'Copied') {
+    el.dataset.label = el.dataset.label || el.textContent;
+    (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => {
+      el.textContent = okLabel;
+      setTimeout(() => { el.textContent = el.dataset.label; }, 1800);
+    }, () => { prompt('Copy this text:', text); });
+  }
+
+  /** Run a re-render that replaces the element `selector` while the user types in it, and keep the caret. */
+  function keepFocus(selector, rerender) {
+    const caret = document.activeElement.selectionStart;
+    rerender();
+    const again = document.querySelector(selector);
+    if (again) { again.focus(); again.setSelectionRange(caret, caret); }
+  }
+
+  // ------------------------------------------------------------ state
+  // Glossary: g = the compiled move graph (MoveGraph.compile); "item" = one evaluated domino from
+  // MoveGraph.evaluateStrip; "own" moves and compounds were added in this browser.
+  const store = {
+    get(key, fallback) {
+      try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+    },
+    set(key, value) {
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage unavailable */ }
+    },
+  };
+
+  const state = {
+    startPos: 'open_LR',
+    startWeight: 'mirrored',
+    strip: [],             // move ids
+    selected: null,        // index into strip, or null = "what comes next"
+    kindFilter: 'all',
+    search: '',
+    showAllInsert: false,
+    mapSelected: null,
+    mapLink: null,         // { from, to } of a tapped map arrow
+    maxLevel: [1, 2, 3].includes(store.get('bmc.maxLevel', 3)) ? store.get('bmc.maxLevel', 3) : 3,
+  };
+  let myMoves = store.get('bmc.moves', []);
+  let myCompounds = store.get('bmc.compounds', []);
+  let g;
+  let mapLayout = null;
+  let dataErrors = [];     // problems in data/*.yaml
+  let ownErrors = {};      // own move or compound id -> its problems
+  let importedNote = '';
+
+  /** Compile the base data plus own moves and compounds. Call after any of them change. */
+  function recompile() {
+    g = MG.compile({ positions: BASE.positions, moves: [...BASE.moves, ...myMoves, ...myCompounds] });
+    ownErrors = {};
+    dataErrors = g.errors.filter((e) => {
+      const own = [...myMoves, ...myCompounds].find((c) => e.includes(`"${c.id}"`));
+      if (own) (ownErrors[own.id] = ownErrors[own.id] || []).push(e);
+      return !own;
+    });
+    mapLayout = PM.layoutMap(g);
+    dropUnknownMoves();
+  }
+
+  /** recompile() and redraw the parts of the page that show the data itself. */
+  function reloadData() {
+    recompile();
+    renderData();
+  }
+
+  function dropUnknownMoves() {
+    state.strip = state.strip.filter((id) => g.moveById[id]);
+  }
+
+  /** Apply a combo from a link or from this browser's storage. Unknown values keep the current ones. */
+  function loadCombo(combo) {
+    if (g.posById[combo.startPos]) state.startPos = combo.startPos;
+    if (['mirrored', 'parallel'].includes(combo.startWeight)) state.startWeight = combo.startWeight;
+    state.strip = Array.isArray(combo.strip) ? [...combo.strip] : [];
+    state.selected = null;
+    dropUnknownMoves();
+  }
+
+  const evaluate = () => MG.evaluateStrip(g, state.startPos, state.startWeight, state.strip);
+  const withinLevel = (id) => (g.moveById[id] ? g.moveById[id].level <= state.maxLevel : false);
+
   function shareHash() {
     return Share.buildHash({ startPos: state.startPos, startWeight: state.startWeight, strip: state.strip, myMoves, myCompounds });
   }
@@ -93,8 +129,13 @@
     try { history.replaceState(null, '', state.strip.length ? shareHash() : location.pathname + location.search); } catch { /* file:// in some browsers */ }
   }
 
+  // Undo: snapshots of the combo, taken whenever it changes.
+  const undoStack = [];
+  let lastSnap = null;
+  const snapshot = () => JSON.stringify({ startPos: state.startPos, startWeight: state.startWeight, strip: state.strip });
+
   /** Call after every change to the combo: records undo, saves, re-renders. */
-  function update() {
+  function commit() {
     const snap = snapshot();
     if (lastSnap !== null && snap !== lastSnap) {
       undoStack.push(lastSnap);
@@ -111,76 +152,146 @@
     Object.assign(state, JSON.parse(prev));
     lastSnap = prev;
     state.selected = null;
-    $('start-pos').value = state.startPos;
-    $('start-weight').value = state.startWeight;
     persist();
     render();
   }
 
-  // ------------------------------------------------------------ render
-  function render() {
-    const result = MG.evaluateStrip(g, state.startPos, state.startWeight, state.strip);
-    if (state.selected !== null && state.selected >= state.strip.length) state.selected = null;
-    renderErrors();
-    renderStrip(result);
-    renderPanel(result);
-    renderMap(result);
-    renderPositions();
-    renderCompounds();
-    renderMyMoves();
-    renderLibrary(result);
-    $('btn-undo').disabled = undoStack.length === 0;
-    $('btn-practice').disabled = state.strip.length === 0;
-    $('btn-text').disabled = state.strip.length === 0;
-    $('btn-clear').disabled = state.strip.length === 0;
+  /** Select a domino (or null for "what can follow"). */
+  function select(i) {
+    state.selected = i;
+    state.search = '';
+    state.showAllInsert = false;
+    render();
   }
 
-  function renderErrors() {
+  /** Everything a user can do to the combo. Each one ends in commit(). */
+  const edit = {
+    add(ids) { state.strip.push(...ids); state.selected = null; commit(); },
+    insert(at, ids, selected = null) { state.strip.splice(at, 0, ...ids); state.selected = selected; commit(); },
+    replace(i, id) { state.strip[i] = id; commit(); },
+    remove(i) { state.strip.splice(i, 1); state.selected = null; commit(); },
+    move(i, d) {
+      const [id] = state.strip.splice(i, 1);
+      state.strip.splice(i + d, 0, id);
+      state.selected = i + d;
+      commit();
+    },
+    expand(i) { state.strip.splice(i, 1, ...g.moveById[state.strip[i]].sequence); state.selected = null; commit(); },
+    cut(i) { state.strip.length = i + 1; state.selected = null; commit(); },
+    setStrip(ids, selected = null) { state.strip = [...ids]; state.selected = selected; commit(); },
+    clear() { edit.setStrip([]); },
+    random() { edit.setStrip(MG.randomCombo(g, state.startPos, { steps: 4, maxLevel: state.maxLevel })); },
+    setStart(id) { state.startPos = id; commit(); },
+    setWeight(w) { state.startWeight = w; commit(); },
+    startNewComboAt(id) { state.startPos = id; edit.clear(); },
+    load(combo) { loadCombo(combo); commit(); },
+  };
+
+  /** Moves and compounds saved in this browser. */
+  const own = {
+    importShared(custom) {
+      const fresh = (custom || []).filter((m) => !myMoves.some((x) => x.id === m.id));
+      if (!fresh.length) return;
+      myMoves = myMoves.concat(fresh);
+      store.set('bmc.moves', myMoves);
+      importedNote = `Added ${fresh.length} move${fresh.length > 1 ? 's' : ''} from the shared link: ${fresh.map((m) => m.name).join(', ')}. They're under "My moves".`;
+    },
+    addMove(move) {
+      myMoves.push(move);
+      store.set('bmc.moves', myMoves);
+      reloadData();
+      render();
+    },
+    deleteMove(id) {
+      myMoves = myMoves.filter((x) => x.id !== id);
+      store.set('bmc.moves', myMoves);
+      reloadData();
+      render();
+    },
+    saveCompound(name) {
+      const base = 'my-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      let id = base || 'my-compound';
+      for (let n = 2; g.moveById[id]; n++) id = `${base}-${n}`;
+      myCompounds.push({ id, name, kind: 'compound', sequence: [...state.strip] });
+      store.set('bmc.compounds', myCompounds);
+      reloadData();
+      edit.setStrip([id], 0);
+    },
+    deleteCompound(id) {
+      myCompounds = myCompounds.filter((x) => x.id !== id);
+      store.set('bmc.compounds', myCompounds);
+      reloadData();
+      render();
+    },
+  };
+
+  // ------------------------------------------------------------ render
+  /** Redraw everything that depends on the combo. */
+  function render() {
+    const result = evaluate();
+    if (state.selected !== null && state.selected >= state.strip.length) state.selected = null;
+    renderStrip(result);
+    renderSummary(result);
+    renderPanel(result);
+    renderMap(result);
+    renderLibrary(result);
+    syncToolbar();
+  }
+
+  /** Redraw what only changes when the data changes (own moves added or deleted). */
+  function renderData() {
+    renderMessages();
+    renderPositions();
+    renderMyMoves();
+    renderCompounds();
+  }
+
+  function syncToolbar() {
+    $('start-pos').value = state.startPos;
+    $('start-weight').value = state.startWeight;
+    $('max-level').value = String(state.maxLevel);
+    const empty = state.strip.length === 0;
+    $('btn-undo').disabled = undoStack.length === 0;
+    $('btn-practice').disabled = empty;
+    $('btn-text').disabled = empty;
+    $('btn-clear').disabled = empty;
+  }
+
+  function renderMessages() {
     const note = $('notice');
-    if (note) { note.hidden = !importedNote; note.textContent = importedNote; }
+    note.hidden = !importedNote;
+    note.textContent = importedNote;
     const box = $('errors');
     box.hidden = dataErrors.length === 0;
     box.textContent = dataErrors.length ? 'Data problems:\n' + dataErrors.join('\n') : '';
   }
 
+  // ------------------------------------------------------------ strip
   function renderStrip(result) {
     const strip = $('strip');
-    strip.replaceChildren();
-    strip.append(h('span', { class: 'start-pill', title: posName(state.startPos) }, 'Start: ' + short(state.startPos)));
-
+    strip.replaceChildren(h('span', { class: 'start-pill', title: posName(state.startPos) }, 'Start: ' + shortName(state.startPos)));
     result.items.forEach((it, i) => {
-      if (it.broken) {
-        strip.append(h('span', { class: 'joint broken' },
-          h('button', { type: 'button', onclick: () => select(i), title: 'These dominoes do not connect' },
-            '✕ bridge')));
-      } else {
-        strip.append(h('span', { class: 'joint', 'aria-hidden': 'true' }, '›'));
-      }
+      strip.append(it.broken
+        ? h('span', { class: 'joint broken' }, button('✕ bridge', () => select(i), { title: 'These dominoes do not connect' }))
+        : h('span', { class: 'joint', 'aria-hidden': 'true' }, '›'));
       strip.append(domino(it, i));
     });
-
     if (!state.strip.length) {
-      const examples = g.moves.filter((m) => m.kind === 'compound' && !m.id.startsWith('my-'))
-        .filter((m) => (g.edgesByMove[m.id] || []).some((e) => e.from === state.startPos));
-      strip.append(h('div', { class: 'empty' },
-        h('p', {}, 'Start a combo: pick moves below, roll a random one, or load an example.'),
-        h('div', { class: 'actions' },
-          h('button', { type: 'button', class: 'primary', onclick: () => $('btn-random').click() }, 'Random combo'),
-          examples.map((m) => h('button', {
-            type: 'button',
-            onclick: () => { state.strip = [...m.sequence]; update(); },
-          }, 'Example: ' + m.name)))));
-      return renderSummary(result);
+      strip.append(emptyState());
+      return;
     }
+    strip.append(h('span', { class: 'joint', 'aria-hidden': 'true' }, '›'),
+      button('+ next move', () => select(null), { class: 'domino add' + (state.selected === null ? ' selected' : '') }));
+  }
 
-    strip.append(h('span', { class: 'joint', 'aria-hidden': 'true' }, '›'));
-    strip.append(h('button', {
-      type: 'button',
-      class: 'domino add' + (state.selected === null ? ' selected' : ''),
-      onclick: () => select(null),
-    }, '+ next move'));
-
-    renderSummary(result);
+  function emptyState() {
+    const examples = g.moves.filter((m) => m.kind === 'compound' && !m.id.startsWith('my-'))
+      .filter((m) => (g.edgesByMove[m.id] || []).some((e) => e.from === state.startPos));
+    return h('div', { class: 'empty' },
+      h('p', {}, 'Start a combo: pick moves below, roll a random one, or load an example.'),
+      h('div', { class: 'actions' },
+        button('Random combo', edit.random, { class: 'primary' }),
+        examples.map((m) => button('Example: ' + m.name, () => edit.setStrip(m.sequence)))));
   }
 
   function renderSummary(result) {
@@ -197,22 +308,20 @@
   function domino(it, i) {
     const m = it.move;
     if (it.missing) {
-      return h('button', { type: 'button', class: 'domino broken', onclick: () => select(i) },
-        h('div', { class: 'name' }, `Unknown move "${it.id}"`));
+      return button(h('div', { class: 'name' }, `Unknown move "${it.id}"`), () => select(i), { class: 'domino broken' });
     }
     const flags = [];
     if (it.timingWarn) flags.push(h('span', { class: 'flag', title: 'Starts mid-phrase' }, ` · starts on ${it.beat}`));
-    if (it.weightWarn) flags.push(h('span', { class: 'flag', title: 'Weight mismatch' }, ` · needs ${m.weight.from || g.weightOf(m.id).from}`));
+    if (it.weightWarn) flags.push(h('span', { class: 'flag', title: 'Weight mismatch' }, ` · needs ${g.weightOf(m.id).from}`));
     if (m.check) flags.push(h('span', { class: 'flag', title: m.check }, ' · ⚑'));
-    return h('button', {
-      type: 'button',
-      class: `domino k-${m.kind}` + (it.broken ? ' broken' : '') + (state.selected === i ? ' selected' : ''),
-      onclick: () => select(i),
-      title: `${posName(it.from)} → ${posName(it.to)}`,
-    },
-      h('div', { class: 'halves' }, h('span', {}, short(it.from)), h('span', {}, short(it.to))),
+    return button([
+      h('div', { class: 'halves' }, h('span', {}, shortName(it.from)), h('span', {}, shortName(it.to))),
       h('div', { class: 'name' }, m.name),
-      h('div', { class: 'meta' }, countLabel(it), flags));
+      h('div', { class: 'meta' }, countLabel(it), flags),
+    ], () => select(i), {
+      class: `domino k-${m.kind}` + (it.broken ? ' broken' : '') + (state.selected === i ? ' selected' : ''),
+      title: `${posName(it.from)} → ${posName(it.to)}`,
+    });
   }
 
   /** "1→4" style range within the 8-count; 0-count adjusters happen on the fly. */
@@ -223,48 +332,33 @@
     return `${n} ct · ${it.beat}→${end}`;
   }
 
-  function select(i) {
-    state.selected = i;
-    state.search = '';
-    state.showAllInsert = false;
-    render();
-  }
-
   // ------------------------------------------------------------ panel
   function renderPanel(result) {
-    const panel = $('panel');
-    panel.replaceChildren();
     const it = state.selected === null ? null : result.items[state.selected];
-    const main = it ? detailPanel(it, state.selected, result) : nextPanel(result.end);
+    const main = it ? detailPanel(it, state.selected) : nextPanel(result.end);
     let side;
     if (!it) side = [sketchFigure(result.end, 'Where you are now')];
     else if (it.missing || !it.from) side = [];
     else if (it.from === it.to) side = [sketchFigure(it.from, 'Start and end (same position)')];
     else side = [sketchFigure(it.from, 'Start'), sketchFigure(it.to, 'End')];
-    panel.append(h('div', { class: 'panel-grid' },
+    $('panel').replaceChildren(h('div', { class: 'panel-grid' },
       h('div', { class: 'panel-main' }, main),
-      side.length ? h('aside', { class: 'leader-view', 'aria-label': 'Leader view' },
-        h('h3', {}, 'Leader view'), side) : null));
+      side.length ? h('aside', { class: 'leader-view', 'aria-label': 'Leader view' }, h('h3', {}, 'Leader view'), side) : null));
   }
 
   /** Top-down sketch of a position as the leader sees it. */
   function sketchFigure(posId, caption) {
     const p = g.posById[posId];
-    if (!p || !SK) return null;
+    if (!p) return null;
     const art = h('div', { class: 'sk-art' });
     art.innerHTML = SK.sketchSVG(p, { title: p.name });
     return h('figure', { class: 'sk-fig' }, art,
-      h('figcaption', {}, h('strong', {}, caption + ': '), p.name, h('br'),
-        h('span', { class: 'muted' }, SK.describe(p))));
+      h('figcaption', {}, h('strong', {}, caption + ': '), p.name, h('br'), h('span', { class: 'muted' }, SK.describe(p))));
   }
 
   function kindChips() {
     return h('div', { class: 'chips' }, ['all', 'move', 'styling', 'adjuster', 'compound'].map((k) =>
-      h('button', {
-        type: 'button',
-        class: state.kindFilter === k ? 'on' : '',
-        onclick: () => { state.kindFilter = k; render(); },
-      }, k)));
+      button(k, () => { state.kindFilter = k; render(); }, { class: state.kindFilter === k ? 'on' : '' })));
   }
 
   function nextPanel(end) {
@@ -276,80 +370,71 @@
     });
     const search = h('input', {
       class: 'search', type: 'search', placeholder: 'Filter moves…', 'aria-label': 'Filter next moves', value: state.search,
-      oninput: (ev) => {
-        state.search = ev.target.value;
-        const pos = ev.target.selectionStart;
-        render();
-        const again = document.querySelector('.search');
-        if (again) { again.focus(); again.setSelectionRange(pos, pos); }
-      },
+      oninput: (ev) => { state.search = ev.target.value; keepFocus('.search', render); },
     });
     return h('div', {},
-      h('div', { class: 'panel-head' },
-        h('h2', {}, `What can follow ${posName(end)}`), kindChips()),
+      h('div', { class: 'panel-head' }, h('h2', {}, `What can follow ${posName(end)}`), kindChips()),
       search,
       options.length
-        ? h('ul', { class: 'options' }, options.map((e) => {
+        ? optionList(options.map((e) => {
           const m = g.moveById[e.move];
-          return h('li', {}, h('button', {
-            type: 'button',
-            onclick: () => { state.strip.push(m.id); state.search = ''; update(); },
-          },
-            h('span', {}, m.name, ' ', badge(m.kind)),
-            h('span', { class: 'to' }, e.to === e.from ? '↺ same' : '→ ' + short(e.to), ` · ${m.counts} ct `, dots(m.level))));
+          return {
+            label: moveLabel(m),
+            sub: [e.to === e.from ? '↺ same' : '→ ' + shortName(e.to), ` · ${m.counts} ct `, levelDots(m.level)],
+            onclick: () => { state.search = ''; edit.add([m.id]); },
+          };
         }))
         : h('p', { class: 'muted' }, 'Nothing matches. This position needs more moves in data/moves.yaml.'));
   }
 
-  function detailPanel(it, i, result) {
+  function detailPanel(it, i) {
     const m = it.move;
     const wrap = h('div', { class: 'detail' });
     if (it.missing) {
-      wrap.append(h('p', {}, `Move "${it.id}" no longer exists.`),
-        h('button', { type: 'button', onclick: () => removeAt(i) }, 'Remove'));
+      wrap.append(h('p', {}, `Move "${it.id}" no longer exists.`), button('Remove', () => edit.remove(i)));
       return wrap;
     }
     const w = g.weightOf(m.id);
+    const nameOf = (id) => (g.moveById[id] ? g.moveById[id].name : id);
     wrap.append(...[
-      h('div', { class: 'panel-head' }, h('h2', {}, m.name, ' ', badge(m.kind)),
-        h('button', { type: 'button', class: 'ghost', onclick: () => select(null) }, 'Close')),
+      h('div', { class: 'panel-head' }, h('h2', {}, moveLabel(m)), button('Close', () => select(null), { class: 'ghost' })),
       m.check ? h('div', { class: 'check' }, '⚑ Needs review: ' + m.check) : null,
       h('dl', {},
         h('dt', {}, 'From'), h('dd', {}, posName(it.from), h('br'), h('code', {}, MG.notation(g.posById[it.from]))),
         h('dt', {}, 'To'), h('dd', {}, posName(it.to), h('br'), h('code', {}, MG.notation(g.posById[it.to]))),
         h('dt', {}, 'Counts'), h('dd', {}, `${m.counts} (starts on beat ${it.beat})`),
-        h('dt', {}, 'Level'), h('dd', {}, dots(m.level), ' ', LEVEL_NAME[m.level] || ''),
+        h('dt', {}, 'Level'), h('dd', {}, levelDots(m.level), ' ', LEVEL_NAME[m.level] || ''),
         h('dt', {}, 'Weight'), h('dd', {}, `${w.from || 'any'} → ${w.to || 'unchanged'}` + (it.weightWarn ? ` (you arrive ${it.weightIn})` : '')),
-        m.opposite ? [h('dt', {}, 'Opposite'), h('dd', {}, g.moveById[m.opposite] ? g.moveById[m.opposite].name : m.opposite)] : null,
-        m.sequence ? [h('dt', {}, 'Made of'), h('dd', {}, m.sequence.map((id) => g.moveById[id] ? g.moveById[id].name : id).join(' › '))] : null,
+        m.opposite ? [h('dt', {}, 'Opposite'), h('dd', {}, nameOf(m.opposite))] : null,
+        m.sequence ? [h('dt', {}, 'Made of'), h('dd', {}, m.sequence.map(nameOf).join(' › '))] : null,
         m.notes ? [h('dt', {}, 'Notes'), h('dd', {}, m.notes)] : null),
       h('div', { class: 'actions' },
-        h('button', { type: 'button', onclick: () => removeAt(i) }, 'Remove'),
-        i > 0 ? h('button', { type: 'button', onclick: () => moveBy(i, -1) }, '‹ Move left') : null,
-        i < state.strip.length - 1 ? h('button', { type: 'button', onclick: () => moveBy(i, 1) }, 'Move right ›') : null,
-        m.sequence ? h('button', { type: 'button', onclick: () => expand(i) }, 'Expand into parts') : null,
-        h('button', { type: 'button', onclick: () => { state.strip.length = i + 1; state.selected = null; update(); } }, 'Cut here')),
+        button('Remove', () => edit.remove(i)),
+        i > 0 ? button('‹ Move left', () => edit.move(i, -1)) : null,
+        i < state.strip.length - 1 ? button('Move right ›', () => edit.move(i, 1)) : null,
+        m.sequence ? button('Expand into parts', () => edit.expand(i)) : null,
+        button('Cut here', () => edit.cut(i))),
     ].filter(Boolean));
 
     if (it.broken) {
       const bridges = it.from ? MG.findBridges(g, it.expected, it.from, { maxLevel: state.maxLevel }) : [];
       wrap.append(h('h2', {}, `Bridge: ${posName(it.expected)} → ${posName(it.from)}`),
         bridges.length
-          ? h('ul', { class: 'options' }, bridges.map((path) => h('li', {}, h('button', {
-            type: 'button',
-            onclick: () => { state.strip.splice(i, 0, ...path); state.selected = null; update(); },
-          }, h('span', {}, path.map((id) => g.moveById[id].name).join(' › ')),
-            h('span', { class: 'to' }, `${path.length} step${path.length > 1 ? 's' : ''}`)))))
+          ? optionList(bridges.map((path) => ({
+            label: path.map(nameOf).join(' › '),
+            sub: `${path.length} step${path.length > 1 ? 's' : ''}`,
+            onclick: () => edit.insert(i, path),
+          })))
           : h('p', { class: 'muted' }, 'No bridge within 3 moves. Remove this domino or add an adjuster to the data.'));
     } else {
-      const alts = MG.alternatives(g, it.from, it.to, m.id).filter(allowed);
+      const alts = MG.alternatives(g, it.from, it.to, m.id).filter(withinLevel);
       wrap.append(h('h2', {}, `Replace with (same start and end)`),
         alts.length
-          ? h('ul', { class: 'options' }, alts.map((id) => h('li', {}, h('button', {
-            type: 'button',
-            onclick: () => { state.strip[i] = id; update(); },
-          }, h('span', {}, g.moveById[id].name, ' ', badge(g.moveById[id].kind)),
-            h('span', { class: 'to' }, `${g.moveById[id].counts} ct`)))))
+          ? optionList(alts.map((id) => ({
+            label: moveLabel(g.moveById[id]),
+            sub: `${g.moveById[id].counts} ct`,
+            onclick: () => edit.replace(i, id),
+          })))
           : h('p', { class: 'muted' }, 'No alternatives yet.'));
     }
 
@@ -357,50 +442,37 @@
       const next = state.strip[i + 1];
       const nextEdges = next ? g.edgesByMove[next] || [] : null;
       const fits = (e) => !nextEdges || nextEdges.some((x) => x.from === e.to);
-      const all = MG.nextMoves(g, it.to).filter((e) => g.moveById[e.move].kind !== 'compound' && allowed(e.move));
+      const all = MG.nextMoves(g, it.to).filter((e) => g.moveById[e.move].kind !== 'compound' && withinLevel(e.move));
       const good = all.filter(fits);
       const shown = state.showAllInsert ? all : good;
       wrap.append(...[h('h2', {}, 'Insert after this'),
         h('p', { class: 'muted' }, next
           ? `${good.length} of ${all.length} moves keep the next domino connected.`
           : 'This is the last domino.'),
-        h('ul', { class: 'options' }, shown.map((e) => {
-          const mm = g.moveById[e.move];
-          return h('li', {}, h('button', {
-            type: 'button',
-            onclick: () => { state.strip.splice(i + 1, 0, mm.id); state.selected = i + 1; update(); },
-          }, h('span', {}, mm.name, ' ', badge(mm.kind)),
-            h('span', { class: 'to' }, (fits(e) ? '' : '⚠ ') + (e.to === e.from ? '↺ same' : '→ ' + short(e.to)))));
-        })),
-        next && good.length < all.length ? h('button', {
-          type: 'button', class: 'ghost',
-          onclick: () => { state.showAllInsert = !state.showAllInsert; render(); },
-        }, state.showAllInsert ? 'Show only moves that fit' : `Show all ${all.length} (some will need a bridge)`) : null].filter(Boolean));
+        optionList(shown.map((e) => ({
+          label: moveLabel(g.moveById[e.move]),
+          sub: (fits(e) ? '' : '⚠ ') + (e.to === e.from ? '↺ same' : '→ ' + shortName(e.to)),
+          onclick: () => edit.insert(i + 1, [e.move], i + 1),
+        }))),
+        next && good.length < all.length
+          ? button(state.showAllInsert ? 'Show only moves that fit' : `Show all ${all.length} (some will need a bridge)`,
+            () => { state.showAllInsert = !state.showAllInsert; render(); }, { class: 'ghost' })
+          : null].filter(Boolean));
     }
     return wrap;
   }
 
-  function removeAt(i) { state.strip.splice(i, 1); state.selected = null; update(); }
-  function moveBy(i, d) {
-    const [x] = state.strip.splice(i, 1);
-    state.strip.splice(i + d, 0, x);
-    state.selected = i + d;
-    update();
-  }
-  function expand(i) {
-    const m = g.moveById[state.strip[i]];
-    state.strip.splice(i, 1, ...m.sequence);
-    state.selected = null;
-    update();
-  }
-
   // ------------------------------------------------------------ map
   function renderMap(result) {
-    if (!mapLayout) return;
     const path = result.items.filter((it) => !it.broken && it.from).map((it) => ({ from: it.from, to: it.to }));
     if (!path.length) path.push({ from: state.startPos, to: state.startPos });
     $('map').innerHTML = PM.mapSVG(g, mapLayout, { selected: state.mapSelected, path });
     renderMapInfo(result);
+  }
+
+  function showOnMap(id) {
+    state.mapSelected = id;
+    render();
   }
 
   function renderMapInfo(result) {
@@ -427,75 +499,74 @@
     const loops = MG.loopMoves(g, id).map((m) => g.moveById[m].name).sort();
     const list = (rows, arrow) => rows.length
       ? h('ul', { class: 'map-list' }, rows.map(([pid, names]) => h('li', {},
-        h('button', { type: 'button', class: 'link', onclick: () => { state.mapSelected = pid; render(); } }, arrow + ' ' + short(pid)),
+        button(arrow + ' ' + shortName(pid), () => showOnMap(pid), { class: 'link' }),
         ': ', [...names].sort().join(', '))))
       : h('p', { class: 'muted' }, 'None yet.');
     const bridges = result.end !== id ? MG.findBridges(g, result.end, id, { limit: 3, maxLevel: state.maxLevel }) : [];
     box.replaceChildren(h('div', {},
-      h('div', { class: 'panel-head' }, h('h3', {}, posName(id)),
-        h('button', { type: 'button', class: 'ghost', onclick: () => { state.mapSelected = null; render(); } }, 'Close')),
+      h('div', { class: 'panel-head' }, h('h3', {}, posName(id)), button('Close', () => showOnMap(null), { class: 'ghost' })),
       sketchFigure(id, 'Leader view'),
       h('div', { class: 'actions' },
-        h('button', {
-          type: 'button',
-          onclick: () => { state.startPos = id; state.strip = []; state.selected = null; $('start-pos').value = id; update(); },
-        }, 'Start a new combo here'),
+        button('Start a new combo here', () => edit.startNewComboAt(id)),
         result.end === id ? h('span', { class: 'muted' }, 'Your combo ends here.') : null),
-      link ? [h('h4', {}, `${short(link.from)} → ${short(link.to)} (${linkMoves.length})`),
-        h('ul', { class: 'options' }, linkMoves.map((mid) => h('li', {}, h('button', {
-          type: 'button',
+      link ? [h('h4', {}, `${shortName(link.from)} → ${shortName(link.to)} (${linkMoves.length})`),
+        optionList(linkMoves.map((mid) => ({
+          label: g.moveById[mid].name,
+          sub: [`${g.moveById[mid].counts} ct `, levelDots(g.moveById[mid].level)],
           disabled: result.end !== id,
           title: result.end === id ? 'Add to the combo' : `Your combo ends in ${posName(result.end)}`,
-          onclick: () => { state.strip.push(mid); state.mapSelected = link.to; state.mapLink = null; update(); },
-        }, h('span', {}, g.moveById[mid].name), h('span', { class: 'to' }, `${g.moveById[mid].counts} ct `, dots(g.moveById[mid].level))))))] : null,
-      bridges.length ? [h('h4', {}, `Get here from the end of your combo (${short(result.end)})`),
-        h('ul', { class: 'options' }, bridges.map((pathIds) => h('li', {}, h('button', {
-          type: 'button',
-          onclick: () => { state.strip.push(...pathIds); state.selected = null; update(); },
-        }, h('span', {}, pathIds.map((m) => g.moveById[m].name).join(' › ')),
-          h('span', { class: 'to' }, `+${pathIds.length}`)))))] : null,
+          onclick: () => { state.mapSelected = link.to; state.mapLink = null; edit.add([mid]); },
+        })))] : null,
+      bridges.length ? [h('h4', {}, `Get here from the end of your combo (${shortName(result.end)})`),
+        optionList(bridges.map((path) => ({
+          label: path.map((m) => g.moveById[m].name).join(' › '),
+          sub: `+${path.length}`,
+          onclick: () => edit.add(path),
+        })))] : null,
       h('h4', {}, `Ways out (${outs.reduce((n, [, s]) => n + s.size, 0)})`), list(outs, '→'),
       h('h4', {}, `Ways in (${ins.reduce((n, [, s]) => n + s.size, 0)})`), list(ins, '←'),
       loops.length ? [h('h4', {}, `In place (${loops.length})`), h('p', { class: 'small' }, loops.join(', '))] : null));
   }
 
   function initMap() {
-    const pick = (ev) => {
+    const onMapActivate = (ev) => {
       const link = ev.target.closest && ev.target.closest('[data-link]');
       if (link) {
         const [from, to] = link.getAttribute('data-link').split('>');
-        state.mapSelected = from;
         state.mapLink = { from, to };
-        render();
+        showOnMap(from);
         return;
       }
       const node = ev.target.closest && ev.target.closest('[data-pos]');
       if (!node) return;
       state.mapLink = null;
       const id = node.getAttribute('data-pos');
-      state.mapSelected = state.mapSelected === id ? null : id;
-      render();
+      showOnMap(state.mapSelected === id ? null : id);
       if (window.matchMedia('(max-width: 720px)').matches) $('map-info').scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-    $('map').addEventListener('click', pick);
-    $('map').addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); pick(ev); } });
+    $('map').addEventListener('click', onMapActivate);
+    $('map').addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onMapActivate(ev); } });
   }
 
-  // ------------------------------------------------------------ reference sections
+  // ------------------------------------------------------------ reference: positions table and move library
   function renderPositions() {
     const healthById = Object.fromEntries(g.health.map((x) => [x.id, x]));
+    const showPosition = (id) => {
+      showOnMap(id);
+      document.querySelector('.map-section').scrollIntoView({ behavior: 'smooth' });
+    };
     $('positions').replaceChildren(h('div', { class: 'table-wrap' }, h('table', {},
       h('thead', {}, h('tr', {}, h('th', {}, ''), h('th', {}, 'Position'), h('th', {}, 'Notation'), h('th', {}, 'Ways in / out'))),
       h('tbody', {}, g.positions.map((p) => {
-        const hl = healthById[p.id];
+        const health = healthById[p.id];
         const thumb = h('div', { class: 'thumb' });
-        thumb.innerHTML = SK ? SK.sketchSVG(p) : '';
+        thumb.innerHTML = SK.sketchSVG(p);
         return h('tr', {},
           h('td', {}, thumb),
-          h('td', {}, h('button', { type: 'button', class: 'link', onclick: () => { state.mapSelected = p.id; render(); document.querySelector('.map-section').scrollIntoView({ behavior: 'smooth' }); } }, p.name),
-            h('br'), h('code', { class: 'muted' }, p.id), h('br'), h('span', { class: 'muted small' }, SK ? SK.describe(p) : '')),
+          h('td', {}, button(p.name, () => showPosition(p.id), { class: 'link' }),
+            h('br'), h('code', { class: 'muted' }, p.id), h('br'), h('span', { class: 'muted small' }, SK.describe(p))),
           h('td', {}, h('code', {}, MG.notation(p))),
-          h('td', { class: hl.thin ? 'flag' : '' }, `${hl.in} / ${hl.out}`));
+          h('td', { class: health.thin ? 'flag' : '' }, `${health.in} / ${health.out}`));
       })))),
     h('p', { class: 'muted small' }, 'Notation: FEO facing each other · SHD shadow (leader behind) · SBS-R/L side by side, follower on the right/left · ' +
       'open / semi / closed / apart = distance · L>R leader\'s left holds follower\'s right · R>back leader\'s right hand on her back · ' +
@@ -503,40 +574,7 @@
     h('p', { class: 'muted small' }, 'Ways in/out count distinct moves that change position. Aim for at least 3 each. Click a name to see it on the map.'));
   }
 
-  function copyButton(label, text) {
-    return h('button', {
-      type: 'button',
-      onclick: (ev) => {
-        (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
-          .then(() => { ev.target.textContent = 'Copied'; }, () => { ev.target.textContent = 'Copy failed: select the text above'; });
-      },
-    }, label);
-  }
-
-  function renderMyMoves() {
-    const box = $('my-moves');
-    if (!myMoves.length) { box.replaceChildren(); return; }
-    const broken = myMoves.filter((m) => myErrors[m.id]);
-    box.replaceChildren(h('div', {},
-      h('h3', {}, `Your moves (${myMoves.length})`),
-      broken.length ? h('div', { class: 'errors' }, broken.map((m) => myErrors[m.id].join('\n')).join('\n')) : null,
-      h('pre', {}, myMoves.map(Share.moveYaml).join('\n')),
-      h('div', { class: 'actions' },
-        copyButton('Copy YAML', myMoves.map(Share.moveYaml).join('\n')),
-        myMoves.map((m) => h('button', {
-          type: 'button',
-          class: 'ghost',
-          onclick: () => {
-            if (myCompounds.some((c) => c.sequence.includes(m.id)) && !confirm(`"${m.name}" is used in a compound move, which will break. Delete anyway?`)) return;
-            myMoves = myMoves.filter((x) => x.id !== m.id);
-            store.set('bmc.moves', myMoves);
-            recompile();
-            render();
-          },
-        }, `Delete "${m.name}"`)))));
-  }
-
-  // ------------------------------------------------------------ move library
+  /** Where a move can start and end: froms, tos (null = in place), all = starts anywhere. */
   function endpoints(id) {
     const edges = g.edgesByMove[id] || [];
     const froms = [...new Set(edges.map((e) => e.from))];
@@ -564,33 +602,30 @@
       })
       .sort((a, b) => a.m.name.localeCompare(b.m.name));
     const fitsEnd = (id) => (g.edgesByMove[id] || []).some((e) => e.from === result.end);
-    const list = (ids) => ids.map(short).join(', ');
+    const list = (ids) => ids.map(shortName).join(', ');
     box.replaceChildren(
       h('p', { class: 'muted small' }, `${rows.length} of ${g.moves.length} moves` +
         (state.maxLevel < 3 ? ` (level filter: up to ${LEVEL_NAME[state.maxLevel]})` : '') + '. “Add” appears when a move can follow the end of your combo.'),
       h('div', { class: 'table-wrap' }, h('table', { class: 'lib' },
         h('thead', {}, h('tr', {}, ['Move', 'Starts in', 'Ends in', 'Counts', ''].map((t) => h('th', {}, t)))),
         h('tbody', {}, rows.map(({ m, ep }) => h('tr', {},
-          h('td', {}, h('strong', {}, m.name), ' ', badge(m.kind), ' ', dots(m.level),
+          h('td', {}, h('strong', {}, m.name), ' ', badge(m.kind), ' ', levelDots(m.level),
             m.check ? h('span', { class: 'flag', title: m.check }, ' ⚑') : null,
             m.notes ? [h('br'), h('span', { class: 'muted small' }, m.notes)] : null),
           h('td', { class: 'small' }, ep.all ? 'any position' : list(ep.froms)),
           h('td', { class: 'small' }, ep.tos ? list(ep.tos) : '↺ same'),
           h('td', {}, String(m.counts)),
-          h('td', {}, fitsEnd(m.id) ? h('button', {
-            type: 'button',
-            onclick: () => { state.strip.push(m.id); state.selected = null; update(); },
-          }, 'Add') : null)))))));
+          h('td', {}, fitsEnd(m.id) ? button('Add', () => edit.add([m.id])) : null)))))));
   }
 
   function initLibrary() {
-    const rerender = () => render();
-    $('lib-search').addEventListener('input', rerender);
-    $('lib-kind').addEventListener('change', rerender);
-    $('lib-check').addEventListener('change', rerender);
-    $('library-section').addEventListener('toggle', rerender);
+    $('lib-search').addEventListener('input', render);
+    $('lib-kind').addEventListener('change', render);
+    $('lib-check').addEventListener('change', render);
+    $('library-section').addEventListener('toggle', render);
   }
 
+  // ------------------------------------------------------------ my moves: add-a-move form, own moves, own compounds
   function initMoveForm() {
     const form = $('move-form');
     const to = form.elements.to;
@@ -629,16 +664,32 @@
       const test = MG.compile({ positions: BASE.positions, moves: [...BASE.moves, ...myMoves, move] });
       const problems = test.errors.filter((e) => e.includes(`"${id}"`));
       if (problems.length) return fail(problems.join(' '));
-      myMoves.push(move);
-      store.set('bmc.moves', myMoves);
-      recompile();
-      render();
+      own.addMove(move);
       form.reset();
       fromBox.querySelectorAll('input').forEach((i) => { i.checked = false; });
       syncKind();
       status.className = 'small';
-      status.textContent = `Saved "${name}". It now appears under "what can follow" for ${from.map(short).join(', ')}.`;
+      status.textContent = `Saved "${name}". It now appears under "what can follow" for ${from.map(shortName).join(', ')}.`;
     });
+  }
+
+  const copyButton = (label, text) => button(label, (ev) => copyText(text, ev.currentTarget));
+
+  function renderMyMoves() {
+    const box = $('my-moves');
+    if (!myMoves.length) { box.replaceChildren(); return; }
+    const broken = myMoves.filter((m) => ownErrors[m.id]);
+    const yaml = myMoves.map(Share.moveYaml).join('\n');
+    box.replaceChildren(h('div', {},
+      h('h3', {}, `Your moves (${myMoves.length})`),
+      broken.length ? h('div', { class: 'errors' }, broken.map((m) => ownErrors[m.id].join('\n')).join('\n')) : null,
+      h('pre', {}, yaml),
+      h('div', { class: 'actions' },
+        copyButton('Copy YAML', yaml),
+        myMoves.map((m) => button(`Delete "${m.name}"`, () => {
+          if (myCompounds.some((c) => c.sequence.includes(m.id)) && !confirm(`"${m.name}" is used in a compound move, which will break. Delete anyway?`)) return;
+          own.deleteMove(m.id);
+        }, { class: 'ghost' })))));
   }
 
   function renderCompounds() {
@@ -649,107 +700,79 @@
         'copy their YAML into data/moves.yaml to keep them for good.'));
       return;
     }
-    const broken = Object.entries(myErrors);
+    const broken = Object.entries(ownErrors);
+    const yaml = myCompounds.map(Share.compoundYaml).join('\n');
     box.replaceChildren(
       broken.length ? h('div', { class: 'errors' },
         'Broken compound moves (a part changed or was removed):\n' + broken.map(([, errs]) => errs.join('\n')).join('\n')) : '',
-      h('pre', {}, myCompounds.map(Share.compoundYaml).join('\n')),
+      h('pre', {}, yaml),
       h('div', { class: 'actions' },
-        h('button', {
-          type: 'button',
-          onclick: (ev) => {
-            const text = myCompounds.map(Share.compoundYaml).join('\n');
-            (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
-              .then(() => { ev.target.textContent = 'Copied'; }, () => { ev.target.textContent = 'Copy failed: select the text above'; });
-          },
-        }, 'Copy YAML'),
-        myCompounds.map((c) => h('button', {
-          type: 'button',
-          class: 'ghost',
-          onclick: () => { myCompounds = myCompounds.filter((x) => x.id !== c.id); store.set('bmc.compounds', myCompounds); recompile(); render(); },
-        }, `Delete "${c.name}"`))));
+        copyButton('Copy YAML', yaml),
+        myCompounds.map((c) => button(`Delete "${c.name}"`, () => own.deleteCompound(c.id), { class: 'ghost' }))));
   }
 
-  // ------------------------------------------------------------ toolbar
+  // ------------------------------------------------------------ toolbar, keyboard, boot
+  /** Practice and "save as compound" need a combo without breaks. */
+  function requireUnbroken(result) {
+    if (!result.items.some((it) => it.broken)) return true;
+    alert('Fix the breaks first (click a red "bridge").');
+    return false;
+  }
+
   function initToolbar() {
-    const sel = $('start-pos');
-    for (const p of g.positions) sel.append(h('option', { value: p.id }, p.name));
-    sel.value = state.startPos;
-    sel.addEventListener('change', () => { state.startPos = sel.value; update(); });
-
-    const lv = $('max-level');
-    lv.value = String(state.maxLevel);
-    lv.addEventListener('change', () => { state.maxLevel = Number(lv.value); store.set('bmc.maxLevel', state.maxLevel); render(); });
-
-    const ws = $('start-weight');
-    ws.value = state.startWeight;
-    ws.addEventListener('change', () => { state.startWeight = ws.value; update(); });
-
+    for (const p of g.positions) $('start-pos').append(h('option', { value: p.id }, p.name));
+    $('start-pos').addEventListener('change', (ev) => edit.setStart(ev.target.value));
+    $('start-weight').addEventListener('change', (ev) => edit.setWeight(ev.target.value));
+    $('max-level').addEventListener('change', (ev) => {
+      state.maxLevel = Number(ev.target.value);
+      store.set('bmc.maxLevel', state.maxLevel);
+      render();
+    });
     $('btn-undo').addEventListener('click', undo);
+    $('btn-clear').addEventListener('click', edit.clear);
+    $('btn-random').addEventListener('click', edit.random);
     $('btn-practice').addEventListener('click', () => {
-      const result = MG.evaluateStrip(g, state.startPos, state.startWeight, state.strip);
+      const result = evaluate();
       if (!result.items.length) return alert('Add some moves first.');
-      if (result.items.some((it) => it.broken)) return alert('Fix the breaks first (click a red "bridge").');
+      if (!requireUnbroken(result)) return;
       window.Practice.open(result.items, { posName, sketchSVG: SK.sketchSVG, positions: g.posById }, state.selected ?? 0);
     });
+    $('btn-share').addEventListener('click', (ev) => copyText(location.href.split('#')[0] + shareHash(), ev.currentTarget, 'Link copied'));
     $('btn-text').addEventListener('click', (ev) => {
-      const result = MG.evaluateStrip(g, state.startPos, state.startWeight, state.strip);
+      const result = evaluate();
       if (!result.items.length) return;
-      const text = Share.comboText(result, posName(state.startPos), posName(result.end), location.href.split('#')[0] + shareHash());
-      const done = (msg) => { ev.target.textContent = msg; setTimeout(() => { ev.target.textContent = 'Copy as text'; }, 1800); };
-      (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
-        .then(() => done('Copied'), () => { prompt('Copy this text:', text); });
-    });
-    $('btn-share').addEventListener('click', (ev) => {
       const url = location.href.split('#')[0] + shareHash();
-      const done = (msg) => { ev.target.textContent = msg; setTimeout(() => { ev.target.textContent = 'Share link'; }, 1800); };
-      (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject())
-        .then(() => done('Link copied'), () => { prompt('Copy this link:', url); });
-    });
-    document.addEventListener('keydown', (ev) => {
-      if (document.querySelector('dialog[open]')) return;
-      const tag = (ev.target.tagName || '').toLowerCase();
-      if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
-      if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') { ev.preventDefault(); undo(); return; }
-      if (ev.key === 'Escape') select(null);
-      else if (ev.key === 'ArrowLeft' && state.strip.length) select(state.selected === null ? state.strip.length - 1 : Math.max(0, state.selected - 1));
-      else if (ev.key === 'ArrowRight' && state.selected !== null) select(state.selected + 1 < state.strip.length ? state.selected + 1 : null);
-      else if ((ev.key === 'Delete' || ev.key === 'Backspace') && state.selected !== null) { ev.preventDefault(); removeAt(state.selected); }
-    });
-    window.addEventListener('hashchange', () => {
-      const next = Share.parseHash(location.hash);
-      if (!next) return;
-      if (next.custom && next.custom.length) { importShared(next.custom); recompile(); }
-      Object.assign(state, { startPos: next.startPos || state.startPos, startWeight: next.startWeight || state.startWeight, strip: next.strip.filter((id) => g.moveById[id]) });
-      sel.value = state.startPos;
-      ws.value = state.startWeight;
-      state.selected = null;
-      update();
-    });
-
-    $('btn-clear').addEventListener('click', () => { state.strip = []; state.selected = null; update(); });
-    $('btn-random').addEventListener('click', () => {
-      state.strip = MG.randomCombo(g, state.startPos, { steps: 4, maxLevel: state.maxLevel });
-      state.selected = null;
-      update();
+      copyText(Share.comboText(result, posName(state.startPos), posName(result.end), url), ev.currentTarget);
     });
     $('btn-save').addEventListener('click', () => {
-      const result = MG.evaluateStrip(g, state.startPos, state.startWeight, state.strip);
       if (state.strip.length < 2) return alert('Add at least two dominoes first.');
-      if (result.items.some((it) => it.broken)) return alert('Fix the breaks first (click a red "bridge").');
+      if (!requireUnbroken(evaluate())) return;
       const name = prompt('Name for this compound move:');
       if (!name) return;
-      const base = 'my-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      let id = base || 'my-compound';
-      for (let n = 2; g.moveById[id]; n++) id = `${base}-${n}`;
-      myCompounds.push({ id, name, kind: 'compound', sequence: [...state.strip] });
-      store.set('bmc.compounds', myCompounds);
-      recompile();
-      state.strip = [id];
-      state.selected = 0;
-      update();
-      document.querySelector('details.ref:last-of-type').open = true;
+      own.saveCompound(name);
+      $('my-section').open = true;
     });
+  }
+
+  function onKey(ev) {
+    if (document.querySelector('dialog[open]')) return;
+    const tag = (ev.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+    const last = state.strip.length - 1;
+    const sel = state.selected;
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') { ev.preventDefault(); undo(); return; }
+    if (ev.key === 'Escape') select(null);
+    else if (ev.key === 'ArrowLeft' && state.strip.length) select(sel === null ? last : Math.max(0, sel - 1));
+    else if (ev.key === 'ArrowRight' && sel !== null) select(sel < last ? sel + 1 : null);
+    else if ((ev.key === 'Delete' || ev.key === 'Backspace') && sel !== null) { ev.preventDefault(); edit.remove(sel); }
+  }
+
+  /** A shared link opened while the page is already open. */
+  function onHashChange() {
+    const combo = Share.parseHash(location.hash);
+    if (!combo) return;
+    if (combo.custom.length) { own.importShared(combo.custom); reloadData(); }
+    edit.load(combo);
   }
 
   // Offline support where service workers are allowed (https or localhost, not file://).
@@ -757,12 +780,19 @@
     navigator.serviceWorker.register('sw.js').catch(() => { /* offline support is optional */ });
   }
 
+  // A shared link wins over what this browser remembers.
+  const initial = Share.parseHash(location.hash) || store.get('bmc.state', {});
+  own.importShared(initial.custom);
   recompile();
+  loadCombo(initial);
   initToolbar();
   initMap();
   initMoveForm();
   initLibrary();
+  document.addEventListener('keydown', onKey);
+  window.addEventListener('hashchange', onHashChange);
   lastSnap = snapshot();
   persist();
+  renderData();
   render();
 })();
