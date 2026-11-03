@@ -35,9 +35,7 @@
       if (!name) return fail('Give the move a name.');
       if (!from.length) return fail('Tick at least one position it can start from.');
       if (!Number.isInteger(counts) || counts < 0) return fail('Counts must be a whole number, 0 or more.');
-      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'move';
-      let id = 'my-' + slug;
-      for (let n = 2; App.g.moveById[id]; n++) id = `my-${slug}-${n}`;
+      const id = Share.uniqueId(name, (taken) => Boolean(App.g.moveById[taken]), 'move');
       const move = {
         id, name, kind: form.elements.kind.value, level: Number(form.elements.level.value),
         from, to: form.elements.kind.value === 'styling' ? 'same' : to.value, counts,
@@ -81,11 +79,11 @@
         'copy their YAML into data/moves.yaml to keep them for good.'));
       return;
     }
-    const broken = Object.entries(own.errors);
+    const broken = own.compounds.filter((c) => own.errors[c.id]);
     const yaml = own.compounds.map(Share.compoundYaml).join('\n');
     box.replaceChildren(
       broken.length ? h('div', { class: 'errors' },
-        'Broken compound moves (a part changed or was removed):\n' + broken.map(([, errs]) => errs.join('\n')).join('\n')) : '',
+        'Broken compound moves (a part changed or was removed):\n' + broken.map((c) => own.errors[c.id].join('\n')).join('\n')) : '',
       h('pre', {}, yaml),
       h('div', { class: 'actions' },
         copyButton('Copy YAML', yaml),

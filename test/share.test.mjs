@@ -58,6 +58,15 @@ test('buildHash spells out own compounds and carries only the own moves it uses'
   assert.equal(S.buildHash({ startPos: 'closed', startWeight: 'parallel', strip: [] }), '#start=closed&weight=parallel&moves=');
 });
 
+test('uniqueId makes a "my-" slug and counts up when it is taken', () => {
+  const taken = new Set(['my-hair-comb', 'my-hair-comb-2', 'my-compound']);
+  const isTaken = (id) => taken.has(id);
+  assert.equal(S.uniqueId('Vuelta ñ', isTaken, 'move'), 'my-vuelta');
+  assert.equal(S.uniqueId('Hair comb!', isTaken, 'move'), 'my-hair-comb-3');
+  assert.equal(S.uniqueId('¡¿?!', isTaken, 'move'), 'my-move');
+  assert.equal(S.uniqueId('***', isTaken, 'compound'), 'my-compound-2'); // used to be "my--2"
+});
+
 test('YAML exports parse back to the same move', () => {
   assert.deepEqual(yaml.load(S.moveYaml(vuelta)), [vuelta]);
   assert.deepEqual(yaml.load(S.moveYaml(catchIt)), [catchIt]);

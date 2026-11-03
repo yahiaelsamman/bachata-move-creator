@@ -170,9 +170,7 @@
     },
     /** Save the current combo as one compound domino. */
     saveCompound(name) {
-      const base = 'my-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      let id = base || 'my-compound';
-      for (let n = 2; App.g.moveById[id]; n++) id = `${base}-${n}`;
+      const id = Share.uniqueId(name, (taken) => Boolean(App.g.moveById[taken]), 'compound');
       own.compounds.push({ id, name, kind: 'compound', sequence: [...state.strip] });
       store.set('bmc.compounds', own.compounds);
       App.reloadData();

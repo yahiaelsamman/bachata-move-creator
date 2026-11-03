@@ -70,6 +70,14 @@
     return '#' + q.toString().replace(/%2C/g, ',');
   }
 
+  /** Id for a move added in the app: "my-" + the name as a slug (or `fallback`), then -2, -3… until not taken. */
+  function uniqueId(name, isTaken, fallback) {
+    const slug = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || fallback;
+    let id = 'my-' + slug;
+    for (let n = 2; isTaken(id); n++) id = `my-${slug}-${n}`;
+    return id;
+  }
+
   /** YAML for data/moves.yaml. */
   function moveYaml(m) {
     return `- id: ${m.id}\n  name: ${JSON.stringify(m.name)}\n  kind: ${m.kind}\n  level: ${m.level}\n` +
@@ -89,5 +97,5 @@
       `${result.totalCounts} counts, ends in ${endName}.\n${url}`;
   }
 
-  return { encodeMoves, decodeMoves, isValidOwnMove, parseHash, buildHash, moveYaml, compoundYaml, comboText };
+  return { encodeMoves, decodeMoves, isValidOwnMove, parseHash, buildHash, uniqueId, moveYaml, compoundYaml, comboText };
 });

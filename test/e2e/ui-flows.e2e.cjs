@@ -200,6 +200,45 @@ const flows = {
     assert.ok(await page.locator('#my-section').evaluate((d) => d.open));
   },
 
+  async 'a compound named with symbols only gets a readable id'() {
+    const page = await open('#start=open_LR&weight=mirrored&moves=cross-body-lead,close-frame');
+    page.promptAnswer = '***';
+    await page.click('#btn-save');
+    // The page already shows this link (own compounds are spelled out), so change it to fire hashchange.
+    await page.evaluate(() => { location.hash = '#moves=cross-body-lead,close-frame'; });
+    await page.waitForFunction(() => document.querySelectorAll('.domino:not(.add)').length === 2);
+    await page.click('#btn-save');
+    const yaml = await page.locator('#compounds pre').textContent();
+    assert.match(yaml, /^- id: my-compound$/m);
+    assert.match(yaml, /^- id: my-compound-2$/m);
+  },
+
+  async 'a link with an unknown start or weight keeps the current ones'() {
+    const page = await open('#start=closed&weight=parallel&moves=dip');
+    await page.evaluate(() => { location.hash = '#start=nowhere&weight=sideways&moves=basic'; });
+    await page.waitForFunction(() => /moves=basic/.test(location.hash));
+    assert.equal(await page.locator('#start-pos').inputValue(), 'closed');
+    assert.equal(await page.locator('#start-weight').inputValue(), 'parallel');
+    assert.doesNotMatch(await text(page, '#summary'), /sideways/);
+    assert.deepEqual(await stripIds(page), ['basic']);
+  },
+
+  async 'errors of an own move are not listed as broken compounds'() {
+    const context = await browser.newContext();
+    await context.addInitScript(() => {
+      if (sessionStorage.getItem('seeded')) return;
+      sessionStorage.setItem('seeded', '1');
+      localStorage.setItem('bmc.moves', JSON.stringify([{ id: 'my-lost', name: 'Lost', kind: 'move', level: 1, from: ['nowhere'], to: 'same', counts: 4 }]));
+      localStorage.setItem('bmc.compounds', JSON.stringify([{ id: 'my-pair', name: 'Pair', kind: 'compound', sequence: ['cross-body-lead', 'close-frame'] }]));
+    });
+    const page = await context.newPage();
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.goto(PAGE);
+    assert.match(await page.locator('#my-moves .errors').textContent(), /"my-lost"/);
+    assert.equal(await page.locator('#compounds .errors').count(), 0);
+    await context.close();
+  },
+
   async 'practice mode'() {
     const page = await open('#start=open_LR&weight=mirrored&moves=cross-body-lead,close-frame');
     await page.click('#btn-practice');
