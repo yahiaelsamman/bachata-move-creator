@@ -2,6 +2,8 @@
 
 Link social dance moves like dominoes and build new combinations.
 
+**Live:** https://yahiaelsamman.github.io/bachata-move-creator/
+
 - **Positions are the nodes.** A position is the state of the couple: orientation,
   frame, handhold, crossed hands and arm configuration.
 - **Moves are the edges.** Every move starts in one position and ends in another, so
