@@ -52,6 +52,12 @@ npm test
   combo is drawn as a path. Click a position for its ways in and out, to start a
   new combo there, or to get the shortest routes there from the end of your combo.
 
+**Practice**
+- **Practice** steps through the combo one big card at a time: the move, its counts
+  on the 8, notes and the start/end sketches. **Play** advances on the beat (tempo
+  slider, optional click, loop). Catches and releases show on the card they
+  happen in.
+
 **Keep and share**
 - **Share link:** the combo lives in the URL, so a link opens the same combo
   anywhere.
@@ -113,6 +119,10 @@ The workflow in `.github/workflows/pages.yml` publishes the site once Pages is o
    `https://<user>.github.io/bachata-move-creator/`.
 
 GitHub Pages needs a public repository on the free plan.
+
+Once it's published, the page can be installed to a phone's home screen ("Add to
+Home Screen") and works offline at the venue: a service worker keeps a copy, and
+fetches updates whenever there's a connection.
 
 ## Status
 

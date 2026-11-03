@@ -576,6 +576,11 @@
     });
   }
 
+  // Offline support where service workers are allowed (https or localhost, not file://).
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    navigator.serviceWorker.register('sw.js').catch(() => { /* offline support is optional */ });
+  }
+
   recompile();
   initToolbar();
   initMap();
