@@ -58,6 +58,7 @@
     search: '',
     showAllInsert: false,
     mapSelected: null,
+    mapLink: null,
     maxLevel: [1, 2, 3].includes(store.get('bmc.maxLevel', 3)) ? store.get('bmc.maxLevel', 3) : 3,
   };
   let mapLayout = null;
@@ -456,6 +457,9 @@
       }
       return Object.entries(by).sort((a, b) => posName(a[0]).localeCompare(posName(b[0])));
     };
+    const link = state.mapLink && state.mapLink.from === id ? state.mapLink : null;
+    const linkMoves = link ? [...new Set(g.outgoing[id].filter((e) => e.to === link.to && e.from !== e.to &&
+      g.moveById[e.move].kind !== 'compound').map((e) => e.move))] : [];
     const outs = group(g.outgoing[id], 'to');
     const ins = group(g.incoming[id], 'from');
     const loops = [...new Set(g.outgoing[id].filter((e) => e.to === id && g.moveById[e.move].kind !== 'compound').map((e) => g.moveById[e.move].name))].sort();
@@ -475,6 +479,13 @@
           onclick: () => { state.startPos = id; state.strip = []; state.selected = null; $('start-pos').value = id; update(); },
         }, 'Start a new combo here'),
         result.end === id ? h('span', { class: 'muted' }, 'Your combo ends here.') : null),
+      link ? [h('h4', {}, `${short(link.from)} → ${short(link.to)} (${linkMoves.length})`),
+        h('ul', { class: 'options' }, linkMoves.map((mid) => h('li', {}, h('button', {
+          type: 'button',
+          disabled: result.end !== id,
+          title: result.end === id ? 'Add to the combo' : `Your combo ends in ${posName(result.end)}`,
+          onclick: () => { state.strip.push(mid); state.mapSelected = link.to; state.mapLink = null; update(); },
+        }, h('span', {}, g.moveById[mid].name), h('span', { class: 'to' }, `${g.moveById[mid].counts} ct `, dots(g.moveById[mid].level))))))] : null,
       bridges.length ? [h('h4', {}, `Get here from the end of your combo (${short(result.end)})`),
         h('ul', { class: 'options' }, bridges.map((pathIds) => h('li', {}, h('button', {
           type: 'button',
@@ -488,8 +499,17 @@
 
   function initMap() {
     const pick = (ev) => {
+      const link = ev.target.closest && ev.target.closest('[data-link]');
+      if (link) {
+        const [from, to] = link.getAttribute('data-link').split('>');
+        state.mapSelected = from;
+        state.mapLink = { from, to };
+        render();
+        return;
+      }
       const node = ev.target.closest && ev.target.closest('[data-pos]');
       if (!node) return;
+      state.mapLink = null;
       const id = node.getAttribute('data-pos');
       state.mapSelected = state.mapSelected === id ? null : id;
       render();
@@ -718,7 +738,7 @@
       const result = MG.evaluateStrip(g, state.startPos, state.startWeight, state.strip);
       if (!result.items.length) return alert('Add some moves first.');
       if (result.items.some((it) => it.broken)) return alert('Fix the breaks first (click a red "bridge").');
-      window.Practice.open(result.items, { posName, sketchSVG: SK.sketchSVG, positions: g.posById });
+      window.Practice.open(result.items, { posName, sketchSVG: SK.sketchSVG, positions: g.posById }, state.selected ?? 0);
     });
     $('btn-text').addEventListener('click', (ev) => {
       const result = MG.evaluateStrip(g, state.startPos, state.startWeight, state.strip);

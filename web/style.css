@@ -412,3 +412,5 @@ table.lib button { padding: 3px 10px; font-size: 0.85rem; }
   padding: 10px 14px;
   margin-bottom: 16px;
 }
+.mp-hit { fill: none; stroke: transparent; stroke-width: 14; cursor: pointer; pointer-events: stroke; }
+.mp-hit-wrap:hover .mp-link:not(.mp-dim) { opacity: 1; }

@@ -139,7 +139,9 @@
       }
       const names = l.moves.map((id) => g.moveById[id].name).join(', ');
       const width = Math.min(1.2 + l.moves.length * 0.6, 4);
-      return `<path d="M${r1(sx)},${r1(sy)} Q${r1(cx)},${r1(cy)} ${r1(ex)},${r1(ey)}" class="${cls}" style="stroke-width:${r1(width)}" marker-end="url(#${marker})"><title>${esc(g.posById[l.from].name)} → ${esc(g.posById[l.to].name)}: ${esc(names)}</title></path>`;
+      const pathD = `M${r1(sx)},${r1(sy)} Q${r1(cx)},${r1(cy)} ${r1(ex)},${r1(ey)}`;
+      // A wide invisible twin makes the arrow easy to tap.
+      return `<g class="mp-hit-wrap" data-link="${esc(l.from)}>${esc(l.to)}"><path d="${pathD}" class="mp-hit"/><path d="${pathD}" class="${cls}" style="stroke-width:${r1(width)}" marker-end="url(#${marker})"/><title>${esc(g.posById[l.from].name)} → ${esc(g.posById[l.to].name)}: ${esc(names)}</title></g>`;
     }).join('\n');
 
     const nodeSvg = g.positions.map((p) => {

@@ -51,7 +51,7 @@ npm test
   drawn from the handholds, and the top hand is drawn thicker when hands are
   crossed. A selected move shows its start and end.
 - **Map of positions:** every position with arrows for the moves between them. Your
-  combo is drawn as a path. Click a position for its ways in and out, to start a
+  combo is drawn as a path. Click a position for its ways in and out, or tap an arrow to see and add its moves; you can also start a
   new combo there, or to get the shortest routes there from the end of your combo.
 
 **Practice**

@@ -208,11 +208,13 @@
   }
 
   window.Practice = {
-    open(items, h) {
+    open(items, h, startAt = 0) {
       helpers = h;
       ensureDialog();
       steps = buildSteps(items.filter((it) => !it.broken));
-      idx = 0;
+      // Start on the step that contains the selected domino, if any.
+      const target = items[startAt];
+      idx = Math.max(0, steps.findIndex((st) => st.it === target || (st.extras || []).includes(target) || (st.after || []).includes(target)));
       beat = 0;
       stop();
       render();
