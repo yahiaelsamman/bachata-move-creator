@@ -21,6 +21,7 @@
 #   opposite  optional id of the same move in the other direction
 #   notes     free text
 #   check     set when the start/end in this draft needs a dancer's review
+#   level     1 beginner, 2 intermediate, 3 advanced (draft; compounds use their hardest part)
 #   sequence  (compound only) list of move ids. These are live references, so
 #             the start, end and counts are computed from the parts.
 #
@@ -30,18 +31,21 @@
 - id: basic
   name: Basic (side)
   kind: styling
+  level: 1
   from: any
   counts: 4
 
 - id: box-step
   name: Box step
   kind: styling
+  level: 2
   from: [closed, open_LR, double]
   counts: 8
 
 - id: tap-and-hold
   name: Tap & hold
   kind: styling
+  level: 1
   from: any
   counts: 4
   notes: Musical pause / freeze on a break in the music.
@@ -49,36 +53,42 @@
 - id: body-roll
   name: Body roll (together)
   kind: styling
+  level: 2
   from: {frame: closed}
   counts: 4
 
 - id: head-roll
   name: Led head roll
   kind: styling
+  level: 3
   from: [closed, neck_wrap]
   counts: 4
 
 - id: hip-circle
   name: Hip circle (together)
   kind: styling
+  level: 2
   from: [closed, shadow, cuddle]
   counts: 4
 
 - id: dominican-footwork
   name: Dominican footwork (in sync)
   kind: styling
+  level: 2
   from: [closed, double, open_LR]
   counts: 4
 
 - id: dip
   name: Dip
   kind: styling
+  level: 3
   from: [closed, neck_wrap]
   counts: 4
 
 - id: shadow-walk
   name: Shadow walk
   kind: styling
+  level: 2
   from: shadow
   counts: 4
   weight: {from: parallel}
@@ -86,12 +96,14 @@
 - id: hammerlock-walkaround
   name: Hammerlock walk-around
   kind: styling
+  level: 2
   from: hammerlock_R
   counts: 8
 
 - id: free-spin
   name: Follower free spin
   kind: styling
+  level: 2
   from: apart
   counts: 4
 
@@ -99,6 +111,7 @@
 - id: follower-right-turn
   name: Follower right turn
   kind: move
+  level: 1
   from: [open_LR, open_RR, open_LL, open_RL]
   to: same
   counts: 4
@@ -108,6 +121,7 @@
 - id: follower-left-turn
   name: Follower left turn
   kind: move
+  level: 1
   from: [open_LR, open_RR, open_LL, open_RL]
   to: same
   counts: 4
@@ -117,6 +131,7 @@
 - id: follower-double-right-turn
   name: Follower double right turn
   kind: move
+  level: 2
   from: [open_LR, open_RR]
   to: same
   counts: 4
@@ -124,6 +139,7 @@
 - id: leader-right-turn
   name: Leader right turn
   kind: move
+  level: 2
   from: open_LR
   to: same
   counts: 4
@@ -132,6 +148,7 @@
 - id: leader-left-turn
   name: Leader left turn
   kind: move
+  level: 2
   from: open_LR
   to: same
   counts: 4
@@ -140,6 +157,7 @@
 - id: cross-body-lead
   name: Cross body lead
   kind: move
+  level: 1
   from: open_LR
   to: same
   counts: 8
@@ -147,6 +165,7 @@
 - id: cbl-inside-turn
   name: Cross body lead with inside turn
   kind: move
+  level: 2
   from: open_LR
   to: same
   counts: 8
@@ -154,6 +173,7 @@
 - id: cuddle-entry
   name: Cuddle entry
   kind: move
+  level: 2
   from: double
   to: cuddle
   counts: 4
@@ -163,6 +183,7 @@
 - id: cuddle-unwrap
   name: Cuddle unwrap
   kind: move
+  level: 2
   from: cuddle
   to: double
   counts: 4
@@ -171,6 +192,7 @@
 - id: cuddle-release-spin
   name: Cuddle release spin
   kind: move
+  level: 2
   from: cuddle
   to: open_LR
   counts: 4
@@ -180,6 +202,7 @@
 - id: cross-right-turn
   name: Crossed-hands right turn
   kind: move
+  level: 2
   from: cross_Ltop
   to: cross_Rtop
   counts: 4
@@ -190,6 +213,7 @@
 - id: cross-left-turn
   name: Crossed-hands left turn
   kind: move
+  level: 2
   from: cross_Rtop
   to: cross_Ltop
   counts: 4
@@ -199,6 +223,7 @@
 - id: cross-half-turn-shadow
   name: Crossed half turn into shadow
   kind: move
+  level: 2
   from: cross_Ltop
   to: shadow
   counts: 4
@@ -209,6 +234,7 @@
 - id: shadow-exit
   name: Shadow exit turn
   kind: move
+  level: 2
   from: shadow
   to: open_LL
   counts: 4
@@ -218,6 +244,7 @@
 - id: hammerlock-entry
   name: Hammerlock entry
   kind: move
+  level: 2
   from: open_RR
   to: hammerlock_R
   counts: 4
@@ -226,6 +253,7 @@
 - id: hammerlock-exit
   name: Hammerlock exit
   kind: move
+  level: 2
   from: hammerlock_R
   to: open_RR
   counts: 4
@@ -233,6 +261,7 @@
 - id: neck-slide
   name: Neck slide
   kind: move
+  level: 3
   from: neck_wrap
   to: open_LR
   counts: 4
@@ -242,6 +271,7 @@
 - id: hand-change-to-handshake
   name: Hand change to handshake
   kind: adjuster
+  level: 1
   from: open_LR
   to: open_RR
   counts: 4
@@ -250,6 +280,7 @@
 - id: hand-change-to-open
   name: Hand change to open L-R
   kind: adjuster
+  level: 1
   from: open_RR
   to: open_LR
   counts: 4
@@ -258,6 +289,7 @@
 - id: hand-change-ll-to-lr
   name: Hand change L-L to L-R
   kind: adjuster
+  level: 1
   from: open_LL
   to: open_LR
   counts: 4
@@ -265,6 +297,7 @@
 - id: catch-second-hand
   name: Catch second hand
   kind: adjuster
+  level: 1
   from: open_LR
   to: double
   counts: 0
@@ -272,6 +305,7 @@
 - id: catch-left-hand
   name: Catch left hand
   kind: adjuster
+  level: 1
   from: open_RL
   to: double
   counts: 0
@@ -279,6 +313,7 @@
 - id: release-right
   name: Release right hand
   kind: adjuster
+  level: 1
   from: double
   to: open_LR
   counts: 0
@@ -286,6 +321,7 @@
 - id: release-left
   name: Release left hand
   kind: adjuster
+  level: 1
   from: double
   to: open_RL
   counts: 0
@@ -293,6 +329,7 @@
 - id: regrip-cross-r-over-l
   name: Regrip crossed (right over left)
   kind: adjuster
+  level: 2
   from: open_RR
   to: cross_Rtop
   counts: 0
@@ -301,6 +338,7 @@
 - id: regrip-cross-l-over-r
   name: Regrip crossed (left over right)
   kind: adjuster
+  level: 2
   from: open_LL
   to: cross_Ltop
   counts: 0
@@ -309,6 +347,7 @@
 - id: release-cross-to-handshake
   name: Release cross to handshake
   kind: adjuster
+  level: 2
   from: cross_Rtop
   to: open_RR
   counts: 0
@@ -316,6 +355,7 @@
 - id: release-cross-to-ll
   name: Release cross to L-L
   kind: adjuster
+  level: 2
   from: cross_Ltop
   to: open_LL
   counts: 0
@@ -323,6 +363,7 @@
 - id: close-frame
   name: Close frame
   kind: adjuster
+  level: 1
   from: open_LR
   to: closed
   counts: 4
@@ -330,6 +371,7 @@
 - id: open-frame
   name: Open frame
   kind: adjuster
+  level: 1
   from: closed
   to: open_LR
   counts: 4
@@ -337,6 +379,7 @@
 - id: hand-to-neck
   name: Hand to neck
   kind: adjuster
+  level: 3
   from: closed
   to: {hands: "R>back", arms: follower_R_behind_leader_neck}
   counts: 4
@@ -345,6 +388,7 @@
 - id: release-all
   name: Release all
   kind: adjuster
+  level: 2
   from: {frame: [closed, semi, open]}
   to: apart
   counts: 0
@@ -352,6 +396,7 @@
 - id: reconnect
   name: Reconnect (left-to-right)
   kind: adjuster
+  level: 2
   from: apart
   to: open_LR
   counts: 0
@@ -366,6 +411,7 @@
 - id: left-turn-into-closed
   name: Left turn into closed
   kind: move
+  level: 1
   from: open_LR
   to: closed
   counts: 4
@@ -374,24 +420,28 @@
 - id: madrid-step
   name: Madrid step
   kind: styling
+  level: 2
   from: [closed, shadow_waist]
   counts: 4
 
 - id: double-slide
   name: Double slide
   kind: styling
+  level: 2
   from: [closed, shadow_waist, shadow]
   counts: 4
 
 - id: forward-forward-back-back
   name: Forward-forward-back-back
   kind: styling
+  level: 2
   from: [closed, cuddle]
   counts: 8
 
 - id: chest-isolation
   name: Chest isolation (together)
   kind: styling
+  level: 3
   from: [closed, shadow_waist]
   counts: 4
 
@@ -399,6 +449,7 @@
 - id: half-turn-into-shadow
   name: Half turn into shadow
   kind: move
+  level: 2
   from: closed
   to: shadow_waist
   counts: 4
@@ -408,6 +459,7 @@
 - id: shadow-entry-from-open
   name: Shadow entry from open
   kind: move
+  level: 2
   from: open_LR
   to: shadow_waist
   counts: 4
@@ -417,6 +469,7 @@
 - id: shadow-push-out
   name: Shadow push-out exit
   kind: move
+  level: 2
   from: shadow_waist
   to: open_LR
   counts: 4
@@ -425,6 +478,7 @@
 - id: shadow-lateral-exit
   name: Shadow lateral exit
   kind: move
+  level: 3
   from: shadow_waist
   to: open_LR
   counts: 8
@@ -433,6 +487,7 @@
 - id: shadow-slingshot-exit
   name: Shadow slingshot exit
   kind: move
+  level: 3
   from: shadow_waist
   to: open_LR
   counts: 8
@@ -441,6 +496,7 @@
 - id: shadow-turn-to-closed
   name: Shadow turn back to closed
   kind: move
+  level: 2
   from: shadow_waist
   to: closed
   counts: 4
@@ -449,12 +505,14 @@
 - id: shadow-head-roll
   name: Shadow head roll
   kind: styling
+  level: 3
   from: shadow_waist
   counts: 4
 
 - id: shadow-waist-walk
   name: Shadow walk (hand on waist)
   kind: styling
+  level: 2
   from: shadow_waist
   counts: 4
   weight: {from: parallel}
@@ -463,6 +521,7 @@
 - id: cross-half-turn-shadow-left
   name: Crossed half turn into shadow (left)
   kind: move
+  level: 2
   from: cross_Rtop
   to: shadow
   counts: 4
@@ -472,6 +531,7 @@
 - id: shadow-turn-back-l-over-r
   name: Shadow turn back (left over right)
   kind: move
+  level: 2
   from: shadow
   to: cross_Ltop
   counts: 4
@@ -482,6 +542,7 @@
 - id: shadow-turn-back-r-over-l
   name: Shadow turn back (right over left)
   kind: move
+  level: 2
   from: shadow
   to: cross_Rtop
   counts: 4
@@ -492,6 +553,7 @@
 - id: crossed-hammerlock-entry
   name: Hammerlock entry from crossed hands
   kind: move
+  level: 2
   from: cross_Rtop
   to: hammerlock_R
   counts: 4
@@ -500,6 +562,7 @@
 - id: hammerlock-unwind-to-cross
   name: Hammerlock unwind to crossed hands
   kind: move
+  level: 2
   from: hammerlock_R
   to: cross_Rtop
   counts: 4
@@ -507,6 +570,7 @@
 - id: hammerlock-release-to-ll
   name: Hammerlock release to L-L
   kind: move
+  level: 2
   from: hammerlock_R
   to: open_LL
   counts: 4
@@ -515,6 +579,7 @@
 - id: hammerlock-hip-roll
   name: Hammerlock hip roll
   kind: styling
+  level: 2
   from: hammerlock_R
   counts: 4
 
@@ -522,6 +587,7 @@
 - id: left-turn-into-cuddle
   name: Left turn into cuddle
   kind: move
+  level: 2
   from: open_LR
   to: cuddle
   counts: 4
@@ -531,12 +597,14 @@
 - id: cuddle-walk
   name: Cuddle walk forward and back
   kind: styling
+  level: 2
   from: cuddle
   counts: 8
 
 - id: cuddle-unwrap-to-closed
   name: Cuddle unwrap to closed
   kind: move
+  level: 2
   from: cuddle
   to: closed
   counts: 4
@@ -546,6 +614,7 @@
 - id: cuddle-slide-to-shadow
   name: Cuddle slide to shadow
   kind: move
+  level: 2
   from: cuddle
   to: shadow_waist
   counts: 4
@@ -555,6 +624,7 @@
 - id: shadow-wrap-into-cuddle
   name: Shadow wrap into cuddle
   kind: move
+  level: 2
   from: shadow_waist
   to: cuddle
   counts: 4
@@ -565,6 +635,7 @@
 - id: arm-drape-to-neck
   name: Arm drape to neck
   kind: move
+  level: 3
   from: open_LR
   to: neck_wrap
   counts: 4
@@ -573,6 +644,7 @@
 - id: neck-slide-to-closed
   name: Neck slide to closed
   kind: adjuster
+  level: 3
   from: neck_wrap
   to: closed
   counts: 4
@@ -582,6 +654,7 @@
 - id: behind-back-to-crossed
   name: Behind-the-back hand change to crossed hands
   kind: move
+  level: 2
   from: open_LR
   to: cross_Rtop
   counts: 8
@@ -589,6 +662,7 @@
 - id: crossed-matador
   name: Crossed-hand matador
   kind: move
+  level: 3
   from: [cross_Rtop, cross_Ltop]
   to: same
   counts: 8
@@ -596,6 +670,7 @@
 - id: crossed-double-face-loop
   name: Crossed-hand double face loop
   kind: move
+  level: 3
   from: [cross_Rtop, cross_Ltop]
   to: same
   counts: 8
@@ -603,6 +678,7 @@
 - id: hand-toss-top-r
   name: Hand toss (right hand on top)
   kind: move
+  level: 2
   from: cross_Rtop
   to: open_LL
   counts: 4
@@ -611,6 +687,7 @@
 - id: hand-toss-top-l
   name: Hand toss (left hand on top)
   kind: move
+  level: 2
   from: cross_Ltop
   to: open_RR
   counts: 4
@@ -619,6 +696,7 @@
 - id: double-hand-toss
   name: Double hand toss
   kind: move
+  level: 3
   from: [cross_Rtop, cross_Ltop]
   to: apart
   counts: 4
@@ -626,6 +704,7 @@
 - id: crossed-outside-turn
   name: Crossed-hands outside turn (right over left)
   kind: move
+  level: 2
   from: cross_Rtop
   to: cross_Ltop
   counts: 4
@@ -635,15 +714,82 @@
 - id: sombrero
   name: Sombrero
   kind: move
+  level: 3
   from: double
   to: same
   counts: 8
   notes: Leader arcs the joined hands over the follower's head and then his own, in one 8-count, from double hands.
 
+# left-arm hammerlock (Rueda wiki: her left arm behind her back holding his right hand)
+- id: hammerlock-left-entry
+  name: Hammerlock entry, left arm
+  kind: move
+  level: 2
+  from: double
+  to: hammerlock_L
+  counts: 4
+  opposite: hammerlock-left-unwind
+  notes: Follower turns right while the leader keeps his right hand (her left) low, folding her arm behind her back.
+
+- id: hammerlock-left-entry-from-rl
+  name: Hammerlock entry, left arm (from R-L)
+  kind: move
+  level: 2
+  from: open_RL
+  to: hammerlock_L
+  counts: 4
+  notes: Turn her right with your right hand low so her left arm folds behind her back; catch her right hand with your left.
+
+- id: hammerlock-left-unwind
+  name: Hammerlock unwind, left arm
+  kind: move
+  level: 2
+  from: hammerlock_L
+  to: double
+  counts: 4
+  opposite: hammerlock-left-entry
+
+- id: hammerlock-left-release
+  name: Hammerlock release, left arm
+  kind: move
+  level: 2
+  from: hammerlock_L
+  to: open_LR
+  counts: 4
+  notes: Let go of the hand behind her back; she unwinds while you keep left-to-right.
+
+- id: two-hand-turn
+  name: Two-hand turn
+  kind: move
+  level: 2
+  from: double
+  to: same
+  counts: 4
+  notes: Both hands stay joined through a full outside (clockwise) turn in place, resolving on the tap of 4.
+
+- id: fall-forward
+  name: Fall forward
+  kind: styling
+  level: 3
+  from: [closed, neck_wrap]
+  counts: 4
+  notes: She transfers her chest weight towards the leader's frame while he steps back to hold the counterbalance.
+
+- id: copa
+  name: Copa
+  kind: move
+  level: 2
+  from: cross_Ltop
+  to: cross_Rtop
+  counts: 8
+  notes: From salsa descriptions - start from left-over-right double hands; she steps forward on 5 and turns left on 6-7.
+  check: Described for salsa; bachata timing and end hold not confirmed.
+
 # right-to-left
 - id: hand-change-lr-to-rl
   name: Hand change L-R to R-L
   kind: adjuster
+  level: 1
   from: open_LR
   to: open_RL
   counts: 4
@@ -653,6 +799,7 @@
 - id: hand-change-rl-to-lr
   name: Hand change R-L to L-R
   kind: adjuster
+  level: 1
   from: open_RL
   to: open_LR
   counts: 4
@@ -662,6 +809,7 @@
 - id: dishrag
   name: Dishrag
   kind: move
+  level: 2
   from: double
   to: same
   counts: 8
@@ -670,6 +818,7 @@
 - id: rollaway
   name: Rollaway
   kind: move
+  level: 2
   from: open_LR
   to: apart
   counts: 4
@@ -677,12 +826,14 @@
 - id: tandem-free-spins
   name: Tandem free spins
   kind: styling
+  level: 2
   from: apart
   counts: 4
 
 - id: reconnect-closed
   name: Reconnect to closed
   kind: adjuster
+  level: 2
   from: apart
   to: closed
   counts: 0
@@ -691,6 +842,7 @@
 - id: reconnect-double
   name: Reconnect to double hands
   kind: adjuster
+  level: 2
   from: apart
   to: double
   counts: 0
@@ -699,6 +851,7 @@
 - id: reconnect-handshake
   name: Reconnect to handshake
   kind: adjuster
+  level: 2
   from: apart
   to: open_RR
   counts: 0

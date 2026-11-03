@@ -156,3 +156,21 @@ test('practice steps fold 0-count moves into their neighbours', async () => {
   assert.deepEqual(steps[1].extras.map((x) => x.id), ['catch-second-hand']);
   assert.deepEqual(steps[1].after.map((x) => x.id), ['release-all']);
 });
+
+test('levels: compounds take their hardest part, beginner combos stay beginner', () => {
+  const g = MG.compile(loadData());
+  assert.equal(g.moveById['cuddle-combo'].level, 2); // cuddle entry is intermediate
+  assert.ok(g.moves.every((m) => [1, 2, 3].includes(m.level)));
+  let seed = 11;
+  const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 50; i++) {
+    const ids = MG.randomCombo(g, 'open_LR', { steps: 4, rng, maxLevel: 1 });
+    assert.ok(ids.every((id) => g.moveById[id].level === 1), ids.join(' > '));
+  }
+});
+
+test('invalid levels are reported', () => {
+  const g = MG.compile({ positions: [{ id: 'a', name: 'a', orientation: 'facing', frame: 'open', hands: 'L>R', crossed: 'none', arms: 'neutral' }],
+    moves: [{ id: 'x', name: 'X', from: 'any', counts: 4, level: 5 }] });
+  assert.ok(g.errors.some((e) => e.includes('level 5')));
+});

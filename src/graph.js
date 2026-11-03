@@ -93,6 +93,7 @@
       if (m.kind !== 'compound' && !(Number.isInteger(m.counts) && m.counts >= 0)) {
         errors.push(`Move "${m.id}" needs counts as a whole number >= 0.`);
       }
+      if (m.level !== undefined && ![1, 2, 3].includes(m.level)) errors.push(`Move "${m.id}" has level ${m.level}; use 1, 2 or 3.`);
       for (const side of ['from', 'to']) {
         const w = m.weight[side];
         if (w !== undefined && !WEIGHTS.includes(w)) errors.push(`Move "${m.id}" has unknown weight.${side} "${w}".`);
@@ -193,6 +194,16 @@
     for (const m of moves) if (m.id) edgesFor(m.id);
     for (const m of moves) if (m.id) weightOf(m.id);
 
+    // Level: compounds are as hard as their hardest part.
+    const levelOf = (id, stack = []) => {
+      const m = moveById[id];
+      if (!m) return 1;
+      if (m.kind !== 'compound') return m.level || 1;
+      if (stack.includes(id)) return 1;
+      return Math.max(1, ...(m.sequence || []).map((sub) => levelOf(sub, [...stack, id])));
+    };
+    for (const m of moves) if (m.id) m.level = levelOf(m.id);
+
     for (const m of moves) {
       if (!m.opposite) continue;
       const o = moveById[m.opposite];
@@ -277,9 +288,9 @@
   }
 
   /** Shortest ways to get from one position to another (no styling loops, no compounds). */
-  function findBridges(g, from, to, { maxDepth = 3, limit = 6 } = {}) {
+  function findBridges(g, from, to, { maxDepth = 3, limit = 6, maxLevel = 3 } = {}) {
     if (from === to) return [[]];
-    const usable = (e) => e.from !== e.to && g.moveById[e.move].kind !== 'compound';
+    const usable = (e) => e.from !== e.to && g.moveById[e.move].kind !== 'compound' && g.moveById[e.move].level <= maxLevel;
     const results = [];
     const seen = new Set();
     for (let depth = 1; depth <= maxDepth && results.length < limit; depth++) {
@@ -315,12 +326,12 @@
   }
 
   /** Random walk of `steps` moves from a position (no compounds, no immediate repeats). */
-  function randomWalk(g, start, steps, rng = Math.random) {
+  function randomWalk(g, start, steps, rng = Math.random, maxLevel = 3) {
     const ids = [];
     let cur = start;
     for (let i = 0; i < steps; i++) {
       const options = nextMoves(g, cur).filter(
-        (e) => g.moveById[e.move].kind !== 'compound' && e.move !== ids[ids.length - 1]);
+        (e) => g.moveById[e.move].kind !== 'compound' && e.move !== ids[ids.length - 1] && g.moveById[e.move].level <= maxLevel);
       if (!options.length) break;
       const e = options[Math.floor(rng() * options.length)];
       ids.push(e.move);
@@ -330,12 +341,12 @@
   }
 
   /** Random combo that, when possible, finds its way back to the start position. */
-  function randomCombo(g, start, { steps = 5, home = true, rng = Math.random } = {}) {
-    const ids = randomWalk(g, start, steps, rng);
+  function randomCombo(g, start, { steps = 5, home = true, rng = Math.random, maxLevel = 3 } = {}) {
+    const ids = randomWalk(g, start, steps, rng, maxLevel);
     if (!home) return ids;
     const end = evaluateStrip(g, start, 'mirrored', ids).end;
     if (end === start) return ids;
-    const back = findBridges(g, end, start, { limit: 1 })[0];
+    const back = findBridges(g, end, start, { limit: 1, maxLevel })[0] || findBridges(g, end, start, { limit: 1 })[0];
     return back ? ids.concat(back) : ids;
   }
 

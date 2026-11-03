@@ -102,6 +102,16 @@ window.BACHATA_DATA = {
    "arms": "hammerlock_follower_R"
   },
   {
+   "id": "hammerlock_L",
+   "name": "Hammerlock, left arm (follower's left arm behind her back)",
+   "short": "Hammerlock L",
+   "orientation": "facing",
+   "frame": "semi",
+   "hands": "L>R,R>L",
+   "crossed": "none",
+   "arms": "hammerlock_follower_L"
+  },
+  {
    "id": "cuddle",
    "name": "Cuddle / wrap / sweetheart",
    "short": "Cuddle",
@@ -147,6 +157,7 @@ window.BACHATA_DATA = {
    "id": "basic",
    "name": "Basic (side)",
    "kind": "styling",
+   "level": 1,
    "from": "any",
    "counts": 4
   },
@@ -154,6 +165,7 @@ window.BACHATA_DATA = {
    "id": "box-step",
    "name": "Box step",
    "kind": "styling",
+   "level": 2,
    "from": [
     "closed",
     "open_LR",
@@ -165,6 +177,7 @@ window.BACHATA_DATA = {
    "id": "tap-and-hold",
    "name": "Tap & hold",
    "kind": "styling",
+   "level": 1,
    "from": "any",
    "counts": 4,
    "notes": "Musical pause / freeze on a break in the music."
@@ -173,6 +186,7 @@ window.BACHATA_DATA = {
    "id": "body-roll",
    "name": "Body roll (together)",
    "kind": "styling",
+   "level": 2,
    "from": {
     "frame": "closed"
    },
@@ -182,6 +196,7 @@ window.BACHATA_DATA = {
    "id": "head-roll",
    "name": "Led head roll",
    "kind": "styling",
+   "level": 3,
    "from": [
     "closed",
     "neck_wrap"
@@ -192,6 +207,7 @@ window.BACHATA_DATA = {
    "id": "hip-circle",
    "name": "Hip circle (together)",
    "kind": "styling",
+   "level": 2,
    "from": [
     "closed",
     "shadow",
@@ -203,6 +219,7 @@ window.BACHATA_DATA = {
    "id": "dominican-footwork",
    "name": "Dominican footwork (in sync)",
    "kind": "styling",
+   "level": 2,
    "from": [
     "closed",
     "double",
@@ -214,6 +231,7 @@ window.BACHATA_DATA = {
    "id": "dip",
    "name": "Dip",
    "kind": "styling",
+   "level": 3,
    "from": [
     "closed",
     "neck_wrap"
@@ -224,6 +242,7 @@ window.BACHATA_DATA = {
    "id": "shadow-walk",
    "name": "Shadow walk",
    "kind": "styling",
+   "level": 2,
    "from": "shadow",
    "counts": 4,
    "weight": {
@@ -234,6 +253,7 @@ window.BACHATA_DATA = {
    "id": "hammerlock-walkaround",
    "name": "Hammerlock walk-around",
    "kind": "styling",
+   "level": 2,
    "from": "hammerlock_R",
    "counts": 8
   },
@@ -241,6 +261,7 @@ window.BACHATA_DATA = {
    "id": "free-spin",
    "name": "Follower free spin",
    "kind": "styling",
+   "level": 2,
    "from": "apart",
    "counts": 4
   },
@@ -248,6 +269,7 @@ window.BACHATA_DATA = {
    "id": "follower-right-turn",
    "name": "Follower right turn",
    "kind": "move",
+   "level": 1,
    "from": [
     "open_LR",
     "open_RR",
@@ -263,6 +285,7 @@ window.BACHATA_DATA = {
    "id": "follower-left-turn",
    "name": "Follower left turn",
    "kind": "move",
+   "level": 1,
    "from": [
     "open_LR",
     "open_RR",
@@ -278,6 +301,7 @@ window.BACHATA_DATA = {
    "id": "follower-double-right-turn",
    "name": "Follower double right turn",
    "kind": "move",
+   "level": 2,
    "from": [
     "open_LR",
     "open_RR"
@@ -289,6 +313,7 @@ window.BACHATA_DATA = {
    "id": "leader-right-turn",
    "name": "Leader right turn",
    "kind": "move",
+   "level": 2,
    "from": "open_LR",
    "to": "same",
    "counts": 4,
@@ -298,6 +323,7 @@ window.BACHATA_DATA = {
    "id": "leader-left-turn",
    "name": "Leader left turn",
    "kind": "move",
+   "level": 2,
    "from": "open_LR",
    "to": "same",
    "counts": 4,
@@ -307,6 +333,7 @@ window.BACHATA_DATA = {
    "id": "cross-body-lead",
    "name": "Cross body lead",
    "kind": "move",
+   "level": 1,
    "from": "open_LR",
    "to": "same",
    "counts": 8
@@ -315,6 +342,7 @@ window.BACHATA_DATA = {
    "id": "cbl-inside-turn",
    "name": "Cross body lead with inside turn",
    "kind": "move",
+   "level": 2,
    "from": "open_LR",
    "to": "same",
    "counts": 8
@@ -323,6 +351,7 @@ window.BACHATA_DATA = {
    "id": "cuddle-entry",
    "name": "Cuddle entry",
    "kind": "move",
+   "level": 2,
    "from": "double",
    "to": "cuddle",
    "counts": 4,
@@ -335,6 +364,7 @@ window.BACHATA_DATA = {
    "id": "cuddle-unwrap",
    "name": "Cuddle unwrap",
    "kind": "move",
+   "level": 2,
    "from": "cuddle",
    "to": "double",
    "counts": 4,
@@ -346,6 +376,7 @@ window.BACHATA_DATA = {
    "id": "cuddle-release-spin",
    "name": "Cuddle release spin",
    "kind": "move",
+   "level": 2,
    "from": "cuddle",
    "to": "open_LR",
    "counts": 4,
@@ -358,6 +389,7 @@ window.BACHATA_DATA = {
    "id": "cross-right-turn",
    "name": "Crossed-hands right turn",
    "kind": "move",
+   "level": 2,
    "from": "cross_Ltop",
    "to": "cross_Rtop",
    "counts": 4,
@@ -369,6 +401,7 @@ window.BACHATA_DATA = {
    "id": "cross-left-turn",
    "name": "Crossed-hands left turn",
    "kind": "move",
+   "level": 2,
    "from": "cross_Rtop",
    "to": "cross_Ltop",
    "counts": 4,
@@ -379,6 +412,7 @@ window.BACHATA_DATA = {
    "id": "cross-half-turn-shadow",
    "name": "Crossed half turn into shadow",
    "kind": "move",
+   "level": 2,
    "from": "cross_Ltop",
    "to": "shadow",
    "counts": 4,
@@ -392,6 +426,7 @@ window.BACHATA_DATA = {
    "id": "shadow-exit",
    "name": "Shadow exit turn",
    "kind": "move",
+   "level": 2,
    "from": "shadow",
    "to": "open_LL",
    "counts": 4,
@@ -404,6 +439,7 @@ window.BACHATA_DATA = {
    "id": "hammerlock-entry",
    "name": "Hammerlock entry",
    "kind": "move",
+   "level": 2,
    "from": "open_RR",
    "to": "hammerlock_R",
    "counts": 4,
@@ -413,6 +449,7 @@ window.BACHATA_DATA = {
    "id": "hammerlock-exit",
    "name": "Hammerlock exit",
    "kind": "move",
+   "level": 2,
    "from": "hammerlock_R",
    "to": "open_RR",
    "counts": 4
@@ -421,6 +458,7 @@ window.BACHATA_DATA = {
    "id": "neck-slide",
    "name": "Neck slide",
    "kind": "move",
+   "level": 3,
    "from": "neck_wrap",
    "to": "open_LR",
    "counts": 4,
@@ -430,6 +468,7 @@ window.BACHATA_DATA = {
    "id": "hand-change-to-handshake",
    "name": "Hand change to handshake",
    "kind": "adjuster",
+   "level": 1,
    "from": "open_LR",
    "to": "open_RR",
    "counts": 4,
@@ -439,6 +478,7 @@ window.BACHATA_DATA = {
    "id": "hand-change-to-open",
    "name": "Hand change to open L-R",
    "kind": "adjuster",
+   "level": 1,
    "from": "open_RR",
    "to": "open_LR",
    "counts": 4,
@@ -448,6 +488,7 @@ window.BACHATA_DATA = {
    "id": "hand-change-ll-to-lr",
    "name": "Hand change L-L to L-R",
    "kind": "adjuster",
+   "level": 1,
    "from": "open_LL",
    "to": "open_LR",
    "counts": 4
@@ -456,6 +497,7 @@ window.BACHATA_DATA = {
    "id": "catch-second-hand",
    "name": "Catch second hand",
    "kind": "adjuster",
+   "level": 1,
    "from": "open_LR",
    "to": "double",
    "counts": 0
@@ -464,6 +506,7 @@ window.BACHATA_DATA = {
    "id": "catch-left-hand",
    "name": "Catch left hand",
    "kind": "adjuster",
+   "level": 1,
    "from": "open_RL",
    "to": "double",
    "counts": 0
@@ -472,6 +515,7 @@ window.BACHATA_DATA = {
    "id": "release-right",
    "name": "Release right hand",
    "kind": "adjuster",
+   "level": 1,
    "from": "double",
    "to": "open_LR",
    "counts": 0
@@ -480,6 +524,7 @@ window.BACHATA_DATA = {
    "id": "release-left",
    "name": "Release left hand",
    "kind": "adjuster",
+   "level": 1,
    "from": "double",
    "to": "open_RL",
    "counts": 0
@@ -488,6 +533,7 @@ window.BACHATA_DATA = {
    "id": "regrip-cross-r-over-l",
    "name": "Regrip crossed (right over left)",
    "kind": "adjuster",
+   "level": 2,
    "from": "open_RR",
    "to": "cross_Rtop",
    "counts": 0,
@@ -497,6 +543,7 @@ window.BACHATA_DATA = {
    "id": "regrip-cross-l-over-r",
    "name": "Regrip crossed (left over right)",
    "kind": "adjuster",
+   "level": 2,
    "from": "open_LL",
    "to": "cross_Ltop",
    "counts": 0,
@@ -506,6 +553,7 @@ window.BACHATA_DATA = {
    "id": "release-cross-to-handshake",
    "name": "Release cross to handshake",
    "kind": "adjuster",
+   "level": 2,
    "from": "cross_Rtop",
    "to": "open_RR",
    "counts": 0
@@ -514,6 +562,7 @@ window.BACHATA_DATA = {
    "id": "release-cross-to-ll",
    "name": "Release cross to L-L",
    "kind": "adjuster",
+   "level": 2,
    "from": "cross_Ltop",
    "to": "open_LL",
    "counts": 0
@@ -522,6 +571,7 @@ window.BACHATA_DATA = {
    "id": "close-frame",
    "name": "Close frame",
    "kind": "adjuster",
+   "level": 1,
    "from": "open_LR",
    "to": "closed",
    "counts": 4
@@ -530,6 +580,7 @@ window.BACHATA_DATA = {
    "id": "open-frame",
    "name": "Open frame",
    "kind": "adjuster",
+   "level": 1,
    "from": "closed",
    "to": "open_LR",
    "counts": 4
@@ -538,6 +589,7 @@ window.BACHATA_DATA = {
    "id": "hand-to-neck",
    "name": "Hand to neck",
    "kind": "adjuster",
+   "level": 3,
    "from": "closed",
    "to": {
     "hands": "R>back",
@@ -550,6 +602,7 @@ window.BACHATA_DATA = {
    "id": "release-all",
    "name": "Release all",
    "kind": "adjuster",
+   "level": 2,
    "from": {
     "frame": [
      "closed",
@@ -564,6 +617,7 @@ window.BACHATA_DATA = {
    "id": "reconnect",
    "name": "Reconnect (left-to-right)",
    "kind": "adjuster",
+   "level": 2,
    "from": "apart",
    "to": "open_LR",
    "counts": 0,
@@ -575,6 +629,7 @@ window.BACHATA_DATA = {
    "id": "left-turn-into-closed",
    "name": "Left turn into closed",
    "kind": "move",
+   "level": 1,
    "from": "open_LR",
    "to": "closed",
    "counts": 4,
@@ -584,6 +639,7 @@ window.BACHATA_DATA = {
    "id": "madrid-step",
    "name": "Madrid step",
    "kind": "styling",
+   "level": 2,
    "from": [
     "closed",
     "shadow_waist"
@@ -594,6 +650,7 @@ window.BACHATA_DATA = {
    "id": "double-slide",
    "name": "Double slide",
    "kind": "styling",
+   "level": 2,
    "from": [
     "closed",
     "shadow_waist",
@@ -605,6 +662,7 @@ window.BACHATA_DATA = {
    "id": "forward-forward-back-back",
    "name": "Forward-forward-back-back",
    "kind": "styling",
+   "level": 2,
    "from": [
     "closed",
     "cuddle"
@@ -615,6 +673,7 @@ window.BACHATA_DATA = {
    "id": "chest-isolation",
    "name": "Chest isolation (together)",
    "kind": "styling",
+   "level": 3,
    "from": [
     "closed",
     "shadow_waist"
@@ -625,6 +684,7 @@ window.BACHATA_DATA = {
    "id": "half-turn-into-shadow",
    "name": "Half turn into shadow",
    "kind": "move",
+   "level": 2,
    "from": "closed",
    "to": "shadow_waist",
    "counts": 4,
@@ -637,6 +697,7 @@ window.BACHATA_DATA = {
    "id": "shadow-entry-from-open",
    "name": "Shadow entry from open",
    "kind": "move",
+   "level": 2,
    "from": "open_LR",
    "to": "shadow_waist",
    "counts": 4,
@@ -649,6 +710,7 @@ window.BACHATA_DATA = {
    "id": "shadow-push-out",
    "name": "Shadow push-out exit",
    "kind": "move",
+   "level": 2,
    "from": "shadow_waist",
    "to": "open_LR",
    "counts": 4,
@@ -660,6 +722,7 @@ window.BACHATA_DATA = {
    "id": "shadow-lateral-exit",
    "name": "Shadow lateral exit",
    "kind": "move",
+   "level": 3,
    "from": "shadow_waist",
    "to": "open_LR",
    "counts": 8,
@@ -671,6 +734,7 @@ window.BACHATA_DATA = {
    "id": "shadow-slingshot-exit",
    "name": "Shadow slingshot exit",
    "kind": "move",
+   "level": 3,
    "from": "shadow_waist",
    "to": "open_LR",
    "counts": 8,
@@ -682,6 +746,7 @@ window.BACHATA_DATA = {
    "id": "shadow-turn-to-closed",
    "name": "Shadow turn back to closed",
    "kind": "move",
+   "level": 2,
    "from": "shadow_waist",
    "to": "closed",
    "counts": 4,
@@ -693,6 +758,7 @@ window.BACHATA_DATA = {
    "id": "shadow-head-roll",
    "name": "Shadow head roll",
    "kind": "styling",
+   "level": 3,
    "from": "shadow_waist",
    "counts": 4
   },
@@ -700,6 +766,7 @@ window.BACHATA_DATA = {
    "id": "shadow-waist-walk",
    "name": "Shadow walk (hand on waist)",
    "kind": "styling",
+   "level": 2,
    "from": "shadow_waist",
    "counts": 4,
    "weight": {
@@ -710,6 +777,7 @@ window.BACHATA_DATA = {
    "id": "cross-half-turn-shadow-left",
    "name": "Crossed half turn into shadow (left)",
    "kind": "move",
+   "level": 2,
    "from": "cross_Rtop",
    "to": "shadow",
    "counts": 4,
@@ -722,6 +790,7 @@ window.BACHATA_DATA = {
    "id": "shadow-turn-back-l-over-r",
    "name": "Shadow turn back (left over right)",
    "kind": "move",
+   "level": 2,
    "from": "shadow",
    "to": "cross_Ltop",
    "counts": 4,
@@ -735,6 +804,7 @@ window.BACHATA_DATA = {
    "id": "shadow-turn-back-r-over-l",
    "name": "Shadow turn back (right over left)",
    "kind": "move",
+   "level": 2,
    "from": "shadow",
    "to": "cross_Rtop",
    "counts": 4,
@@ -747,6 +817,7 @@ window.BACHATA_DATA = {
    "id": "crossed-hammerlock-entry",
    "name": "Hammerlock entry from crossed hands",
    "kind": "move",
+   "level": 2,
    "from": "cross_Rtop",
    "to": "hammerlock_R",
    "counts": 4,
@@ -756,6 +827,7 @@ window.BACHATA_DATA = {
    "id": "hammerlock-unwind-to-cross",
    "name": "Hammerlock unwind to crossed hands",
    "kind": "move",
+   "level": 2,
    "from": "hammerlock_R",
    "to": "cross_Rtop",
    "counts": 4
@@ -764,6 +836,7 @@ window.BACHATA_DATA = {
    "id": "hammerlock-release-to-ll",
    "name": "Hammerlock release to L-L",
    "kind": "move",
+   "level": 2,
    "from": "hammerlock_R",
    "to": "open_LL",
    "counts": 4,
@@ -773,6 +846,7 @@ window.BACHATA_DATA = {
    "id": "hammerlock-hip-roll",
    "name": "Hammerlock hip roll",
    "kind": "styling",
+   "level": 2,
    "from": "hammerlock_R",
    "counts": 4
   },
@@ -780,6 +854,7 @@ window.BACHATA_DATA = {
    "id": "left-turn-into-cuddle",
    "name": "Left turn into cuddle",
    "kind": "move",
+   "level": 2,
    "from": "open_LR",
    "to": "cuddle",
    "counts": 4,
@@ -792,6 +867,7 @@ window.BACHATA_DATA = {
    "id": "cuddle-walk",
    "name": "Cuddle walk forward and back",
    "kind": "styling",
+   "level": 2,
    "from": "cuddle",
    "counts": 8
   },
@@ -799,6 +875,7 @@ window.BACHATA_DATA = {
    "id": "cuddle-unwrap-to-closed",
    "name": "Cuddle unwrap to closed",
    "kind": "move",
+   "level": 2,
    "from": "cuddle",
    "to": "closed",
    "counts": 4,
@@ -811,6 +888,7 @@ window.BACHATA_DATA = {
    "id": "cuddle-slide-to-shadow",
    "name": "Cuddle slide to shadow",
    "kind": "move",
+   "level": 2,
    "from": "cuddle",
    "to": "shadow_waist",
    "counts": 4,
@@ -821,6 +899,7 @@ window.BACHATA_DATA = {
    "id": "shadow-wrap-into-cuddle",
    "name": "Shadow wrap into cuddle",
    "kind": "move",
+   "level": 2,
    "from": "shadow_waist",
    "to": "cuddle",
    "counts": 4,
@@ -831,6 +910,7 @@ window.BACHATA_DATA = {
    "id": "arm-drape-to-neck",
    "name": "Arm drape to neck",
    "kind": "move",
+   "level": 3,
    "from": "open_LR",
    "to": "neck_wrap",
    "counts": 4,
@@ -840,6 +920,7 @@ window.BACHATA_DATA = {
    "id": "neck-slide-to-closed",
    "name": "Neck slide to closed",
    "kind": "adjuster",
+   "level": 3,
    "from": "neck_wrap",
    "to": "closed",
    "counts": 4,
@@ -849,6 +930,7 @@ window.BACHATA_DATA = {
    "id": "behind-back-to-crossed",
    "name": "Behind-the-back hand change to crossed hands",
    "kind": "move",
+   "level": 2,
    "from": "open_LR",
    "to": "cross_Rtop",
    "counts": 8
@@ -857,6 +939,7 @@ window.BACHATA_DATA = {
    "id": "crossed-matador",
    "name": "Crossed-hand matador",
    "kind": "move",
+   "level": 3,
    "from": [
     "cross_Rtop",
     "cross_Ltop"
@@ -868,6 +951,7 @@ window.BACHATA_DATA = {
    "id": "crossed-double-face-loop",
    "name": "Crossed-hand double face loop",
    "kind": "move",
+   "level": 3,
    "from": [
     "cross_Rtop",
     "cross_Ltop"
@@ -879,6 +963,7 @@ window.BACHATA_DATA = {
    "id": "hand-toss-top-r",
    "name": "Hand toss (right hand on top)",
    "kind": "move",
+   "level": 2,
    "from": "cross_Rtop",
    "to": "open_LL",
    "counts": 4,
@@ -888,6 +973,7 @@ window.BACHATA_DATA = {
    "id": "hand-toss-top-l",
    "name": "Hand toss (left hand on top)",
    "kind": "move",
+   "level": 2,
    "from": "cross_Ltop",
    "to": "open_RR",
    "counts": 4,
@@ -897,6 +983,7 @@ window.BACHATA_DATA = {
    "id": "double-hand-toss",
    "name": "Double hand toss",
    "kind": "move",
+   "level": 3,
    "from": [
     "cross_Rtop",
     "cross_Ltop"
@@ -908,6 +995,7 @@ window.BACHATA_DATA = {
    "id": "crossed-outside-turn",
    "name": "Crossed-hands outside turn (right over left)",
    "kind": "move",
+   "level": 2,
    "from": "cross_Rtop",
    "to": "cross_Ltop",
    "counts": 4,
@@ -918,15 +1006,91 @@ window.BACHATA_DATA = {
    "id": "sombrero",
    "name": "Sombrero",
    "kind": "move",
+   "level": 3,
    "from": "double",
    "to": "same",
    "counts": 8,
    "notes": "Leader arcs the joined hands over the follower's head and then his own, in one 8-count, from double hands."
   },
   {
+   "id": "hammerlock-left-entry",
+   "name": "Hammerlock entry, left arm",
+   "kind": "move",
+   "level": 2,
+   "from": "double",
+   "to": "hammerlock_L",
+   "counts": 4,
+   "opposite": "hammerlock-left-unwind",
+   "notes": "Follower turns right while the leader keeps his right hand (her left) low, folding her arm behind her back."
+  },
+  {
+   "id": "hammerlock-left-entry-from-rl",
+   "name": "Hammerlock entry, left arm (from R-L)",
+   "kind": "move",
+   "level": 2,
+   "from": "open_RL",
+   "to": "hammerlock_L",
+   "counts": 4,
+   "notes": "Turn her right with your right hand low so her left arm folds behind her back; catch her right hand with your left."
+  },
+  {
+   "id": "hammerlock-left-unwind",
+   "name": "Hammerlock unwind, left arm",
+   "kind": "move",
+   "level": 2,
+   "from": "hammerlock_L",
+   "to": "double",
+   "counts": 4,
+   "opposite": "hammerlock-left-entry"
+  },
+  {
+   "id": "hammerlock-left-release",
+   "name": "Hammerlock release, left arm",
+   "kind": "move",
+   "level": 2,
+   "from": "hammerlock_L",
+   "to": "open_LR",
+   "counts": 4,
+   "notes": "Let go of the hand behind her back; she unwinds while you keep left-to-right."
+  },
+  {
+   "id": "two-hand-turn",
+   "name": "Two-hand turn",
+   "kind": "move",
+   "level": 2,
+   "from": "double",
+   "to": "same",
+   "counts": 4,
+   "notes": "Both hands stay joined through a full outside (clockwise) turn in place, resolving on the tap of 4."
+  },
+  {
+   "id": "fall-forward",
+   "name": "Fall forward",
+   "kind": "styling",
+   "level": 3,
+   "from": [
+    "closed",
+    "neck_wrap"
+   ],
+   "counts": 4,
+   "notes": "She transfers her chest weight towards the leader's frame while he steps back to hold the counterbalance."
+  },
+  {
+   "id": "copa",
+   "name": "Copa",
+   "kind": "move",
+   "level": 2,
+   "from": "cross_Ltop",
+   "to": "cross_Rtop",
+   "counts": 8,
+   "notes": "From salsa descriptions - start from left-over-right double hands; she steps forward on 5 and turns left on 6-7.",
+   "check": "Described for salsa; bachata timing and end hold not confirmed."
+  },
+  {
    "id": "hand-change-lr-to-rl",
    "name": "Hand change L-R to R-L",
    "kind": "adjuster",
+   "level": 1,
    "from": "open_LR",
    "to": "open_RL",
    "counts": 4,
@@ -937,6 +1101,7 @@ window.BACHATA_DATA = {
    "id": "hand-change-rl-to-lr",
    "name": "Hand change R-L to L-R",
    "kind": "adjuster",
+   "level": 1,
    "from": "open_RL",
    "to": "open_LR",
    "counts": 4,
@@ -946,6 +1111,7 @@ window.BACHATA_DATA = {
    "id": "dishrag",
    "name": "Dishrag",
    "kind": "move",
+   "level": 2,
    "from": "double",
    "to": "same",
    "counts": 8
@@ -954,6 +1120,7 @@ window.BACHATA_DATA = {
    "id": "rollaway",
    "name": "Rollaway",
    "kind": "move",
+   "level": 2,
    "from": "open_LR",
    "to": "apart",
    "counts": 4
@@ -962,6 +1129,7 @@ window.BACHATA_DATA = {
    "id": "tandem-free-spins",
    "name": "Tandem free spins",
    "kind": "styling",
+   "level": 2,
    "from": "apart",
    "counts": 4
   },
@@ -969,6 +1137,7 @@ window.BACHATA_DATA = {
    "id": "reconnect-closed",
    "name": "Reconnect to closed",
    "kind": "adjuster",
+   "level": 2,
    "from": "apart",
    "to": "closed",
    "counts": 0,
@@ -980,6 +1149,7 @@ window.BACHATA_DATA = {
    "id": "reconnect-double",
    "name": "Reconnect to double hands",
    "kind": "adjuster",
+   "level": 2,
    "from": "apart",
    "to": "double",
    "counts": 0,
@@ -991,6 +1161,7 @@ window.BACHATA_DATA = {
    "id": "reconnect-handshake",
    "name": "Reconnect to handshake",
    "kind": "adjuster",
+   "level": 2,
    "from": "apart",
    "to": "open_RR",
    "counts": 0,

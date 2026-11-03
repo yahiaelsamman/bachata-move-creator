@@ -37,6 +37,7 @@
     search: '',
     showAllInsert: false,
     mapSelected: null,
+    maxLevel: [1, 2, 3].includes(store.get('bmc.maxLevel', 3)) ? store.get('bmc.maxLevel', 3) : 3,
   };
   let mapLayout = null;
   const undoStack = [];
@@ -75,6 +76,9 @@
   const short = (id) => (g.posById[id] ? g.posById[id].short || g.posById[id].name : '?');
   const posName = (id) => (g.posById[id] ? g.posById[id].name : '?');
   const badge = (kind) => h('span', { class: `badge k-${kind}` }, KIND_LABEL[kind] || kind);
+  const LEVEL_NAME = { 1: 'beginner', 2: 'intermediate', 3: 'advanced' };
+  const dots = (lvl) => h('span', { class: 'lvl', title: LEVEL_NAME[lvl] || '' }, '●'.repeat(lvl) + '○'.repeat(3 - lvl));
+  const allowed = (id) => (g.moveById[id] ? g.moveById[id].level <= state.maxLevel : false);
   const $ = (id) => document.getElementById(id);
 
   /** Share link: compounds saved only in this browser are spelled out into their parts. */
@@ -264,6 +268,7 @@
     const options = MG.nextMoves(g, end).filter((e) => {
       const m = g.moveById[e.move];
       if (state.kindFilter !== 'all' && m.kind !== state.kindFilter) return false;
+      if (m.level > state.maxLevel) return false;
       return !state.search || m.name.toLowerCase().includes(state.search.toLowerCase());
     });
     const search = h('input', {
@@ -288,7 +293,7 @@
             onclick: () => { state.strip.push(m.id); state.search = ''; update(); },
           },
             h('span', {}, m.name, ' ', badge(m.kind)),
-            h('span', { class: 'to' }, e.to === e.from ? '↺ same' : '→ ' + short(e.to), ` · ${m.counts} ct`)));
+            h('span', { class: 'to' }, e.to === e.from ? '↺ same' : '→ ' + short(e.to), ` · ${m.counts} ct `, dots(m.level))));
         }))
         : h('p', { class: 'muted' }, 'Nothing matches. This position needs more moves in data/moves.yaml.'));
   }
@@ -310,6 +315,7 @@
         h('dt', {}, 'From'), h('dd', {}, posName(it.from), h('br'), h('code', {}, MG.notation(g.posById[it.from]))),
         h('dt', {}, 'To'), h('dd', {}, posName(it.to), h('br'), h('code', {}, MG.notation(g.posById[it.to]))),
         h('dt', {}, 'Counts'), h('dd', {}, `${m.counts} (starts on beat ${it.beat})`),
+        h('dt', {}, 'Level'), h('dd', {}, dots(m.level), ' ', LEVEL_NAME[m.level] || ''),
         h('dt', {}, 'Weight'), h('dd', {}, `${w.from || 'any'} → ${w.to || 'unchanged'}` + (it.weightWarn ? ` (you arrive ${it.weightIn})` : '')),
         m.opposite ? [h('dt', {}, 'Opposite'), h('dd', {}, g.moveById[m.opposite] ? g.moveById[m.opposite].name : m.opposite)] : null,
         m.sequence ? [h('dt', {}, 'Made of'), h('dd', {}, m.sequence.map((id) => g.moveById[id] ? g.moveById[id].name : id).join(' › '))] : null,
@@ -323,7 +329,7 @@
     ].filter(Boolean));
 
     if (it.broken) {
-      const bridges = it.from ? MG.findBridges(g, it.expected, it.from) : [];
+      const bridges = it.from ? MG.findBridges(g, it.expected, it.from, { maxLevel: state.maxLevel }) : [];
       wrap.append(h('h2', {}, `Bridge: ${posName(it.expected)} → ${posName(it.from)}`),
         bridges.length
           ? h('ul', { class: 'options' }, bridges.map((path) => h('li', {}, h('button', {
@@ -333,7 +339,7 @@
             h('span', { class: 'to' }, `${path.length} step${path.length > 1 ? 's' : ''}`)))))
           : h('p', { class: 'muted' }, 'No bridge within 3 moves. Remove this domino or add an adjuster to the data.'));
     } else {
-      const alts = MG.alternatives(g, it.from, it.to, m.id);
+      const alts = MG.alternatives(g, it.from, it.to, m.id).filter(allowed);
       wrap.append(h('h2', {}, `Replace with (same start and end)`),
         alts.length
           ? h('ul', { class: 'options' }, alts.map((id) => h('li', {}, h('button', {
@@ -348,7 +354,7 @@
       const next = state.strip[i + 1];
       const nextEdges = next ? g.edgesByMove[next] || [] : null;
       const fits = (e) => !nextEdges || nextEdges.some((x) => x.from === e.to);
-      const all = MG.nextMoves(g, it.to).filter((e) => g.moveById[e.move].kind !== 'compound');
+      const all = MG.nextMoves(g, it.to).filter((e) => g.moveById[e.move].kind !== 'compound' && allowed(e.move));
       const good = all.filter(fits);
       const shown = state.showAllInsert ? all : good;
       wrap.append(...[h('h2', {}, 'Insert after this'),
@@ -419,7 +425,7 @@
         h('button', { type: 'button', class: 'link', onclick: () => { state.mapSelected = pid; render(); } }, arrow + ' ' + short(pid)),
         ': ', [...names].sort().join(', '))))
       : h('p', { class: 'muted' }, 'None yet.');
-    const bridges = result.end !== id ? MG.findBridges(g, result.end, id, { limit: 3 }) : [];
+    const bridges = result.end !== id ? MG.findBridges(g, result.end, id, { limit: 3, maxLevel: state.maxLevel }) : [];
     box.replaceChildren(h('div', {},
       h('div', { class: 'panel-head' }, h('h3', {}, posName(id)),
         h('button', { type: 'button', class: 'ghost', onclick: () => { state.mapSelected = null; render(); } }, 'Close')),
@@ -516,6 +522,10 @@
     sel.value = state.startPos;
     sel.addEventListener('change', () => { state.startPos = sel.value; update(); });
 
+    const lv = $('max-level');
+    lv.value = String(state.maxLevel);
+    lv.addEventListener('change', () => { state.maxLevel = Number(lv.value); store.set('bmc.maxLevel', state.maxLevel); render(); });
+
     const ws = $('start-weight');
     ws.value = state.startWeight;
     ws.addEventListener('change', () => { state.startWeight = ws.value; update(); });
@@ -555,7 +565,7 @@
 
     $('btn-clear').addEventListener('click', () => { state.strip = []; state.selected = null; update(); });
     $('btn-random').addEventListener('click', () => {
-      state.strip = MG.randomCombo(g, state.startPos, { steps: 4 });
+      state.strip = MG.randomCombo(g, state.startPos, { steps: 4, maxLevel: state.maxLevel });
       state.selected = null;
       update();
     });

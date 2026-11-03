@@ -110,6 +110,15 @@
   crossed: none
   arms: hammerlock_follower_R
 
+- id: hammerlock_L
+  name: Hammerlock, left arm (follower's left arm behind her back)
+  short: Hammerlock L
+  orientation: facing
+  frame: semi
+  hands: "L>R,R>L"
+  crossed: none
+  arms: hammerlock_follower_L
+
 - id: cuddle
   name: Cuddle / wrap / sweetheart
   short: Cuddle
