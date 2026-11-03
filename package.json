@@ -1,0 +1,14 @@
+{
+  "name": "bachata-move-creator",
+  "version": "1.0.0",
+  "description": "Link social dance moves like dominoes: positions are nodes, moves are edges.",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "private": "true"
+}

@@ -1,0 +1,137 @@
+# Positions = the nodes of the graph.
+#
+# A position is identified by its attributes (hard keys). Two positions with
+# identical attributes are an error: they are the same node.
+#
+# Attributes
+#   orientation: facing | shadow (leader behind) | reverse_shadow (follower behind)
+#                | side_by_side_L (follower on leader's left) | side_by_side_R
+#                | hip_to_hip | back_to_back
+#   frame:       closed (body contact) | semi | open (arm's length) | apart
+#   hands:       comma-separated connections, written leader-hand > follower-contact
+#                  L>R      leader's left holds follower's right hand
+#                  R>back   leader's right hand on follower's back
+#                "" means no connection. Order does not matter.
+#   crossed:     none | leader_R_over_L | leader_L_over_R
+#   arms:        neutral | hammerlock_follower_R | hammerlock_follower_L | wrap
+#                | follower_R_behind_leader_neck
+#
+# Weight (mirrored / parallel) and timing are NOT part of a position: they are
+# soft and tracked along the strip instead.
+
+- id: open_LR
+  name: Open, left-to-right
+  short: Open L-R
+  orientation: facing
+  frame: open
+  hands: "L>R"
+  crossed: none
+  arms: neutral
+
+- id: open_RR
+  name: Handshake (right-to-right)
+  short: Handshake
+  orientation: facing
+  frame: open
+  hands: "R>R"
+  crossed: none
+  arms: neutral
+
+- id: open_LL
+  name: Open, left-to-left
+  short: Open L-L
+  orientation: facing
+  frame: open
+  hands: "L>L"
+  crossed: none
+  arms: neutral
+
+- id: open_RL
+  name: Open, right-to-left
+  short: Open R-L
+  orientation: facing
+  frame: open
+  hands: "R>L"
+  crossed: none
+  arms: neutral
+
+- id: double
+  name: Double hands
+  short: Double
+  orientation: facing
+  frame: open
+  hands: "L>R,R>L"
+  crossed: none
+  arms: neutral
+
+- id: cross_Rtop
+  name: Crossed hands, right over left
+  short: Cross R/L
+  orientation: facing
+  frame: open
+  hands: "L>L,R>R"
+  crossed: leader_R_over_L
+  arms: neutral
+
+- id: cross_Ltop
+  name: Crossed hands, left over right
+  short: Cross L/R
+  orientation: facing
+  frame: open
+  hands: "L>L,R>R"
+  crossed: leader_L_over_R
+  arms: neutral
+
+- id: closed
+  name: Closed position
+  short: Closed
+  orientation: facing
+  frame: closed
+  hands: "L>R,R>back"
+  crossed: none
+  arms: neutral
+
+- id: neck_wrap
+  name: Follower's hand behind leader's neck
+  short: Neck wrap
+  orientation: facing
+  frame: closed
+  hands: "R>back"
+  crossed: none
+  arms: follower_R_behind_leader_neck
+
+- id: hammerlock_R
+  name: Hammerlock (follower's right arm behind her back)
+  short: Hammerlock
+  orientation: facing
+  frame: semi
+  hands: "L>L,R>R"
+  crossed: none
+  arms: hammerlock_follower_R
+
+- id: cuddle
+  name: Cuddle / wrap
+  short: Cuddle
+  orientation: side_by_side_R
+  frame: closed
+  hands: "L>R,R>L"
+  crossed: none
+  arms: wrap
+
+- id: shadow
+  name: Shadow (leader behind, same hands)
+  short: Shadow
+  orientation: shadow
+  frame: closed
+  hands: "L>L,R>R"
+  crossed: none
+  arms: neutral
+
+- id: apart
+  name: Apart (no connection)
+  short: Apart
+  orientation: facing
+  frame: apart
+  hands: ""
+  crossed: none
+  arms: neutral

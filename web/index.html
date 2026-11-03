@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bachata Move Creator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Bachata Move Creator</h1>
+    <p class="sub">Positions are the nodes, moves are the dominoes. Click the last domino to see what can follow.</p>
+  </header>
+
+  <div id="errors" class="errors" hidden></div>
+
+  <section class="toolbar" aria-label="Combo controls">
+    <label>Start position <select id="start-pos"></select></label>
+    <label>Weight <select id="start-weight">
+      <option value="mirrored">mirrored</option>
+      <option value="parallel">parallel</option>
+    </select></label>
+    <span class="spacer"></span>
+    <button id="btn-random" type="button">Random combo</button>
+    <button id="btn-save" type="button">Save as compound</button>
+    <button id="btn-clear" type="button" class="ghost">Clear</button>
+  </section>
+
+  <section class="strip-wrap" aria-label="Combo">
+    <div id="strip" class="strip"></div>
+    <p id="summary" class="summary"></p>
+  </section>
+
+  <section id="panel" class="panel" aria-live="polite"></section>
+
+  <details class="ref">
+    <summary>Positions</summary>
+    <div id="positions"></div>
+  </details>
+
+  <details class="ref">
+    <summary>My compound moves</summary>
+    <div id="compounds"></div>
+  </details>
+
+  <script src="data.js"></script>
+  <script src="../src/graph.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
