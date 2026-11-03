@@ -1,9 +1,9 @@
 // Offline support: network first (so updates arrive), cache as fallback.
-const CACHE = 'bmc-v1';
+const CACHE = 'bmc-v2';
 const ASSETS = [
   './', 'index.html', 'style.css', 'app.js', 'practice.js', 'data.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon.svg',
-  '../src/graph.js', '../src/sketch.js', '../src/map.js',
+  '../src/graph.js', '../src/sketch.js', '../src/map.js', '../src/share.js',
 ];
 
 self.addEventListener('install', (event) => {

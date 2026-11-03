@@ -4,6 +4,7 @@
   const MG = window.MoveGraph;
   const SK = window.LeaderSketch;
   const PM = window.PositionMap;
+  const Share = window.ComboShare;
   const BASE = window.BACHATA_DATA;
   const KIND_LABEL = { move: 'move', styling: 'styling', adjuster: 'adjuster', compound: 'compound' };
 
@@ -17,38 +18,7 @@
     },
   };
 
-  // A shared link (#start=…&weight=…&moves=a,b,c) wins over what this browser remembers.
-  function fromHash() {
-    const q = new URLSearchParams(location.hash.slice(1));
-    if (!q.has('moves') && !q.has('start')) return null;
-    return {
-      startPos: q.get('start') || undefined,
-      startWeight: q.get('weight') || undefined,
-      strip: (q.get('moves') || '').split(',').filter(Boolean),
-      custom: decodeMoves(q.get('custom')),
-    };
-  }
-
-  // Moves added in the app travel inside share links as base64url JSON.
-  function encodeMoves(moves) {
-    const json = JSON.stringify(moves);
-    return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  }
-  function decodeMoves(text) {
-    if (!text) return [];
-    try {
-      const b64 = text.replace(/-/g, '+').replace(/_/g, '/');
-      const list = JSON.parse(decodeURIComponent(escape(atob(b64))));
-      if (!Array.isArray(list)) return [];
-      const str = (v, max) => typeof v === 'string' && v.length <= max;
-      return list.filter((m) => m && str(m.id, 80) && m.id.startsWith('my-') && str(m.name, 60) &&
-        ['move', 'styling', 'adjuster'].includes(m.kind) && [1, 2, 3].includes(m.level) &&
-        Array.isArray(m.from) && m.from.every((f) => str(f, 40)) && str(m.to, 40) &&
-        Number.isInteger(m.counts) && m.counts >= 0 && m.counts <= 64 && (m.notes === undefined || str(m.notes, 200)))
-        .map((m) => ({ id: m.id, name: m.name, kind: m.kind, level: m.level, from: m.from, to: m.to, counts: m.counts, ...(m.notes ? { notes: m.notes } : {}) }));
-    } catch { return []; }
-  }
-  const saved = fromHash() || store.get('bmc.state', {});
+  const saved = Share.parseHash(location.hash) || store.get('bmc.state', {});
   const state = {
     startPos: saved.startPos || 'open_LR',
     startWeight: saved.startWeight === 'parallel' ? 'parallel' : 'mirrored',
@@ -115,14 +85,7 @@
 
   /** Share link: compounds saved only in this browser are spelled out into their parts. */
   function shareHash() {
-    const mine = Object.fromEntries(myCompounds.map((c) => [c.id, c]));
-    const flat = (id) => (mine[id] ? mine[id].sequence.flatMap(flat) : [id]);
-    const q = new URLSearchParams({ start: state.startPos, weight: state.startWeight });
-    const ids = state.strip.flatMap(flat);
-    q.set('moves', ids.join(','));
-    const custom = myMoves.filter((m) => ids.includes(m.id));
-    if (custom.length) q.set('custom', encodeMoves(custom));
-    return '#' + q.toString().replace(/%2C/g, ',');
+    return Share.buildHash({ startPos: state.startPos, startWeight: state.startWeight, strip: state.strip, myMoves, myCompounds });
   }
 
   function persist() {
@@ -541,16 +504,6 @@
     h('p', { class: 'muted small' }, 'Ways in/out count distinct moves that change position. Aim for at least 3 each. Click a name to see it on the map.'));
   }
 
-  function compoundYaml(c) {
-    return `- id: ${c.id}\n  name: ${JSON.stringify(c.name)}\n  kind: compound\n  sequence: [${c.sequence.join(', ')}]\n`;
-  }
-
-  function moveYaml(m) {
-    return `- id: ${m.id}\n  name: ${JSON.stringify(m.name)}\n  kind: ${m.kind}\n  level: ${m.level}\n` +
-      `  from: [${m.from.join(', ')}]\n  to: ${m.to}\n  counts: ${m.counts}\n` +
-      (m.notes ? `  notes: ${JSON.stringify(m.notes)}\n` : '');
-  }
-
   function copyButton(label, text) {
     return h('button', {
       type: 'button',
@@ -568,9 +521,9 @@
     box.replaceChildren(h('div', {},
       h('h3', {}, `Your moves (${myMoves.length})`),
       broken.length ? h('div', { class: 'errors' }, broken.map((m) => myErrors[m.id].join('\n')).join('\n')) : null,
-      h('pre', {}, myMoves.map(moveYaml).join('\n')),
+      h('pre', {}, myMoves.map(Share.moveYaml).join('\n')),
       h('div', { class: 'actions' },
-        copyButton('Copy YAML', myMoves.map(moveYaml).join('\n')),
+        copyButton('Copy YAML', myMoves.map(Share.moveYaml).join('\n')),
         myMoves.map((m) => h('button', {
           type: 'button',
           class: 'ghost',
@@ -701,12 +654,12 @@
     box.replaceChildren(
       broken.length ? h('div', { class: 'errors' },
         'Broken compound moves (a part changed or was removed):\n' + broken.map(([, errs]) => errs.join('\n')).join('\n')) : '',
-      h('pre', {}, myCompounds.map(compoundYaml).join('\n')),
+      h('pre', {}, myCompounds.map(Share.compoundYaml).join('\n')),
       h('div', { class: 'actions' },
         h('button', {
           type: 'button',
           onclick: (ev) => {
-            const text = myCompounds.map(compoundYaml).join('\n');
+            const text = myCompounds.map(Share.compoundYaml).join('\n');
             (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
               .then(() => { ev.target.textContent = 'Copied'; }, () => { ev.target.textContent = 'Copy failed: select the text above'; });
           },
@@ -743,9 +696,7 @@
     $('btn-text').addEventListener('click', (ev) => {
       const result = MG.evaluateStrip(g, state.startPos, state.startWeight, state.strip);
       if (!result.items.length) return;
-      const parts = result.items.filter((it) => it.move).map((it) => `${it.move.name} (${it.move.counts ? it.move.counts : 'on the fly'})`);
-      const text = `Bachata combo, starting in ${posName(state.startPos)}:\n${parts.join(' › ')}\n` +
-        `${result.totalCounts} counts, ends in ${posName(result.end)}.\n${location.href.split('#')[0] + shareHash()}`;
+      const text = Share.comboText(result, posName(state.startPos), posName(result.end), location.href.split('#')[0] + shareHash());
       const done = (msg) => { ev.target.textContent = msg; setTimeout(() => { ev.target.textContent = 'Copy as text'; }, 1800); };
       (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
         .then(() => done('Copied'), () => { prompt('Copy this text:', text); });
@@ -767,7 +718,7 @@
       else if ((ev.key === 'Delete' || ev.key === 'Backspace') && state.selected !== null) { ev.preventDefault(); removeAt(state.selected); }
     });
     window.addEventListener('hashchange', () => {
-      const next = fromHash();
+      const next = Share.parseHash(location.hash);
       if (!next) return;
       if (next.custom && next.custom.length) { importShared(next.custom); recompile(); }
       Object.assign(state, { startPos: next.startPos || state.startPos, startWeight: next.startWeight || state.startWeight, strip: next.strip.filter((id) => g.moveById[id]) });
