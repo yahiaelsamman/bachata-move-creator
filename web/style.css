@@ -212,8 +212,13 @@ th { color: var(--muted); font-weight: 500; }
 code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85em; }
 pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
 
+button.primary:disabled { background: var(--surface); color: var(--muted); border-color: var(--line); }
+.summary:empty { display: none; }
 @media (max-width: 520px) {
   .domino { width: calc(50vw - 40px); }
+  .toolbar { gap: 8px; }
+  .toolbar button, .toolbar select { padding: 5px 9px; font-size: 0.92rem; }
+  h1 { font-size: 1.3rem; }
   .spacer { display: none; }
   .toolbar label:first-child { width: 100%; }
   #start-pos { flex: 1; width: auto; }
@@ -257,7 +262,8 @@ pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; 
 
 /* ---------------------------------------------------------------- empty state, keys */
 .empty {
-  flex: 1;
+  flex: 1 1 100%;
+  margin-top: 8px;
   border: 1.5px dashed var(--line);
   border-radius: var(--radius);
   padding: 14px 16px;

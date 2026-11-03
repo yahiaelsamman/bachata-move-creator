@@ -126,6 +126,8 @@
     renderPositions();
     renderCompounds();
     $('btn-undo').disabled = undoStack.length === 0;
+    $('btn-practice').disabled = state.strip.length === 0;
+    $('btn-clear').disabled = state.strip.length === 0;
   }
 
   function renderErrors() {
@@ -182,7 +184,7 @@
         `ends in ${posName(result.end)}, ${result.weight} weight` +
         (breaks ? ` · ${breaks} break${breaks > 1 ? 's' : ''}` : '') +
         (warnings ? ` · ${warnings} soft warning${warnings > 1 ? 's' : ''}` : '')
-      : 'Empty combo. Pick a start position, then add moves below.';
+      : '';
   }
 
   function domino(it, i) {
@@ -349,7 +351,7 @@
       const all = MG.nextMoves(g, it.to).filter((e) => g.moveById[e.move].kind !== 'compound');
       const good = all.filter(fits);
       const shown = state.showAllInsert ? all : good;
-      wrap.append(h('h2', {}, 'Insert after this'),
+      wrap.append(...[h('h2', {}, 'Insert after this'),
         h('p', { class: 'muted' }, next
           ? `${good.length} of ${all.length} moves keep the next domino connected.`
           : 'This is the last domino.'),
@@ -364,7 +366,7 @@
         next && good.length < all.length ? h('button', {
           type: 'button', class: 'ghost',
           onclick: () => { state.showAllInsert = !state.showAllInsert; render(); },
-        }, state.showAllInsert ? 'Show only moves that fit' : `Show all ${all.length} (some will need a bridge)`) : null);
+        }, state.showAllInsert ? 'Show only moves that fit' : `Show all ${all.length} (some will need a bridge)`) : null].filter(Boolean));
     }
     return wrap;
   }
