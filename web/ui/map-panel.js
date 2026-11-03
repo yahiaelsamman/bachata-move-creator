@@ -4,6 +4,7 @@
   const MG = window.MoveGraph;
   const PM = window.PositionMap;
   const { $, h, button, optionList, levelDots, posName, shortName, state, edit } = App;
+  const moveName = (id) => App.g.moveById[id].name;
 
   App.renderMap = function (result) {
     const path = result.items.filter((it) => !it.broken && it.from).map((it) => ({ from: it.from, to: it.to }));
@@ -18,58 +19,81 @@
     App.render();
   };
 
+  /** Info for the picked position: ways in and out, bridges from the combo's end, or the moves of a tapped arrow. */
   function renderMapInfo(result) {
     const g = App.g;
-    const box = $('map-info');
     const id = state.mapSelected;
     if (!id || !g.posById[id]) {
-      box.replaceChildren(h('p', { class: 'muted' },
+      $('map-info').replaceChildren(h('p', { class: 'muted' },
         `${g.positions.length} positions, ${g.edges.filter((e) => MG.isTransition(g, e)).length} position-changing connections. ` +
         'Pick a position on the map to see its ways in and out.'));
       return;
     }
-    const group = (edges, key) => {
-      const by = {};
-      for (const e of edges) {
-        if (!MG.isTransition(g, e)) continue;
-        (by[e[key]] = by[e[key]] || new Set()).add(g.moveById[e.move].name);
-      }
-      return Object.entries(by).sort((a, b) => posName(a[0]).localeCompare(posName(b[0])));
-    };
     const link = state.mapLink && state.mapLink.from === id ? state.mapLink : null;
-    const linkMoves = link ? [...new Set(g.outgoing[id].filter((e) => e.to === link.to && MG.isTransition(g, e)).map((e) => e.move))] : [];
-    const outs = group(g.outgoing[id], 'to');
-    const ins = group(g.incoming[id], 'from');
-    const loops = MG.loopMoves(g, id).map((m) => g.moveById[m].name).sort();
-    const list = (rows, arrow) => rows.length
-      ? h('ul', { class: 'map-list' }, rows.map(([pid, names]) => h('li', {},
-        button(arrow + ' ' + shortName(pid), () => App.showOnMap(pid), { class: 'link' }),
-        ': ', [...names].sort().join(', '))))
-      : h('p', { class: 'muted' }, 'None yet.');
-    const bridges = result.end !== id ? MG.findBridges(g, result.end, id, { limit: 3, maxLevel: state.maxLevel }) : [];
-    box.replaceChildren(h('div', {},
+    const outs = neighbours(g.outgoing[id], 'to');
+    const ins = neighbours(g.incoming[id], 'from');
+    const loops = MG.loopMoves(g, id).map(moveName).sort();
+    $('map-info').replaceChildren(h('div', {},
       h('div', { class: 'panel-head' }, h('h3', {}, posName(id)), button('Close', () => App.showOnMap(null), { class: 'ghost' })),
       App.sketchFigure(id, 'Leader view'),
       h('div', { class: 'actions' },
         button('Start a new combo here', () => edit.startNewComboAt(id)),
         result.end === id ? h('span', { class: 'muted' }, 'Your combo ends here.') : null),
-      link ? [h('h4', {}, `${shortName(link.from)} → ${shortName(link.to)} (${linkMoves.length})`),
-        optionList(linkMoves.map((mid) => ({
-          label: g.moveById[mid].name,
-          sub: [`${g.moveById[mid].counts} ct `, levelDots(g.moveById[mid].level)],
-          disabled: result.end !== id,
-          title: result.end === id ? 'Add to the combo' : `Your combo ends in ${posName(result.end)}`,
-          onclick: () => { state.mapSelected = link.to; state.mapLink = null; edit.add([mid]); },
-        })))] : null,
-      bridges.length ? [h('h4', {}, `Get here from the end of your combo (${shortName(result.end)})`),
-        optionList(bridges.map((path) => ({
-          label: path.map((m) => g.moveById[m].name).join(' › '),
-          sub: `+${path.length}`,
-          onclick: () => edit.add(path),
-        })))] : null,
-      h('h4', {}, `Ways out (${outs.reduce((n, [, s]) => n + s.size, 0)})`), list(outs, '→'),
-      h('h4', {}, `Ways in (${ins.reduce((n, [, s]) => n + s.size, 0)})`), list(ins, '←'),
+      link ? linkSection(link, result) : null,
+      bridgeToHere(id, result),
+      h('h4', {}, `Ways out (${countMoves(outs)})`), waysList(outs, '→'),
+      h('h4', {}, `Ways in (${countMoves(ins)})`), waysList(ins, '←'),
       loops.length ? [h('h4', {}, `In place (${loops.length})`), h('p', { class: 'small' }, loops.join(', '))] : null));
+  }
+
+  /** Position-changing edges grouped by the position at their other `end`: [[posId, Set of move names]], by name. */
+  function neighbours(edges, end) {
+    const byPos = {};
+    for (const e of edges) {
+      if (!MG.isTransition(App.g, e)) continue;
+      (byPos[e[end]] = byPos[e[end]] || new Set()).add(moveName(e.move));
+    }
+    return Object.entries(byPos).sort((a, b) => posName(a[0]).localeCompare(posName(b[0])));
+  }
+
+  const countMoves = (rows) => rows.reduce((n, [, names]) => n + names.size, 0);
+
+  function waysList(rows, arrow) {
+    if (!rows.length) return h('p', { class: 'muted' }, 'None yet.');
+    return h('ul', { class: 'map-list' }, rows.map(([posId, names]) => h('li', {},
+      button(arrow + ' ' + shortName(posId), () => App.showOnMap(posId), { class: 'link' }),
+      ': ', [...names].sort().join(', '))));
+  }
+
+  /** The moves of a tapped arrow. They can be added when the combo ends where the arrow starts. */
+  function linkSection(link, result) {
+    const g = App.g;
+    const ids = [...new Set(g.outgoing[link.from].filter((e) => e.to === link.to && MG.isTransition(g, e)).map((e) => e.move))];
+    const atEnd = result.end === link.from;
+    return [
+      h('h4', {}, `${shortName(link.from)} → ${shortName(link.to)} (${ids.length})`),
+      optionList(ids.map((id) => ({
+        label: moveName(id),
+        sub: [`${g.moveById[id].counts} ct `, levelDots(g.moveById[id].level)],
+        disabled: !atEnd,
+        title: atEnd ? 'Add to the combo' : `Your combo ends in ${posName(result.end)}`,
+        onclick: () => { state.mapSelected = link.to; state.mapLink = null; edit.add([id]); },
+      }))),
+    ];
+  }
+
+  /** Short ways from the end of the combo to this position. */
+  function bridgeToHere(id, result) {
+    const bridges = result.end !== id ? MG.findBridges(App.g, result.end, id, { limit: 3, maxLevel: state.maxLevel }) : [];
+    if (!bridges.length) return null;
+    return [
+      h('h4', {}, `Get here from the end of your combo (${shortName(result.end)})`),
+      optionList(bridges.map((path) => ({
+        label: path.map(moveName).join(' › '),
+        sub: `+${path.length}`,
+        onclick: () => edit.add(path),
+      }))),
+    ];
   }
 
   /** Clicks (and Enter/Space) on the map: an arrow shows its moves, a position toggles its info. */
