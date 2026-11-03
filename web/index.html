@@ -61,6 +61,22 @@
     </div>
   </section>
 
+  <details class="ref" id="library-section">
+    <summary>Move library</summary>
+    <div class="lib-controls">
+      <input id="lib-search" type="search" placeholder="Search moves, notes or positions…">
+      <select id="lib-kind" aria-label="Kind">
+        <option value="all">all kinds</option>
+        <option value="move">move</option>
+        <option value="styling">styling</option>
+        <option value="adjuster">adjuster</option>
+        <option value="compound">compound</option>
+      </select>
+      <label class="small muted"><input type="checkbox" id="lib-check"> only ⚑ needs review</label>
+    </div>
+    <div id="library"></div>
+  </details>
+
   <details class="ref">
     <summary>Positions</summary>
     <div id="positions"></div>

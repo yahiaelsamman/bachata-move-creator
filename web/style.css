@@ -393,3 +393,10 @@ td .small { font-size: 0.8rem; }
 }
 .mf-chip:has(input:checked) { background: var(--accent-soft); border-color: var(--accent); }
 .mf-chip input { accent-color: var(--accent); margin: 0; }
+
+/* ---------------------------------------------------------------- move library */
+.lib-controls { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 6px 0 4px; }
+.lib-controls input[type="search"] { flex: 1 1 240px; }
+.lib-controls label { display: inline-flex; gap: 6px; align-items: center; }
+table.lib td:nth-child(4) { text-align: center; }
+table.lib button { padding: 3px 10px; font-size: 0.85rem; }

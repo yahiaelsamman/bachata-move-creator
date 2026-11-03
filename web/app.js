@@ -131,6 +131,7 @@
     renderPositions();
     renderCompounds();
     renderMyMoves();
+    renderLibrary(result);
     $('btn-undo').disabled = undoStack.length === 0;
     $('btn-practice').disabled = state.strip.length === 0;
     $('btn-clear').disabled = state.strip.length === 0;
@@ -527,6 +528,60 @@
         }, `Delete "${m.name}"`)))));
   }
 
+  // ------------------------------------------------------------ move library
+  function endpoints(id) {
+    const edges = g.edgesByMove[id] || [];
+    const froms = [...new Set(edges.map((e) => e.from))];
+    const same = edges.length && edges.every((e) => e.from === e.to);
+    const tos = same ? null : [...new Set(edges.map((e) => e.to))];
+    return { froms, tos, all: froms.length === g.positions.length };
+  }
+
+  function renderLibrary(result) {
+    const box = $('library');
+    if (!$('library-section').open) { box.replaceChildren(); return; }
+    const q = $('lib-search').value.trim().toLowerCase();
+    const kind = $('lib-kind').value;
+    const onlyCheck = $('lib-check').checked;
+    const rows = g.moves
+      .filter((m) => kind === 'all' || m.kind === kind)
+      .filter((m) => !onlyCheck || m.check)
+      .filter((m) => m.level <= state.maxLevel)
+      .map((m) => ({ m, ep: endpoints(m.id) }))
+      .filter(({ m, ep }) => {
+        if (!q) return true;
+        const hay = [m.name, m.notes, m.id, ...ep.froms.map(posName), ...(ep.tos || []).map(posName)].join(' ').toLowerCase();
+        return hay.includes(q);
+      })
+      .sort((a, b) => a.m.name.localeCompare(b.m.name));
+    const fitsEnd = (id) => (g.edgesByMove[id] || []).some((e) => e.from === result.end);
+    const list = (ids) => ids.map(short).join(', ');
+    box.replaceChildren(
+      h('p', { class: 'muted small' }, `${rows.length} of ${g.moves.length} moves` +
+        (state.maxLevel < 3 ? ` (level filter: up to ${LEVEL_NAME[state.maxLevel]})` : '') + '. “Add” appears when a move can follow the end of your combo.'),
+      h('div', { class: 'table-wrap' }, h('table', { class: 'lib' },
+        h('thead', {}, h('tr', {}, ['Move', 'Starts in', 'Ends in', 'Counts', ''].map((t) => h('th', {}, t)))),
+        h('tbody', {}, rows.map(({ m, ep }) => h('tr', {},
+          h('td', {}, h('strong', {}, m.name), ' ', badge(m.kind), ' ', dots(m.level),
+            m.check ? h('span', { class: 'flag', title: m.check }, ' ⚑') : null,
+            m.notes ? [h('br'), h('span', { class: 'muted small' }, m.notes)] : null),
+          h('td', { class: 'small' }, ep.all ? 'any position' : list(ep.froms)),
+          h('td', { class: 'small' }, ep.tos ? list(ep.tos) : '↺ same'),
+          h('td', {}, String(m.counts)),
+          h('td', {}, fitsEnd(m.id) ? h('button', {
+            type: 'button',
+            onclick: () => { state.strip.push(m.id); state.selected = null; update(); },
+          }, 'Add') : null)))))));
+  }
+
+  function initLibrary() {
+    const rerender = () => render();
+    $('lib-search').addEventListener('input', rerender);
+    $('lib-kind').addEventListener('change', rerender);
+    $('lib-check').addEventListener('change', rerender);
+    $('library-section').addEventListener('toggle', rerender);
+  }
+
   function initMoveForm() {
     const form = $('move-form');
     const to = form.elements.to;
@@ -688,6 +743,7 @@
   initToolbar();
   initMap();
   initMoveForm();
+  initLibrary();
   lastSnap = snapshot();
   persist();
   render();

@@ -785,6 +785,35 @@
   notes: From salsa descriptions - start from left-over-right double hands; she steps forward on 5 and turns left on 6-7.
   check: Described for salsa; bachata timing and end hold not confirmed.
 
+- id: inside-turn-hand-change
+  name: Inside turn with hand change
+  kind: move
+  level: 2
+  from: open_LR
+  to: open_RR
+  counts: 4
+  notes: From BachataHub - lead an inside turn with your left hand and catch her hand with your right on the exit.
+
+- id: shadow-take-both-hands
+  name: Take both hands in shadow
+  kind: adjuster
+  level: 2
+  from: shadow_waist
+  to: shadow
+  counts: 0
+  opposite: shadow-hand-to-waist
+  notes: Your left hand passes her right hand to your right while your left picks up her left.
+
+- id: shadow-hand-to-waist
+  name: Hand to waist in shadow
+  kind: adjuster
+  level: 2
+  from: shadow
+  to: shadow_waist
+  counts: 0
+  opposite: shadow-take-both-hands
+  notes: Let go of her right hand with your right and place it on her waist; pass her right hand to your left.
+
 # right-to-left
 - id: hand-change-lr-to-rl
   name: Hand change L-R to R-L

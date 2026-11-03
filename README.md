@@ -60,6 +60,11 @@ npm test
   slider, optional click, loop). Catches and releases show on the card they
   happen in.
 
+**Move library**
+- Every move in one searchable list (name, notes or position), filterable by kind
+  and "needs review", with where it starts and ends. **Add** appears when the move
+  can follow the end of your combo.
+
 **Levels**
 - Every move has a draft level (beginner, intermediate, advanced; compounds take
   their hardest part). The **Level** filter hides harder moves everywhere,
