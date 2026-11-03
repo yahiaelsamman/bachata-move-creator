@@ -52,6 +52,7 @@
   }
 
   const pageUrl = () => location.href.split('#')[0] + App.shareHash();
+  const practiceSketch = (posId) => (App.g.posById[posId] ? window.LeaderSketch.sketchSVG(App.g.posById[posId]) : '');
 
   function initToolbar() {
     for (const p of App.g.positions) $('start-pos').append(h('option', { value: p.id }, p.name));
@@ -69,7 +70,7 @@
       const result = App.evaluate();
       if (!result.items.length) return alert('Add some moves first.');
       if (!requireUnbroken(result)) return;
-      window.Practice.open(result.items, { posName, sketchSVG: window.LeaderSketch.sketchSVG, positions: App.g.posById }, state.selected ?? 0);
+      window.Practice.open(result.items, { posName, sketch: practiceSketch }, state.selected ?? 0);
     });
     $('btn-share').addEventListener('click', (ev) => App.copyText(pageUrl(), ev.currentTarget, 'Link copied'));
     $('btn-text').addEventListener('click', (ev) => {

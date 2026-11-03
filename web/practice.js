@@ -3,8 +3,12 @@
  * beat (tempo in BPM, optional click sound). 0-count moves (catches, releases)
  * are shown on the card of the move they happen in.
  *
- *   Practice.open(items, { posName, sketchSVG, positions })
- *     items: the evaluated strip (MoveGraph.evaluateStrip(...).items)
+ *   Practice.open(items, view, startAt)
+ *     items:   the evaluated strip (MoveGraph.evaluateStrip(...).items)
+ *     view:    { posName(id), sketch(id) -> SVG markup, or '' }
+ *     startAt: index of the item to start on
+ *
+ * Self-contained (no App): the Node tests load it with a small window shim.
  */
 (function () {
   'use strict';
@@ -15,7 +19,9 @@
   })();
   const savePrefs = () => { try { localStorage.setItem('bmc.practice', JSON.stringify(prefs)); } catch { /* ignore */ } };
 
-  let dlg, steps = [], idx = 0, beat = 0, timer = null, audio = null, helpers = null;
+  let dlg, steps = [], idx = 0, beat = 0, timer = null, audio = null, view = null;
+  const q = (selector) => dlg.querySelector(selector);
+  const loops = () => prefs.loop !== false;
 
   /** Fold 0-count moves into the next counted move ("then on the fly: …"). */
   function buildSteps(items) {
@@ -60,26 +66,25 @@
         <label><input type="checkbox" class="pr-loop"> Loop</label>
       </div>`;
     document.body.append(dlg);
-    const $ = (s) => dlg.querySelector(s);
-    $('.pr-close').addEventListener('click', () => dlg.close());
-    $('.pr-prev').addEventListener('click', () => go(idx - 1));
-    $('.pr-nextbtn').addEventListener('click', () => go(idx + 1));
-    $('.pr-play').addEventListener('click', toggle);
-    const bpm = $('.pr-bpm');
+    q('.pr-close').addEventListener('click', () => dlg.close());
+    q('.pr-prev').addEventListener('click', () => go(idx - 1));
+    q('.pr-nextbtn').addEventListener('click', () => go(idx + 1));
+    q('.pr-play').addEventListener('click', toggle);
+    const bpm = q('.pr-bpm');
     bpm.value = prefs.bpm || 124;
-    $('.pr-bpm-val').textContent = bpm.value;
+    q('.pr-bpm-val').textContent = bpm.value;
     bpm.addEventListener('input', () => {
       prefs.bpm = Number(bpm.value); savePrefs();
-      $('.pr-bpm-val').textContent = bpm.value;
+      q('.pr-bpm-val').textContent = bpm.value;
       if (timer) { stop(); start(); }
     });
-    $('.pr-sound').checked = Boolean(prefs.sound);
-    $('.pr-sound').addEventListener('change', (e) => { prefs.sound = e.target.checked; savePrefs(); });
-    $('.pr-voice').checked = Boolean(prefs.voice);
-    $('.pr-voice').addEventListener('change', (e) => { prefs.voice = e.target.checked; savePrefs(); });
-    if (!('speechSynthesis' in window)) $('.pr-voice').closest('label').hidden = true;
-    $('.pr-loop').checked = prefs.loop !== false;
-    $('.pr-loop').addEventListener('change', (e) => { prefs.loop = e.target.checked; savePrefs(); });
+    // Checkboxes mirror prefs.sound, prefs.voice and prefs.loop (loop is on unless turned off).
+    for (const name of ['sound', 'voice', 'loop']) {
+      const box = q('.pr-' + name);
+      box.checked = name === 'loop' ? loops() : Boolean(prefs[name]);
+      box.addEventListener('change', () => { prefs[name] = box.checked; savePrefs(); });
+    }
+    if (!('speechSynthesis' in window)) q('.pr-voice').closest('label').hidden = true;
     dlg.addEventListener('close', stop);
     dlg.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT') return;
@@ -92,8 +97,7 @@
 
   function go(i) {
     if (!steps.length) return;
-    const loop = dlg.querySelector('.pr-loop').checked;
-    if (i >= steps.length) i = loop ? 0 : steps.length - 1;
+    if (i >= steps.length) i = loops() ? 0 : steps.length - 1;
     if (i < 0) i = 0;
     idx = i;
     beat = 0;
@@ -101,28 +105,29 @@
   }
 
   function render() {
-    const $ = (s) => dlg.querySelector(s);
     const step = steps[idx];
-    $('.pr-progress').textContent = steps.length ? `${idx + 1} / ${steps.length}` : '';
+    q('.pr-progress').textContent = steps.length ? `${idx + 1} / ${steps.length}` : '';
     if (!step) {
-      $('.pr-card').innerHTML = '<p>Add some moves first.</p>';
+      q('.pr-card').innerHTML = '<p>Add some moves first.</p>';
       return;
     }
     const { it, extras = [], after = [] } = step;
     const m = it.move;
     const firstFrom = extras.length ? extras[0].from : it.from;
     const lastTo = after.length ? after[after.length - 1].to : it.to;
-    const sk = (id, label) => helpers.positions[id]
-      ? `<figure><div>${helpers.sketchSVG(helpers.positions[id])}</div><figcaption>${label}: ${esc(helpers.posName(id))}</figcaption></figure>` : '';
-    $('.pr-card').innerHTML = `
+    const sk = (id, label) => {
+      const svg = view.sketch(id);
+      return svg ? `<figure><div>${svg}</div><figcaption>${label}: ${esc(view.posName(id))}</figcaption></figure>` : '';
+    };
+    q('.pr-card').innerHTML = `
       ${extras.length ? `<p class="pr-extra">First, on the fly: ${extras.map((x) => esc(x.move.name)).join(' › ')}</p>` : ''}
       <h2 class="pr-name">${esc(m.name)}</h2>
       <p class="pr-meta"><span class="badge k-${esc(m.kind)}">${esc(m.kind)}</span> ${m.counts} counts · starts on ${it.beat}</p>
       ${after.length ? `<p class="pr-extra">Then, on the fly: ${after.map((x) => esc(x.move.name)).join(' › ')}</p>` : ''}
       ${m.notes ? `<p class="pr-notes">${esc(m.notes)}</p>` : ''}
       <div class="pr-sketches">${firstFrom === lastTo ? sk(firstFrom, 'Start and end') : sk(firstFrom, 'Start') + sk(lastTo, 'End')}</div>`;
-    const nextStep = steps[idx + 1] || (dlg.querySelector('.pr-loop').checked ? steps[0] : null);
-    $('.pr-next').textContent = nextStep ? `Next: ${nextStep.it.move.name}` : 'Last move';
+    const nextStep = steps[idx + 1] || (loops() ? steps[0] : null);
+    q('.pr-next').textContent = nextStep ? `Next: ${nextStep.it.move.name}` : 'Last move';
     paintBeats();
   }
 
@@ -139,7 +144,7 @@
   }
 
   function click(accent) {
-    if (!dlg.querySelector('.pr-sound').checked) return;
+    if (!prefs.sound) return;
     try {
       audio = audio || new (window.AudioContext || window.webkitAudioContext)();
       const o = audio.createOscillator();
@@ -155,7 +160,7 @@
 
   const WORDS = ['one', 'two', 'three', 'tap', 'five', 'six', 'seven', 'tap'];
   function say(k) {
-    if (!dlg.querySelector('.pr-voice').checked || !('speechSynthesis' in window)) return;
+    if (!prefs.voice || !('speechSynthesis' in window)) return;
     try {
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(WORDS[k]);
@@ -171,7 +176,7 @@
     const n = step.it.move.counts;
     if (beat >= n) {
       const last = idx === steps.length - 1;
-      if (last && !dlg.querySelector('.pr-loop').checked) return stop();
+      if (last && !loops()) return stop();
       go(idx + 1);
     }
     const current = (steps[idx].it.countFrom + beat) % 8;
@@ -182,11 +187,11 @@
   }
 
   function start() {
-    const bpm = Number(dlg.querySelector('.pr-bpm').value) || 124;
+    const bpm = Number(q('.pr-bpm').value) || 124;
     if (audio && audio.state === 'suspended') audio.resume();
     tick();
     timer = setInterval(tick, 60000 / bpm);
-    dlg.querySelector('.pr-play').textContent = 'Pause';
+    q('.pr-play').textContent = 'Pause';
   }
 
   function stop() {
@@ -194,7 +199,7 @@
     try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch { /* ignore */ }
     timer = null;
     if (dlg) {
-      dlg.querySelector('.pr-play').textContent = 'Play';
+      q('.pr-play').textContent = 'Play';
       paintBeats();
     }
   }
@@ -208,8 +213,8 @@
   }
 
   window.Practice = {
-    open(items, h, startAt = 0) {
-      helpers = h;
+    open(items, pageView, startAt = 0) {
+      view = pageView;
       ensureDialog();
       steps = buildSteps(items.filter((it) => !it.broken));
       // Start on the step that contains the selected domino, if any.
@@ -220,7 +225,7 @@
       render();
       if (typeof dlg.showModal === 'function') dlg.showModal();
       else dlg.setAttribute('open', '');
-      dlg.querySelector('.pr-play').focus();
+      q('.pr-play').focus();
     },
     _buildSteps: buildSteps,
   };

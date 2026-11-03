@@ -205,8 +205,12 @@ const flows = {
     await page.click('#btn-practice');
     assert.equal(await page.locator('dialog[open]').count(), 1);
     assert.equal(await text(page, '.pr-name'), 'Cross body lead');
+    assert.match(await text(page, '.pr-sketches'), /Start and end: Open, left-to-right/);
     await page.click('.pr-nextbtn');
     assert.equal(await text(page, '.pr-name'), 'Close frame');
+    assert.equal(await page.locator('.pr-sketches svg').count(), 2);
+    await page.click('.pr-nextbtn'); // loops back to the start by default
+    assert.equal(await text(page, '.pr-name'), 'Cross body lead');
     await page.keyboard.press('Escape');
     assert.equal(await page.locator('dialog[open]').count(), 0);
   },
