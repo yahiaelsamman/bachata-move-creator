@@ -2,7 +2,9 @@
 #
 # Fields
 #   id        unique, kebab-case
-#   name      display name (keep naming consistent)
+#   name      display name. Convention: family, then action, then variant in
+#             parentheses, e.g. "Hammerlock entry (left arm)", "Shadow exit (push-out)",
+#             "Hand change (L-R to handshake)". Families sort together A-Z.
 #   kind      move | styling | adjuster | compound
 #               styling  = starts and ends in the same position ("double domino")
 #               adjuster = small connector (hand change, catch, release, close frame)
@@ -58,7 +60,7 @@
   counts: 4
 
 - id: head-roll
-  name: Led head roll
+  name: Head roll (led)
   kind: styling
   level: 3
   from: [closed, neck_wrap]
@@ -129,7 +131,7 @@
   notes: "Also called the inside turn. Common timing: C-shaped prep with the lead hand on 1-4, turn on 5-8."
 
 - id: follower-double-right-turn
-  name: Follower double right turn
+  name: Follower right turn (double)
   kind: move
   level: 2
   from: [open_LR, open_RR]
@@ -163,7 +165,7 @@
   counts: 8
 
 - id: cbl-inside-turn
-  name: Cross body lead with inside turn
+  name: Cross body lead (with inside turn)
   kind: move
   level: 2
   from: open_LR
@@ -181,7 +183,7 @@
   notes: Leader raises left hand, follower turns left into the wrap.
 
 - id: cuddle-unwrap
-  name: Cuddle unwrap
+  name: Cuddle exit (unwrap)
   kind: move
   level: 2
   from: cuddle
@@ -190,7 +192,7 @@
   weight: {to: mirrored}
 
 - id: cuddle-release-spin
-  name: Cuddle release spin
+  name: Cuddle exit (release spin)
   kind: move
   level: 2
   from: cuddle
@@ -200,7 +202,7 @@
   notes: Release the right hand, follower unwinds to her right.
 
 - id: cross-right-turn
-  name: Crossed-hands right turn
+  name: Crossed hands right turn
   kind: move
   level: 2
   from: cross_Ltop
@@ -211,7 +213,7 @@
   check: "Conflicting sources: Library of Dance and a common rule of thumb say you turn toward the hand on top, i.e. the right turn is led from right-over-left. This draft follows your rule (left over right allows the right turn). Decide which is true for you."
 
 - id: cross-left-turn
-  name: Crossed-hands left turn
+  name: Crossed hands left turn
   kind: move
   level: 2
   from: cross_Rtop
@@ -221,7 +223,7 @@
   check: "See the crossed-hands right turn: sources suggest the turn from right-over-left is a right (outside) turn, not a left turn."
 
 - id: cross-half-turn-shadow
-  name: Crossed half turn into shadow
+  name: Crossed hands half turn into shadow
   kind: move
   level: 2
   from: cross_Ltop
@@ -232,7 +234,7 @@
   check: Direction of the half turn and which cross allows it.
 
 - id: shadow-exit
-  name: Shadow exit turn
+  name: Shadow exit (turn, to L-L)
   kind: move
   level: 2
   from: shadow
@@ -259,7 +261,7 @@
   counts: 4
 
 - id: neck-slide
-  name: Neck slide
+  name: Neck wrap exit (slide to L-R)
   kind: move
   level: 3
   from: neck_wrap
@@ -269,7 +271,7 @@
 
 # ---------------------------------------------------------------- adjusters
 - id: hand-change-to-handshake
-  name: Hand change to handshake
+  name: Hand change (L-R to handshake)
   kind: adjuster
   level: 1
   from: open_LR
@@ -278,7 +280,7 @@
   opposite: hand-change-to-open
 
 - id: hand-change-to-open
-  name: Hand change to open L-R
+  name: Hand change (handshake to L-R)
   kind: adjuster
   level: 1
   from: open_RR
@@ -287,7 +289,7 @@
   opposite: hand-change-to-handshake
 
 - id: hand-change-ll-to-lr
-  name: Hand change L-L to L-R
+  name: Hand change (L-L to L-R)
   kind: adjuster
   level: 1
   from: open_LL
@@ -295,7 +297,7 @@
   counts: 4
 
 - id: catch-second-hand
-  name: Catch second hand
+  name: Catch (second hand)
   kind: adjuster
   level: 1
   from: open_LR
@@ -303,7 +305,7 @@
   counts: 0
 
 - id: catch-left-hand
-  name: Catch left hand
+  name: Catch (left hand)
   kind: adjuster
   level: 1
   from: open_RL
@@ -311,7 +313,7 @@
   counts: 0
 
 - id: release-right
-  name: Release right hand
+  name: Release (right hand)
   kind: adjuster
   level: 1
   from: double
@@ -319,7 +321,7 @@
   counts: 0
 
 - id: release-left
-  name: Release left hand
+  name: Release (left hand)
   kind: adjuster
   level: 1
   from: double
@@ -327,7 +329,7 @@
   counts: 0
 
 - id: regrip-cross-r-over-l
-  name: Regrip crossed (right over left)
+  name: Crossed hands regrip (right over left)
   kind: adjuster
   level: 2
   from: open_RR
@@ -336,7 +338,7 @@
   notes: Keep the handshake on top, catch left-to-left underneath.
 
 - id: regrip-cross-l-over-r
-  name: Regrip crossed (left over right)
+  name: Crossed hands regrip (left over right)
   kind: adjuster
   level: 2
   from: open_LL
@@ -345,7 +347,7 @@
   notes: Keep left-to-left on top, catch right-to-right underneath.
 
 - id: release-cross-to-handshake
-  name: Release cross to handshake
+  name: Crossed hands release (to handshake)
   kind: adjuster
   level: 2
   from: cross_Rtop
@@ -353,7 +355,7 @@
   counts: 0
 
 - id: release-cross-to-ll
-  name: Release cross to L-L
+  name: Crossed hands release (to L-L)
   kind: adjuster
   level: 2
   from: cross_Ltop
@@ -377,7 +379,7 @@
   counts: 4
 
 - id: hand-to-neck
-  name: Hand to neck
+  name: Neck wrap entry (hand to neck)
   kind: adjuster
   level: 3
   from: closed
@@ -386,7 +388,7 @@
   notes: Leader places the follower's right hand behind his neck.
 
 - id: release-all
-  name: Release all
+  name: Release (both hands)
   kind: adjuster
   level: 2
   from: {frame: [closed, semi, open]}
@@ -394,7 +396,7 @@
   counts: 0
 
 - id: reconnect
-  name: Reconnect (left-to-right)
+  name: Reconnect (to L-R)
   kind: adjuster
   level: 2
   from: apart
@@ -409,7 +411,7 @@
 
 # closed
 - id: left-turn-into-closed
-  name: Left turn into closed
+  name: Closed entry (left turn)
   kind: move
   level: 1
   from: open_LR
@@ -447,7 +449,7 @@
 
 # shadow, hand on waist
 - id: half-turn-into-shadow
-  name: Half turn into shadow
+  name: Shadow entry (half turn from closed)
   kind: move
   level: 2
   from: closed
@@ -457,7 +459,7 @@
   notes: Follower turns right half way; leader's right hand slides to her waist.
 
 - id: shadow-entry-from-open
-  name: Shadow entry from open
+  name: Shadow entry (from open)
   kind: move
   level: 2
   from: open_LR
@@ -467,7 +469,7 @@
   notes: Leader steps behind on a check step while the follower keeps her basic.
 
 - id: shadow-push-out
-  name: Shadow push-out exit
+  name: Shadow exit (push-out)
   kind: move
   level: 2
   from: shadow_waist
@@ -476,7 +478,7 @@
   weight: {to: mirrored}
 
 - id: shadow-lateral-exit
-  name: Shadow lateral exit
+  name: Shadow exit (lateral)
   kind: move
   level: 3
   from: shadow_waist
@@ -485,7 +487,7 @@
   weight: {to: mirrored}
 
 - id: shadow-slingshot-exit
-  name: Shadow slingshot exit
+  name: Shadow exit (slingshot)
   kind: move
   level: 3
   from: shadow_waist
@@ -494,7 +496,7 @@
   weight: {to: mirrored}
 
 - id: shadow-turn-to-closed
-  name: Shadow turn back to closed
+  name: Shadow exit (turn back to closed)
   kind: move
   level: 2
   from: shadow_waist
@@ -519,7 +521,7 @@
 
 # shadow, same hands
 - id: cross-half-turn-shadow-left
-  name: Crossed half turn into shadow (left)
+  name: Crossed hands half turn into shadow (left)
   kind: move
   level: 2
   from: cross_Rtop
@@ -529,7 +531,7 @@
   opposite: cross-half-turn-shadow
 
 - id: shadow-turn-back-l-over-r
-  name: Shadow turn back (left over right)
+  name: Shadow exit (turn back to crossed, left over right)
   kind: move
   level: 2
   from: shadow
@@ -540,7 +542,7 @@
   notes: Follower turns back to face; the hands cross again.
 
 - id: shadow-turn-back-r-over-l
-  name: Shadow turn back (right over left)
+  name: Shadow exit (turn back to crossed, right over left)
   kind: move
   level: 2
   from: shadow
@@ -551,7 +553,7 @@
 
 # hammerlock
 - id: crossed-hammerlock-entry
-  name: Hammerlock entry from crossed hands
+  name: Hammerlock entry (from crossed hands)
   kind: move
   level: 2
   from: cross_Rtop
@@ -560,7 +562,7 @@
   notes: Follower turns left with the right hand kept low, folding behind her back.
 
 - id: hammerlock-unwind-to-cross
-  name: Hammerlock unwind to crossed hands
+  name: Hammerlock unwind (to crossed hands)
   kind: move
   level: 2
   from: hammerlock_R
@@ -568,7 +570,7 @@
   counts: 4
 
 - id: hammerlock-release-to-ll
-  name: Hammerlock release to L-L
+  name: Hammerlock release (to L-L)
   kind: move
   level: 2
   from: hammerlock_R
@@ -585,7 +587,7 @@
 
 # cuddle
 - id: left-turn-into-cuddle
-  name: Left turn into cuddle
+  name: Cuddle entry (from left turn)
   kind: move
   level: 2
   from: open_LR
@@ -595,14 +597,14 @@
   notes: Left turn with the connection kept; leader catches her left hand as she wraps.
 
 - id: cuddle-walk
-  name: Cuddle walk forward and back
+  name: Cuddle walk (forward and back)
   kind: styling
   level: 2
   from: cuddle
   counts: 8
 
 - id: cuddle-unwrap-to-closed
-  name: Cuddle unwrap to closed
+  name: Cuddle exit (unwrap to closed)
   kind: move
   level: 2
   from: cuddle
@@ -612,7 +614,7 @@
   notes: Follower unwinds to face; leader lets go of her left hand and takes her back.
 
 - id: cuddle-slide-to-shadow
-  name: Cuddle slide to shadow
+  name: Cuddle slide (into shadow)
   kind: move
   level: 2
   from: cuddle
@@ -622,7 +624,7 @@
   notes: Leader lets go of her left hand, steps behind, right hand to her waist.
 
 - id: shadow-wrap-into-cuddle
-  name: Shadow wrap into cuddle
+  name: Shadow wrap (into cuddle)
   kind: move
   level: 2
   from: shadow_waist
@@ -633,7 +635,7 @@
 
 # neck wrap
 - id: arm-drape-to-neck
-  name: Arm drape to neck
+  name: Neck wrap entry (arm drape)
   kind: move
   level: 3
   from: open_LR
@@ -642,7 +644,7 @@
   notes: Leader lifts her right hand over his head to his neck as she steps in; right hand to her back.
 
 - id: neck-slide-to-closed
-  name: Neck slide to closed
+  name: Neck wrap exit (slide to closed)
   kind: adjuster
   level: 3
   from: neck_wrap
@@ -652,7 +654,7 @@
 
 # crossed hands
 - id: behind-back-to-crossed
-  name: Behind-the-back hand change to crossed hands
+  name: Crossed hands entry (behind-the-back hand change)
   kind: move
   level: 2
   from: open_LR
@@ -660,7 +662,7 @@
   counts: 8
 
 - id: crossed-matador
-  name: Crossed-hand matador
+  name: Crossed hands matador
   kind: move
   level: 3
   from: [cross_Rtop, cross_Ltop]
@@ -668,7 +670,7 @@
   counts: 8
 
 - id: crossed-double-face-loop
-  name: Crossed-hand double face loop
+  name: Crossed hands double face loop
   kind: move
   level: 3
   from: [cross_Rtop, cross_Ltop]
@@ -676,7 +678,7 @@
   counts: 8
 
 - id: hand-toss-top-r
-  name: Hand toss (right hand on top)
+  name: Crossed hands hand toss (right on top)
   kind: move
   level: 2
   from: cross_Rtop
@@ -685,7 +687,7 @@
   notes: Toss away the top right hand, keep left-to-left.
 
 - id: hand-toss-top-l
-  name: Hand toss (left hand on top)
+  name: Crossed hands hand toss (left on top)
   kind: move
   level: 2
   from: cross_Ltop
@@ -694,7 +696,7 @@
   notes: Toss away the top left hand, keep the handshake.
 
 - id: double-hand-toss
-  name: Double hand toss
+  name: Crossed hands double hand toss
   kind: move
   level: 3
   from: [cross_Rtop, cross_Ltop]
@@ -702,7 +704,7 @@
   counts: 4
 
 - id: crossed-outside-turn
-  name: Crossed-hands outside turn (right over left)
+  name: Crossed hands outside turn (right over left)
   kind: move
   level: 2
   from: cross_Rtop
@@ -722,7 +724,7 @@
 
 # left-arm hammerlock (Rueda wiki: her left arm behind her back holding his right hand)
 - id: hammerlock-left-entry
-  name: Hammerlock entry, left arm
+  name: Hammerlock entry (left arm)
   kind: move
   level: 2
   from: double
@@ -732,7 +734,7 @@
   notes: Follower turns right while the leader keeps his right hand (her left) low, folding her arm behind her back.
 
 - id: hammerlock-left-entry-from-rl
-  name: Hammerlock entry, left arm (from R-L)
+  name: Hammerlock entry (left arm, from R-L)
   kind: move
   level: 2
   from: open_RL
@@ -741,7 +743,7 @@
   notes: Turn her right with your right hand low so her left arm folds behind her back; catch her right hand with your left.
 
 - id: hammerlock-left-unwind
-  name: Hammerlock unwind, left arm
+  name: Hammerlock unwind (left arm)
   kind: move
   level: 2
   from: hammerlock_L
@@ -750,7 +752,7 @@
   opposite: hammerlock-left-entry
 
 - id: hammerlock-left-release
-  name: Hammerlock release, left arm
+  name: Hammerlock release (left arm)
   kind: move
   level: 2
   from: hammerlock_L
@@ -786,7 +788,7 @@
   check: Described for salsa; bachata timing and end hold not confirmed.
 
 - id: inside-turn-hand-change
-  name: Inside turn with hand change
+  name: Follower left turn (with hand change)
   kind: move
   level: 2
   from: open_LR
@@ -795,7 +797,7 @@
   notes: From BachataHub - lead an inside turn with your left hand and catch her hand with your right on the exit.
 
 - id: shadow-take-both-hands
-  name: Take both hands in shadow
+  name: Shadow hand switch (take both hands)
   kind: adjuster
   level: 2
   from: shadow_waist
@@ -805,7 +807,7 @@
   notes: Your left hand passes her right hand to your right while your left picks up her left.
 
 - id: shadow-hand-to-waist
-  name: Hand to waist in shadow
+  name: Shadow hand switch (hand to waist)
   kind: adjuster
   level: 2
   from: shadow
@@ -816,7 +818,7 @@
 
 # right-to-left
 - id: hand-change-lr-to-rl
-  name: Hand change L-R to R-L
+  name: Hand change (L-R to R-L)
   kind: adjuster
   level: 1
   from: open_LR
@@ -826,7 +828,7 @@
   notes: Right hand comes in, overlap, left releases.
 
 - id: hand-change-rl-to-lr
-  name: Hand change R-L to L-R
+  name: Hand change (R-L to L-R)
   kind: adjuster
   level: 1
   from: open_RL
@@ -860,7 +862,7 @@
   counts: 4
 
 - id: reconnect-closed
-  name: Reconnect to closed
+  name: Reconnect (to closed)
   kind: adjuster
   level: 2
   from: apart
@@ -869,7 +871,7 @@
   weight: {to: mirrored}
 
 - id: reconnect-double
-  name: Reconnect to double hands
+  name: Reconnect (to double hands)
   kind: adjuster
   level: 2
   from: apart
@@ -878,7 +880,7 @@
   weight: {to: mirrored}
 
 - id: reconnect-handshake
-  name: Reconnect to handshake
+  name: Reconnect (to handshake)
   kind: adjuster
   level: 2
   from: apart
