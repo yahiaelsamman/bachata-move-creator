@@ -24,6 +24,24 @@ const PAGE = 'file://' + path.resolve(__dirname, '../../web/index.html');
     ['start', async () => { const v = await p.$$eval('#start-pos option', os => os.map(o => o.value)); await p.selectOption('#start-pos', v[rnd(v.length)]); }],
     ['chips', async () => { const o = p.locator('.chips button'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
     ['save', async () => { await p.click('#btn-save'); }],
+    ['level', async () => { await p.selectOption('#max-level', ['1', '2', '3'][rnd(3)]); }],
+    ['library', async () => {
+      await p.locator('#library-section').evaluate((d) => { d.open = true; });
+      await p.fill('#lib-search', ['', 'turn', 'shadow', 'hammer', 'zzz'][rnd(5)]);
+      const o = p.locator('table.lib button'); const n = await o.count(); if (n) await o.nth(rnd(n)).click();
+    }],
+    ['addmove', async () => {
+      await p.locator('#my-section').evaluate((d) => { d.open = true; });
+      await p.fill('#move-form [name=name]', 'Fuzz move ' + rnd(1000));
+      await p.selectOption('#move-form [name=kind]', ['move', 'styling', 'adjuster'][rnd(3)]);
+      const chips = p.locator('.mf-chip'); const n = await chips.count(); await chips.nth(rnd(n)).click();
+      if (await p.locator('#move-form [name=to]').isEnabled()) {
+        const v = await p.$$eval('#move-form [name=to] option', (os) => os.map((o) => o.value));
+        await p.selectOption('#move-form [name=to]', v[rnd(v.length)]);
+      }
+      await p.click('#move-form button[type=submit]');
+    }],
+    ['text', async () => { if (!(await p.locator('#btn-text').isDisabled())) await p.click('#btn-text'); }],
     ['practice', async () => { if (await p.locator('#btn-practice').isDisabled()) return; await p.click('#btn-practice'); if (await p.locator('dialog[open]').count()) { await p.click('.pr-nextbtn'); await p.click('.pr-nextbtn'); await p.keyboard.press('Escape'); } }],
   ];
   for (let i = 0; i < 400; i++) {

@@ -311,7 +311,7 @@
       return !state.search || m.name.toLowerCase().includes(state.search.toLowerCase());
     });
     const search = h('input', {
-      class: 'search', type: 'search', placeholder: 'Filter moves…', value: state.search,
+      class: 'search', type: 'search', placeholder: 'Filter moves…', 'aria-label': 'Filter next moves', value: state.search,
       oninput: (ev) => {
         state.search = ev.target.value;
         const pos = ev.target.selectionStart;
