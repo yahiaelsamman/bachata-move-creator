@@ -158,29 +158,32 @@
     },
     addMove(move) {
       own.moves.push(move);
-      store.set('bmc.moves', own.moves);
-      App.reloadData();
+      saveOwn();
       App.render();
     },
     deleteMove(id) {
       own.moves = own.moves.filter((x) => x.id !== id);
-      store.set('bmc.moves', own.moves);
-      App.reloadData();
+      saveOwn();
       App.render();
     },
     /** Save the current combo as one compound domino. */
     saveCompound(name) {
       const id = Share.uniqueId(name, (taken) => Boolean(App.g.moveById[taken]), 'compound');
       own.compounds.push({ id, name, kind: 'compound', sequence: [...state.strip] });
-      store.set('bmc.compounds', own.compounds);
-      App.reloadData();
+      saveOwn();
       edit.setStrip([id], 0);
     },
     deleteCompound(id) {
       own.compounds = own.compounds.filter((x) => x.id !== id);
-      store.set('bmc.compounds', own.compounds);
-      App.reloadData();
+      saveOwn();
       App.render();
     },
   };
+
+  /** Store own moves and compounds, then recompile with them. */
+  function saveOwn() {
+    store.set('bmc.moves', own.moves);
+    store.set('bmc.compounds', own.compounds);
+    App.reloadData();
+  }
 })(window.App);
