@@ -16,15 +16,29 @@
     },
   };
 
-  const saved = store.get('bmc.state', {});
+  // A shared link (#start=…&weight=…&moves=a,b,c) wins over what this browser remembers.
+  function fromHash() {
+    const q = new URLSearchParams(location.hash.slice(1));
+    if (!q.has('moves') && !q.has('start')) return null;
+    return {
+      startPos: q.get('start') || undefined,
+      startWeight: q.get('weight') || undefined,
+      strip: (q.get('moves') || '').split(',').filter(Boolean),
+    };
+  }
+  const saved = fromHash() || store.get('bmc.state', {});
   const state = {
     startPos: saved.startPos || 'open_LR',
-    startWeight: saved.startWeight || 'mirrored',
+    startWeight: saved.startWeight === 'parallel' ? 'parallel' : 'mirrored',
     strip: Array.isArray(saved.strip) ? saved.strip : [],
     selected: null, // index into strip, or null = "what comes next"
     kindFilter: 'all',
     search: '',
+    showAllInsert: false,
   };
+  const undoStack = [];
+  let lastSnap = null;
+  const snapshot = () => JSON.stringify({ startPos: state.startPos, startWeight: state.startWeight, strip: state.strip });
   let myCompounds = store.get('bmc.compounds', []);
   let g;
   let dataErrors = [];   // problems in data/*.yaml
@@ -59,11 +73,40 @@
   const badge = (kind) => h('span', { class: `badge k-${kind}` }, KIND_LABEL[kind] || kind);
   const $ = (id) => document.getElementById(id);
 
-  function persist() {
-    store.set('bmc.state', { startPos: state.startPos, startWeight: state.startWeight, strip: state.strip });
+  /** Share link: compounds saved only in this browser are spelled out into their parts. */
+  function shareHash() {
+    const mine = Object.fromEntries(myCompounds.map((c) => [c.id, c]));
+    const flat = (id) => (mine[id] ? mine[id].sequence.flatMap(flat) : [id]);
+    const q = new URLSearchParams({ start: state.startPos, weight: state.startWeight });
+    q.set('moves', state.strip.flatMap(flat).join(','));
+    return '#' + q.toString().replace(/%2C/g, ',');
   }
 
+  function persist() {
+    store.set('bmc.state', { startPos: state.startPos, startWeight: state.startWeight, strip: state.strip });
+    try { history.replaceState(null, '', state.strip.length ? shareHash() : location.pathname + location.search); } catch { /* file:// in some browsers */ }
+  }
+
+  /** Call after every change to the combo: records undo, saves, re-renders. */
   function update() {
+    const snap = snapshot();
+    if (lastSnap !== null && snap !== lastSnap) {
+      undoStack.push(lastSnap);
+      if (undoStack.length > 100) undoStack.shift();
+    }
+    lastSnap = snap;
+    persist();
+    render();
+  }
+
+  function undo() {
+    const prev = undoStack.pop();
+    if (!prev) return;
+    Object.assign(state, JSON.parse(prev));
+    lastSnap = prev;
+    state.selected = null;
+    $('start-pos').value = state.startPos;
+    $('start-weight').value = state.startWeight;
     persist();
     render();
   }
@@ -77,6 +120,7 @@
     renderPanel(result);
     renderPositions();
     renderCompounds();
+    $('btn-undo').disabled = undoStack.length === 0;
   }
 
   function renderErrors() {
@@ -101,6 +145,20 @@
       strip.append(domino(it, i));
     });
 
+    if (!state.strip.length) {
+      const examples = g.moves.filter((m) => m.kind === 'compound' && !m.id.startsWith('my-'))
+        .filter((m) => (g.edgesByMove[m.id] || []).some((e) => e.from === state.startPos));
+      strip.append(h('div', { class: 'empty' },
+        h('p', {}, 'Start a combo: pick moves below, roll a random one, or load an example.'),
+        h('div', { class: 'actions' },
+          h('button', { type: 'button', class: 'primary', onclick: () => $('btn-random').click() }, 'Random combo'),
+          examples.map((m) => h('button', {
+            type: 'button',
+            onclick: () => { state.strip = [...m.sequence]; update(); },
+          }, 'Example: ' + m.name)))));
+      return renderSummary(result);
+    }
+
     strip.append(h('span', { class: 'joint', 'aria-hidden': 'true' }, '›'));
     strip.append(h('button', {
       type: 'button',
@@ -108,6 +166,10 @@
       onclick: () => select(null),
     }, '+ next move'));
 
+    renderSummary(result);
+  }
+
+  function renderSummary(result) {
     const warnings = result.items.filter((it) => it.timingWarn || it.weightWarn).length;
     const breaks = result.items.filter((it) => it.broken).length;
     $('summary').textContent = state.strip.length
@@ -136,12 +198,21 @@
     },
       h('div', { class: 'halves' }, h('span', {}, short(it.from)), h('span', {}, short(it.to))),
       h('div', { class: 'name' }, m.name),
-      h('div', { class: 'meta' }, `${m.counts} ct · beat ${it.beat}`, flags));
+      h('div', { class: 'meta' }, countLabel(it), flags));
+  }
+
+  /** "1→4" style range within the 8-count; 0-count adjusters happen on the fly. */
+  function countLabel(it) {
+    const n = it.move.counts;
+    if (!n) return 'on the fly';
+    const end = ((it.countFrom + n - 1) % 8) + 1;
+    return `${n} ct · ${it.beat}→${end}`;
   }
 
   function select(i) {
     state.selected = i;
     state.search = '';
+    state.showAllInsert = false;
     render();
   }
 
@@ -265,6 +336,31 @@
             h('span', { class: 'to' }, `${g.moveById[id].counts} ct`)))))
           : h('p', { class: 'muted' }, 'No alternatives yet.'));
     }
+
+    if (it.to) {
+      const next = state.strip[i + 1];
+      const nextEdges = next ? g.edgesByMove[next] || [] : null;
+      const fits = (e) => !nextEdges || nextEdges.some((x) => x.from === e.to);
+      const all = MG.nextMoves(g, it.to).filter((e) => g.moveById[e.move].kind !== 'compound');
+      const good = all.filter(fits);
+      const shown = state.showAllInsert ? all : good;
+      wrap.append(h('h2', {}, 'Insert after this'),
+        h('p', { class: 'muted' }, next
+          ? `${good.length} of ${all.length} moves keep the next domino connected.`
+          : 'This is the last domino.'),
+        h('ul', { class: 'options' }, shown.map((e) => {
+          const mm = g.moveById[e.move];
+          return h('li', {}, h('button', {
+            type: 'button',
+            onclick: () => { state.strip.splice(i + 1, 0, mm.id); state.selected = i + 1; update(); },
+          }, h('span', {}, mm.name, ' ', badge(mm.kind)),
+            h('span', { class: 'to' }, (fits(e) ? '' : '⚠ ') + (e.to === e.from ? '↺ same' : '→ ' + short(e.to)))));
+        })),
+        next && good.length < all.length ? h('button', {
+          type: 'button', class: 'ghost',
+          onclick: () => { state.showAllInsert = !state.showAllInsert; render(); },
+        }, state.showAllInsert ? 'Show only moves that fit' : `Show all ${all.length} (some will need a bridge)`) : null);
+    }
     return wrap;
   }
 
@@ -341,6 +437,32 @@
     ws.value = state.startWeight;
     ws.addEventListener('change', () => { state.startWeight = ws.value; update(); });
 
+    $('btn-undo').addEventListener('click', undo);
+    $('btn-share').addEventListener('click', (ev) => {
+      const url = location.href.split('#')[0] + shareHash();
+      const done = (msg) => { ev.target.textContent = msg; setTimeout(() => { ev.target.textContent = 'Share link'; }, 1800); };
+      (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject())
+        .then(() => done('Link copied'), () => { prompt('Copy this link:', url); });
+    });
+    document.addEventListener('keydown', (ev) => {
+      const tag = (ev.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+      if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 'z') { ev.preventDefault(); undo(); return; }
+      if (ev.key === 'Escape') select(null);
+      else if (ev.key === 'ArrowLeft' && state.strip.length) select(state.selected === null ? state.strip.length - 1 : Math.max(0, state.selected - 1));
+      else if (ev.key === 'ArrowRight' && state.selected !== null) select(state.selected + 1 < state.strip.length ? state.selected + 1 : null);
+      else if ((ev.key === 'Delete' || ev.key === 'Backspace') && state.selected !== null) { ev.preventDefault(); removeAt(state.selected); }
+    });
+    window.addEventListener('hashchange', () => {
+      const next = fromHash();
+      if (!next) return;
+      Object.assign(state, { startPos: next.startPos || state.startPos, startWeight: next.startWeight || state.startWeight, strip: next.strip.filter((id) => g.moveById[id]) });
+      sel.value = state.startPos;
+      ws.value = state.startWeight;
+      state.selected = null;
+      update();
+    });
+
     $('btn-clear').addEventListener('click', () => { state.strip = []; state.selected = null; update(); });
     $('btn-random').addEventListener('click', () => {
       state.strip = MG.randomWalk(g, state.startPos, 5);
@@ -368,5 +490,7 @@
 
   recompile();
   initToolbar();
+  lastSnap = snapshot();
+  persist();
   render();
 })();

@@ -253,3 +253,19 @@ pre { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; 
   .leader-view h3 { width: 100%; }
   .sk-fig { flex: 1 1 140px; max-width: 220px; }
 }
+
+/* ---------------------------------------------------------------- empty state, keys */
+.empty {
+  flex: 1;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.empty p { margin: 0 0 10px; }
+.empty .actions { margin: 0; }
+.keys { font-size: 0.78rem; margin: -4px 0 0; }
+button:disabled { opacity: 0.45; cursor: default; }
+button:disabled:hover { border-color: var(--line); }
+.panel-main h2 { margin-top: 14px; }
+.panel-main .panel-head h2 { margin-top: 0; }
+@media (hover: none) { .keys { display: none; } }

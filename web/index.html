@@ -21,7 +21,9 @@
       <option value="parallel">parallel</option>
     </select></label>
     <span class="spacer"></span>
+    <button id="btn-undo" type="button" class="ghost" title="Undo (Ctrl+Z)" disabled>Undo</button>
     <button id="btn-random" type="button">Random combo</button>
+    <button id="btn-share" type="button">Share link</button>
     <button id="btn-save" type="button">Save as compound</button>
     <button id="btn-clear" type="button" class="ghost">Clear</button>
   </section>
@@ -29,6 +31,7 @@
   <section class="strip-wrap" aria-label="Combo">
     <div id="strip" class="strip"></div>
     <p id="summary" class="summary"></p>
+    <p class="keys muted">Keys: ← → select · Del remove · Esc back to “next move” · Ctrl+Z undo</p>
   </section>
 
   <section id="panel" class="panel" aria-live="polite"></section>
