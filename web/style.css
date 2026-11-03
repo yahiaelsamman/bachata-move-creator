@@ -358,3 +358,6 @@ dialog.practice::backdrop { background: rgba(0, 0, 0, 0.45); }
 .pr-settings label { display: flex; align-items: center; gap: 6px; }
 .pr-settings input[type="range"] { padding: 0; width: 120px; }
 .pr-settings input { accent-color: var(--accent); }
+.thumb { width: 64px; }
+.thumb .sketch { width: 64px; border-radius: 6px; }
+td .small { font-size: 0.8rem; }

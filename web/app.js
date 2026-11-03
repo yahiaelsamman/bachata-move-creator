@@ -456,15 +456,22 @@
   function renderPositions() {
     const healthById = Object.fromEntries(g.health.map((x) => [x.id, x]));
     $('positions').replaceChildren(h('div', { class: 'table-wrap' }, h('table', {},
-      h('thead', {}, h('tr', {}, h('th', {}, 'Position'), h('th', {}, 'Notation'), h('th', {}, 'Ways in / out'))),
+      h('thead', {}, h('tr', {}, h('th', {}, ''), h('th', {}, 'Position'), h('th', {}, 'Notation'), h('th', {}, 'Ways in / out'))),
       h('tbody', {}, g.positions.map((p) => {
         const hl = healthById[p.id];
+        const thumb = h('div', { class: 'thumb' });
+        thumb.innerHTML = SK ? SK.sketchSVG(p) : '';
         return h('tr', {},
-          h('td', {}, p.name, h('br'), h('code', { class: 'muted' }, p.id)),
+          h('td', {}, thumb),
+          h('td', {}, h('button', { type: 'button', class: 'link', onclick: () => { state.mapSelected = p.id; render(); document.querySelector('.map-section').scrollIntoView({ behavior: 'smooth' }); } }, p.name),
+            h('br'), h('code', { class: 'muted' }, p.id), h('br'), h('span', { class: 'muted small' }, SK ? SK.describe(p) : '')),
           h('td', {}, h('code', {}, MG.notation(p))),
           h('td', { class: hl.thin ? 'flag' : '' }, `${hl.in} / ${hl.out}`));
       })))),
-    h('p', { class: 'muted' }, 'Ways in/out count distinct moves that change position. Aim for at least 3 each.'));
+    h('p', { class: 'muted small' }, 'Notation: FEO facing each other · SHD shadow (leader behind) · SBS-R/L side by side, follower on the right/left · ' +
+      'open / semi / closed / apart = distance · L>R leader\'s left holds follower\'s right · R>back leader\'s right hand on her back · ' +
+      'cross R/L = leader\'s right hand on top.'),
+    h('p', { class: 'muted small' }, 'Ways in/out count distinct moves that change position. Aim for at least 3 each. Click a name to see it on the map.'));
   }
 
   function compoundYaml(c) {

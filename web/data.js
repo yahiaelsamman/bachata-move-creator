@@ -564,7 +564,10 @@ window.BACHATA_DATA = {
    "kind": "adjuster",
    "from": "apart",
    "to": "open_LR",
-   "counts": 0
+   "counts": 0,
+   "weight": {
+    "to": "mirrored"
+   }
   },
   {
    "id": "left-turn-into-closed",
@@ -947,7 +950,10 @@ window.BACHATA_DATA = {
    "kind": "adjuster",
    "from": "apart",
    "to": "closed",
-   "counts": 0
+   "counts": 0,
+   "weight": {
+    "to": "mirrored"
+   }
   },
   {
    "id": "reconnect-double",
@@ -955,7 +961,10 @@ window.BACHATA_DATA = {
    "kind": "adjuster",
    "from": "apart",
    "to": "double",
-   "counts": 0
+   "counts": 0,
+   "weight": {
+    "to": "mirrored"
+   }
   },
   {
    "id": "reconnect-handshake",
@@ -963,7 +972,10 @@ window.BACHATA_DATA = {
    "kind": "adjuster",
    "from": "apart",
    "to": "open_RR",
-   "counts": 0
+   "counts": 0,
+   "weight": {
+    "to": "mirrored"
+   }
   },
   {
    "id": "classic-opener",

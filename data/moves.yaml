@@ -353,6 +353,7 @@
   from: apart
   to: open_LR
   counts: 0
+  weight: {to: mirrored}
 
 # ---------------------------------------------------------------- round 2: thin positions
 # Names come from public bachata syllabi (Bachata Library, BachataHub, Sydney Salsa
@@ -666,6 +667,7 @@
   from: apart
   to: closed
   counts: 0
+  weight: {to: mirrored}
 
 - id: reconnect-double
   name: Reconnect to double hands
@@ -673,6 +675,7 @@
   from: apart
   to: double
   counts: 0
+  weight: {to: mirrored}
 
 - id: reconnect-handshake
   name: Reconnect to handshake
@@ -680,6 +683,7 @@
   from: apart
   to: open_RR
   counts: 0
+  weight: {to: mirrored}
 
 # ---------------------------------------------------------------- compound moves
 - id: classic-opener
