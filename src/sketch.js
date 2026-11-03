@@ -37,6 +37,7 @@
   const right = (f) => [-f[1], f[0]]; // screen coords, y grows downwards
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   const r1 = (n) => Math.round(n * 10) / 10;
+  const esc = (s) => String(s).replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
   const pt = (p) => `${r1(p[0])},${r1(p[1])}`;
 
   function body(center, face) {
@@ -135,7 +136,7 @@
       return `<line x1="${r1(a.from[0])}" y1="${r1(a.from[1])}" x2="${r1(a.to[0])}" y2="${r1(a.to[1])}" class="sk-arm sk-arm-${a.who}${isTop ? ' sk-top' : ''}"/>` +
         (a.grip ? `<circle cx="${r1(a.grip[0])}" cy="${r1(a.grip[1])}" r="3.2" class="sk-grip"/>` : '');
     }).join('\n  ');
-    const title = opts.title ? `<title>${escapeXml(opts.title)}</title>` : '';
+    const title = opts.title ? `<title>${esc(opts.title)}</title>` : '';
     // Fixed scale, cropped to the content: close positions get a shorter picture,
     // not bigger dancers, so distances stay comparable between sketches.
     const behind = L.follower.c[1] > L.leader.c[1] + 5; // follower behind the leader
@@ -164,10 +165,6 @@
     if (p.arms === 'wrap') parts.push('her arms wrapped in front of her');
     if (p.arms === 'follower_R_behind_leader_neck') parts.push('her right hand behind your neck');
     return parts.join(', ') + '.';
-  }
-
-  function escapeXml(s) {
-    return String(s).replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
   }
 
   return { sketchSVG, describe, layout };

@@ -64,13 +64,10 @@
     return m;
   }
 
-  function compile(data) {
-    const errors = [];
-    const warnings = [];
-    const positions = data.positions || [];
+  /** Index positions by id and by attributes, reporting missing fields and duplicates. */
+  function indexPositions(positions, errors) {
     const posById = {};
     const posByKey = {};
-
     for (const p of positions) {
       if (!p.id) { errors.push('A position has no id.'); continue; }
       if (posById[p.id]) errors.push(`Duplicate position id "${p.id}".`);
@@ -82,8 +79,11 @@
       if (posByKey[key]) errors.push(`Positions "${posByKey[key].id}" and "${p.id}" have identical attributes (same node).`);
       else posByKey[key] = p;
     }
+    return { posById, posByKey };
+  }
 
-    const moves = (data.moves || []).map(normalizeMove);
+  /** Index moves by id, reporting duplicates and invalid kind, counts, level or weight. */
+  function indexMoves(moves, errors) {
     const moveById = {};
     for (const m of moves) {
       if (!m.id) { errors.push('A move has no id.'); continue; }
@@ -99,6 +99,17 @@
         if (w !== undefined && !WEIGHTS.includes(w)) errors.push(`Move "${m.id}" has unknown weight.${side} "${w}".`);
       }
     }
+    return moveById;
+  }
+
+  /** Data -> graph: index positions and moves, expand moves into edges, derive weight and level, check opposites. */
+  function compile(data) {
+    const errors = [];
+    const warnings = [];
+    const positions = data.positions || [];
+    const { posById, posByKey } = indexPositions(positions, errors);
+    const moves = (data.moves || []).map(normalizeMove);
+    const moveById = indexMoves(moves, errors);
 
     const edgesByMove = {};
     const weightByMove = {};
