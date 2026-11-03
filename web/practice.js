@@ -56,6 +56,7 @@
       <div class="pr-settings">
         <label>Tempo <input type="range" class="pr-bpm" min="80" max="160" step="2"> <span class="pr-bpm-val"></span> bpm</label>
         <label><input type="checkbox" class="pr-sound"> Click</label>
+        <label><input type="checkbox" class="pr-voice"> Count aloud</label>
         <label><input type="checkbox" class="pr-loop"> Loop</label>
       </div>`;
     document.body.append(dlg);
@@ -74,6 +75,9 @@
     });
     $('.pr-sound').checked = Boolean(prefs.sound);
     $('.pr-sound').addEventListener('change', (e) => { prefs.sound = e.target.checked; savePrefs(); });
+    $('.pr-voice').checked = Boolean(prefs.voice);
+    $('.pr-voice').addEventListener('change', (e) => { prefs.voice = e.target.checked; savePrefs(); });
+    if (!('speechSynthesis' in window)) $('.pr-voice').closest('label').hidden = true;
     $('.pr-loop').checked = prefs.loop !== false;
     $('.pr-loop').addEventListener('change', (e) => { prefs.loop = e.target.checked; savePrefs(); });
     dlg.addEventListener('close', stop);
@@ -149,6 +153,18 @@
     } catch { /* no audio */ }
   }
 
+  const WORDS = ['one', 'two', 'three', 'tap', 'five', 'six', 'seven', 'tap'];
+  function say(k) {
+    if (!dlg.querySelector('.pr-voice').checked || !('speechSynthesis' in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(WORDS[k]);
+      u.rate = 1.8;
+      u.volume = 0.9;
+      window.speechSynthesis.speak(u);
+    } catch { /* speech not available */ }
+  }
+
   function tick() {
     const step = steps[idx];
     if (!step) return stop();
@@ -160,6 +176,7 @@
     }
     const current = (steps[idx].it.countFrom + beat) % 8;
     click(current === 0 || current === 4);
+    say(current);
     paintBeats();
     beat++;
   }
@@ -174,6 +191,7 @@
 
   function stop() {
     if (timer) clearInterval(timer);
+    try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch { /* ignore */ }
     timer = null;
     if (dlg) {
       dlg.querySelector('.pr-play').textContent = 'Play';

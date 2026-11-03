@@ -25,7 +25,28 @@
       startPos: q.get('start') || undefined,
       startWeight: q.get('weight') || undefined,
       strip: (q.get('moves') || '').split(',').filter(Boolean),
+      custom: decodeMoves(q.get('custom')),
     };
+  }
+
+  // Moves added in the app travel inside share links as base64url JSON.
+  function encodeMoves(moves) {
+    const json = JSON.stringify(moves);
+    return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function decodeMoves(text) {
+    if (!text) return [];
+    try {
+      const b64 = text.replace(/-/g, '+').replace(/_/g, '/');
+      const list = JSON.parse(decodeURIComponent(escape(atob(b64))));
+      if (!Array.isArray(list)) return [];
+      const str = (v, max) => typeof v === 'string' && v.length <= max;
+      return list.filter((m) => m && str(m.id, 80) && m.id.startsWith('my-') && str(m.name, 60) &&
+        ['move', 'styling', 'adjuster'].includes(m.kind) && [1, 2, 3].includes(m.level) &&
+        Array.isArray(m.from) && m.from.every((f) => str(f, 40)) && str(m.to, 40) &&
+        Number.isInteger(m.counts) && m.counts >= 0 && m.counts <= 64 && (m.notes === undefined || str(m.notes, 200)))
+        .map((m) => ({ id: m.id, name: m.name, kind: m.kind, level: m.level, from: m.from, to: m.to, counts: m.counts, ...(m.notes ? { notes: m.notes } : {}) }));
+    } catch { return []; }
   }
   const saved = fromHash() || store.get('bmc.state', {});
   const state = {
@@ -45,6 +66,15 @@
   const snapshot = () => JSON.stringify({ startPos: state.startPos, startWeight: state.startWeight, strip: state.strip });
   let myCompounds = store.get('bmc.compounds', []);
   let myMoves = store.get('bmc.moves', []);
+  let importedNote = '';
+  function importShared(custom) {
+    const fresh = (custom || []).filter((m) => !myMoves.some((x) => x.id === m.id));
+    if (!fresh.length) return;
+    myMoves = myMoves.concat(fresh);
+    store.set('bmc.moves', myMoves);
+    importedNote = `Added ${fresh.length} move${fresh.length > 1 ? 's' : ''} from the shared link: ${fresh.map((m) => m.name).join(', ')}. They're under "My moves".`;
+  }
+  importShared(saved.custom);
   let g;
   let dataErrors = [];   // problems in data/*.yaml
   let myErrors = {};     // compound id -> problems with compounds saved in this browser
@@ -87,7 +117,10 @@
     const mine = Object.fromEntries(myCompounds.map((c) => [c.id, c]));
     const flat = (id) => (mine[id] ? mine[id].sequence.flatMap(flat) : [id]);
     const q = new URLSearchParams({ start: state.startPos, weight: state.startWeight });
-    q.set('moves', state.strip.flatMap(flat).join(','));
+    const ids = state.strip.flatMap(flat);
+    q.set('moves', ids.join(','));
+    const custom = myMoves.filter((m) => ids.includes(m.id));
+    if (custom.length) q.set('custom', encodeMoves(custom));
     return '#' + q.toString().replace(/%2C/g, ',');
   }
 
@@ -134,10 +167,13 @@
     renderLibrary(result);
     $('btn-undo').disabled = undoStack.length === 0;
     $('btn-practice').disabled = state.strip.length === 0;
+    $('btn-text').disabled = state.strip.length === 0;
     $('btn-clear').disabled = state.strip.length === 0;
   }
 
   function renderErrors() {
+    const note = $('notice');
+    if (note) { note.hidden = !importedNote; note.textContent = importedNote; }
     const box = $('errors');
     box.hidden = dataErrors.length === 0;
     box.textContent = dataErrors.length ? 'Data problems:\n' + dataErrors.join('\n') : '';
@@ -684,6 +720,16 @@
       if (result.items.some((it) => it.broken)) return alert('Fix the breaks first (click a red "bridge").');
       window.Practice.open(result.items, { posName, sketchSVG: SK.sketchSVG, positions: g.posById });
     });
+    $('btn-text').addEventListener('click', (ev) => {
+      const result = MG.evaluateStrip(g, state.startPos, state.startWeight, state.strip);
+      if (!result.items.length) return;
+      const parts = result.items.filter((it) => it.move).map((it) => `${it.move.name} (${it.move.counts ? it.move.counts : 'on the fly'})`);
+      const text = `Bachata combo, starting in ${posName(state.startPos)}:\n${parts.join(' › ')}\n` +
+        `${result.totalCounts} counts, ends in ${posName(result.end)}.\n${location.href.split('#')[0] + shareHash()}`;
+      const done = (msg) => { ev.target.textContent = msg; setTimeout(() => { ev.target.textContent = 'Copy as text'; }, 1800); };
+      (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+        .then(() => done('Copied'), () => { prompt('Copy this text:', text); });
+    });
     $('btn-share').addEventListener('click', (ev) => {
       const url = location.href.split('#')[0] + shareHash();
       const done = (msg) => { ev.target.textContent = msg; setTimeout(() => { ev.target.textContent = 'Share link'; }, 1800); };
@@ -703,6 +749,7 @@
     window.addEventListener('hashchange', () => {
       const next = fromHash();
       if (!next) return;
+      if (next.custom && next.custom.length) { importShared(next.custom); recompile(); }
       Object.assign(state, { startPos: next.startPos || state.startPos, startWeight: next.startWeight || state.startWeight, strip: next.strip.filter((id) => g.moveById[id]) });
       sel.value = state.startPos;
       ws.value = state.startWeight;

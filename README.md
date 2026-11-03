@@ -57,7 +57,7 @@ npm test
 **Practice**
 - **Practice** steps through the combo one big card at a time: the move, its counts
   on the 8, notes and the start/end sketches. **Play** advances on the beat (tempo
-  slider, optional click, loop). Catches and releases show on the card they
+  slider, optional click or spoken count, loop). Catches and releases show on the card they
   happen in.
 
 **Move library**
@@ -78,7 +78,10 @@ npm test
 
 **Keep and share**
 - **Share link:** the combo lives in the URL, so a link opens the same combo
-  anywhere.
+  anywhere. Moves you added yourself travel inside the link and are added for
+  whoever opens it.
+- **Copy as text:** the combo as one line of move names and counts plus its link,
+  ready for a chat message.
 - **Save as compound:** stores the strip as one block in this browser. Copy its
   YAML into `data/moves.yaml` to make it permanent.
 
