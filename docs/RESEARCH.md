@@ -54,10 +54,40 @@ holds, so the data is still mostly "physically possible", not canonical.
 - **Sombrero** (double hands, 8 counts): the leader arcs the joined hands over her
   head and then his own (Bailar glossary, as summarised in search results; the
   site blocks automated reading).
-- Still named but unplaced, so not added yet: copa, titanic, media vuelta, matador
+- Still named but unplaced, so not added yet: titanic, media vuelta, matador
   pretzel, dishrag sunburst, sweetheart promenade, rollaway variants
   ([Rumba y Timbal library](https://www.rumbaytimbal.com/rumba-video-library/),
   [University of Dance](https://www.universityofdance.org/courses/bachata)).
+
+## Round 2 findings
+
+- **Left-arm hammerlock** ([Rueda wiki](https://ruedawiki.org/index.php/Hammer_lock)):
+  facing each other, her left arm behind her back holding the leader's right
+  hand, her right hand in his left. Added as `hammerlock_L` with entries from
+  double hands and R-L, an unwind and a release. Safety note from
+  [Salsa Forums](https://www.salsaforums.com/threads/just-curious-if-you-guys-can-explain-something-to-me.37099/):
+  hammerlocks can hurt the follower's shoulder if led carelessly.
+- **Hand change on an inside turn** ([BachataHub](https://bachatahub.com/en/academy/term/hand-change)):
+  lead the inside turn with your left hand and catch her hand with your right on
+  the exit. Added as `inside-turn-hand-change` (open L-R → handshake).
+- **Two-hand turn** (Bailar glossary, via search results): both hands stay joined
+  through a full outside turn in place, resolving on the tap of 4.
+- **Fall forward** (Bailar glossary, via search results): she transfers chest
+  weight towards the leader while he steps back; modern and sensual styles.
+- **Copa** ([Dance Forums, salsa](https://www.dance-forums.com/threads/copa-in-salsa.9123/)):
+  starts from left-over-right double hands; she steps forward on 5 and turns
+  left on 6–7. Salsa timing, so the bachata version is flagged for review.
+- **Difficulty levels:** there is no standard syllabus. Course outlines broadly
+  agree that beginner covers basics, simple turns and connection; intermediate
+  covers turn variations, wraps, hammerlocks, shadow and body movement; advanced
+  adds dips, intricate hand combinations and styling
+  ([Udemy intermediate partner work](https://www.udemy.com/course/bachata-dance-partner-work-course-intermediate-level/),
+  [TU Dresden course levels](https://www.dhsz.tu-dresden.de/angebote/aktueller_zeitraum/_Bachata.html)).
+  The levels in `data/moves.yaml` are a draft on that basis.
+- **Shadow holds connect:** the two shadow holds are now linked by 0-count
+  adjusters (take both hands / hand to waist). That is physically possible,
+  not sourced.
+- **Titanic, media vuelta:** still no description of the holds; not added.
 
 ## Prior art (for later)
 

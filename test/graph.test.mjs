@@ -174,3 +174,15 @@ test('invalid levels are reported', () => {
     moves: [{ id: 'x', name: 'X', from: 'any', counts: 4, level: 5 }] });
   assert.ok(g.errors.some((e) => e.includes('level 5')));
 });
+
+test('weight: entering a same-direction hold sets parallel, leaving it sets mirrored', () => {
+  const g = MG.compile(loadData());
+  const sameDir = (p) => ['shadow', 'reverse_shadow', 'side_by_side_R', 'side_by_side_L'].includes(g.posById[p].orientation);
+  for (const e of g.edges) {
+    const m = g.moveById[e.move];
+    if (m.kind === 'compound' || e.from === e.to) continue;
+    const w = g.weightOf(m.id);
+    if (!sameDir(e.from) && sameDir(e.to)) assert.equal(w.to, 'parallel', `${m.id} (${e.from} -> ${e.to})`);
+    if (sameDir(e.from) && !sameDir(e.to) && g.posById[e.to].frame !== 'apart') assert.equal(w.to, 'mirrored', `${m.id} (${e.from} -> ${e.to})`);
+  }
+});

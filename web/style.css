@@ -137,10 +137,10 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid var(--line);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--muted);
 }
-.halves span { padding: 4px 6px; line-height: 1.2; overflow-wrap: anywhere; }
+.halves span { padding: 4px 6px; line-height: 1.2; overflow-wrap: break-word; }
 .halves span + span { border-left: 1px solid var(--line); }
 .domino .name { padding: 6px 8px 2px; font-weight: 600; line-height: 1.25; }
 .domino .meta { padding: 0 8px 6px; font-size: 0.78rem; color: var(--muted); }
@@ -400,3 +400,8 @@ td .small { font-size: 0.8rem; }
 .lib-controls label { display: inline-flex; gap: 6px; align-items: center; }
 table.lib td:nth-child(4) { text-align: center; }
 table.lib button { padding: 3px 10px; font-size: 0.85rem; }
+
+/* ---------------------------------------------------------------- help */
+.help { margin: -6px 0 14px; font-size: 0.9rem; }
+.help summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+.help ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }

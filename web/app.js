@@ -550,7 +550,8 @@
       .map((m) => ({ m, ep: endpoints(m.id) }))
       .filter(({ m, ep }) => {
         if (!q) return true;
-        const hay = [m.name, m.notes, m.id, ...ep.froms.map(posName), ...(ep.tos || []).map(posName)].join(' ').toLowerCase();
+        const where = ep.all ? [] : ep.froms.map(posName);
+        const hay = [m.name, m.notes, m.id, ...where, ...(ep.tos || []).map(posName)].join(' ').toLowerCase();
         return hay.includes(q);
       })
       .sort((a, b) => a.m.name.localeCompare(b.m.name));

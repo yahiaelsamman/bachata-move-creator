@@ -7,7 +7,7 @@
 - **Other moves flagged `check`:** the crossed half turn into shadow (which cross
   allows which direction?), the shadow exit turn (which hand is kept), and the
   new crossed-hands outside turn (end hold).
-- **Unplaced moves to add once you know their holds:** copa, titanic, media
+- **Unplaced moves to add once you know their holds:** titanic, media
   vuelta, matador pretzel.
 - **Shadow hold:** both versions exist, same hands (`shadow`) and hand on waist
   (`shadow_waist`). Which one is used in practice, and do they connect directly?
