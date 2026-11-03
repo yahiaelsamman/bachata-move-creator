@@ -3,6 +3,7 @@
   'use strict';
   const MG = window.MoveGraph;
   const SK = window.LeaderSketch;
+  const PM = window.PositionMap;
   const BASE = window.BACHATA_DATA;
   const KIND_LABEL = { move: 'move', styling: 'styling', adjuster: 'adjuster', compound: 'compound' };
 
@@ -35,7 +36,9 @@
     kindFilter: 'all',
     search: '',
     showAllInsert: false,
+    mapSelected: null,
   };
+  let mapLayout = null;
   const undoStack = [];
   let lastSnap = null;
   const snapshot = () => JSON.stringify({ startPos: state.startPos, startWeight: state.startWeight, strip: state.strip });
@@ -53,6 +56,7 @@
       return !own;
     });
     if (!g.posById[state.startPos]) state.startPos = BASE.positions[0].id;
+    mapLayout = PM ? PM.layoutMap(g) : null;
     state.strip = state.strip.filter((id) => g.moveById[id]);
   }
 
@@ -118,6 +122,7 @@
     renderErrors();
     renderStrip(result);
     renderPanel(result);
+    renderMap(result);
     renderPositions();
     renderCompounds();
     $('btn-undo').disabled = undoStack.length === 0;
@@ -378,6 +383,75 @@
     update();
   }
 
+  // ------------------------------------------------------------ map
+  function renderMap(result) {
+    if (!mapLayout) return;
+    const path = result.items.filter((it) => !it.broken && it.from).map((it) => ({ from: it.from, to: it.to }));
+    if (!path.length) path.push({ from: state.startPos, to: state.startPos });
+    $('map').innerHTML = PM.mapSVG(g, mapLayout, { selected: state.mapSelected, path });
+    renderMapInfo(result);
+  }
+
+  function renderMapInfo(result) {
+    const box = $('map-info');
+    const id = state.mapSelected;
+    if (!id || !g.posById[id]) {
+      box.replaceChildren(h('p', { class: 'muted' },
+        `${g.positions.length} positions, ${g.edges.filter((e) => e.from !== e.to && g.moveById[e.move].kind !== 'compound').length} position-changing connections. ` +
+        'Pick a position on the map to see its ways in and out.'));
+      return;
+    }
+    const group = (edges, key) => {
+      const by = {};
+      for (const e of edges) {
+        if (e.from === e.to || g.moveById[e.move].kind === 'compound') continue;
+        (by[e[key]] = by[e[key]] || new Set()).add(g.moveById[e.move].name);
+      }
+      return Object.entries(by).sort((a, b) => posName(a[0]).localeCompare(posName(b[0])));
+    };
+    const outs = group(g.outgoing[id], 'to');
+    const ins = group(g.incoming[id], 'from');
+    const loops = [...new Set(g.outgoing[id].filter((e) => e.to === id && g.moveById[e.move].kind !== 'compound').map((e) => g.moveById[e.move].name))].sort();
+    const list = (rows, arrow) => rows.length
+      ? h('ul', { class: 'map-list' }, rows.map(([pid, names]) => h('li', {},
+        h('button', { type: 'button', class: 'link', onclick: () => { state.mapSelected = pid; render(); } }, arrow + ' ' + short(pid)),
+        ': ', [...names].sort().join(', '))))
+      : h('p', { class: 'muted' }, 'None yet.');
+    const bridges = result.end !== id ? MG.findBridges(g, result.end, id, { limit: 3 }) : [];
+    box.replaceChildren(h('div', {},
+      h('div', { class: 'panel-head' }, h('h3', {}, posName(id)),
+        h('button', { type: 'button', class: 'ghost', onclick: () => { state.mapSelected = null; render(); } }, 'Close')),
+      sketchFigure(id, 'Leader view'),
+      h('div', { class: 'actions' },
+        h('button', {
+          type: 'button',
+          onclick: () => { state.startPos = id; state.strip = []; state.selected = null; $('start-pos').value = id; update(); },
+        }, 'Start a new combo here'),
+        result.end === id ? h('span', { class: 'muted' }, 'Your combo ends here.') : null),
+      bridges.length ? [h('h4', {}, `Get here from the end of your combo (${short(result.end)})`),
+        h('ul', { class: 'options' }, bridges.map((pathIds) => h('li', {}, h('button', {
+          type: 'button',
+          onclick: () => { state.strip.push(...pathIds); state.selected = null; update(); },
+        }, h('span', {}, pathIds.map((m) => g.moveById[m].name).join(' › ')),
+          h('span', { class: 'to' }, `+${pathIds.length}`)))))] : null,
+      h('h4', {}, `Ways out (${outs.reduce((n, [, s]) => n + s.size, 0)})`), list(outs, '→'),
+      h('h4', {}, `Ways in (${ins.reduce((n, [, s]) => n + s.size, 0)})`), list(ins, '←'),
+      loops.length ? [h('h4', {}, `In place (${loops.length})`), h('p', { class: 'small' }, loops.join(', '))] : null));
+  }
+
+  function initMap() {
+    const pick = (ev) => {
+      const node = ev.target.closest && ev.target.closest('[data-pos]');
+      if (!node) return;
+      const id = node.getAttribute('data-pos');
+      state.mapSelected = state.mapSelected === id ? null : id;
+      render();
+      if (window.matchMedia('(max-width: 720px)').matches) $('map-info').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    $('map').addEventListener('click', pick);
+    $('map').addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); pick(ev); } });
+  }
+
   // ------------------------------------------------------------ reference sections
   function renderPositions() {
     const healthById = Object.fromEntries(g.health.map((x) => [x.id, x]));
@@ -490,6 +564,7 @@
 
   recompile();
   initToolbar();
+  initMap();
   lastSnap = snapshot();
   persist();
   render();

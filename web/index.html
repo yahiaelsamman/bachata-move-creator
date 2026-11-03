@@ -36,6 +36,17 @@
 
   <section id="panel" class="panel" aria-live="polite"></section>
 
+  <section class="map-section" aria-label="Map of positions">
+    <div class="map-head">
+      <h2>Map of positions</h2>
+      <p class="muted">Arrows are moves that change position (thicker = more moves). ↺ counts in-place moves. Your combo is drawn as a path. Arrows into Apart show when you select a position. Click a position.</p>
+    </div>
+    <div class="map-grid">
+      <div id="map" class="map"></div>
+      <aside id="map-info" class="map-info"></aside>
+    </div>
+  </section>
+
   <details class="ref">
     <summary>Positions</summary>
     <div id="positions"></div>
@@ -49,6 +60,7 @@
   <script src="data.js"></script>
   <script src="../src/graph.js"></script>
   <script src="../src/sketch.js"></script>
+  <script src="../src/map.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

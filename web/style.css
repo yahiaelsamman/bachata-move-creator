@@ -269,3 +269,51 @@ button:disabled:hover { border-color: var(--line); }
 .panel-main h2 { margin-top: 14px; }
 .panel-main .panel-head h2 { margin-top: 0; }
 @media (hover: none) { .keys { display: none; } }
+
+/* ---------------------------------------------------------------- position map */
+.map-section {
+  margin-top: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.map-head h2 { margin: 0 0 4px; }
+.map-head p { margin: 0 0 10px; font-size: 0.85rem; }
+.map-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 20px; align-items: start; }
+.map { overflow-x: auto; }
+.posmap { width: 100%; min-width: 520px; display: block; }
+.mp-link { fill: none; stroke: var(--muted); opacity: 0.45; }
+.mp-a { fill: var(--muted); }
+.mp-a-path, .mp-a-out { fill: var(--accent); }
+.mp-a-in { fill: var(--styling); }
+.mp-link.mp-path { stroke: var(--accent); opacity: 1; }
+.mp-link.mp-out { stroke: var(--accent); opacity: 1; }
+.mp-link.mp-in { stroke: var(--styling); opacity: 1; }
+.mp-link.mp-dim { opacity: 0.12; }
+.mp-node { cursor: pointer; }
+.mp-node rect { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.mp-node text { font-size: 12px; fill: var(--ink); font-family: inherit; }
+.mp-node .mp-loops { font-size: 10px; fill: var(--styling); }
+.mp-node:hover rect, .mp-node:focus rect { stroke: var(--accent); }
+.mp-node:focus { outline: none; }
+.mp-node.mp-visited rect { stroke: var(--accent); fill: var(--accent-soft); }
+.mp-node.mp-selected rect { stroke: var(--accent); stroke-width: 3; }
+.mp-node.mp-dim { opacity: 0.35; }
+.map-info h3 { margin: 0; font-size: 1rem; flex: 1; }
+.map-info h4 { margin: 12px 0 4px; font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+.map-list { list-style: none; padding: 0; margin: 0; font-size: 0.85rem; display: grid; gap: 4px; }
+.map-info .options { grid-template-columns: 1fr; }
+.small { font-size: 0.85rem; margin: 0; }
+button.link {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+@media (max-width: 720px) {
+  .map-grid { grid-template-columns: 1fr; }
+}
