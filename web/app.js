@@ -2,6 +2,7 @@
 (function () {
   'use strict';
   const MG = window.MoveGraph;
+  const SK = window.LeaderSketch;
   const BASE = window.BACHATA_DATA;
   const KIND_LABEL = { move: 'move', styling: 'styling', adjuster: 'adjuster', compound: 'compound' };
 
@@ -148,8 +149,28 @@
   function renderPanel(result) {
     const panel = $('panel');
     panel.replaceChildren();
-    if (state.selected === null) panel.append(nextPanel(result.end));
-    else panel.append(detailPanel(result.items[state.selected], state.selected, result));
+    const it = state.selected === null ? null : result.items[state.selected];
+    const main = it ? detailPanel(it, state.selected, result) : nextPanel(result.end);
+    let side;
+    if (!it) side = [sketchFigure(result.end, 'Where you are now')];
+    else if (it.missing || !it.from) side = [];
+    else if (it.from === it.to) side = [sketchFigure(it.from, 'Start and end (same position)')];
+    else side = [sketchFigure(it.from, 'Start'), sketchFigure(it.to, 'End')];
+    panel.append(h('div', { class: 'panel-grid' },
+      h('div', { class: 'panel-main' }, main),
+      side.length ? h('aside', { class: 'leader-view', 'aria-label': 'Leader view' },
+        h('h3', {}, 'Leader view'), side) : null));
+  }
+
+  /** Top-down sketch of a position as the leader sees it. */
+  function sketchFigure(posId, caption) {
+    const p = g.posById[posId];
+    if (!p || !SK) return null;
+    const art = h('div', { class: 'sk-art' });
+    art.innerHTML = SK.sketchSVG(p, { title: p.name });
+    return h('figure', { class: 'sk-fig' }, art,
+      h('figcaption', {}, h('strong', {}, caption + ': '), p.name, h('br'),
+        h('span', { class: 'muted' }, SK.describe(p))));
   }
 
   function kindChips() {
