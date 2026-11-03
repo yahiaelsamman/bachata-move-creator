@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
 import { loadData } from '../scripts/build.mjs';
 
 const require = createRequire(import.meta.url);
@@ -26,9 +27,23 @@ const tiny = () => ({
   ],
 });
 
-test('the real data has no errors', () => {
+test('the real data has no errors or warnings', () => {
   const g = MG.compile(loadData());
   assert.deepEqual(g.errors, []);
+  assert.deepEqual(g.warnings, []);
+});
+
+test('web/data.js is up to date with data/*.yaml (run npm run build)', () => {
+  const src = readFileSync(new URL('../web/data.js', import.meta.url), 'utf8');
+  const built = JSON.parse(src.slice(src.indexOf('=') + 1).trim().replace(/;$/, ''));
+  assert.deepEqual(built, loadData());
+});
+
+test('every position can be reached and left', () => {
+  const g = MG.compile(loadData());
+  for (const h of g.health) {
+    assert.ok(h.in > 0 && h.out > 0, `${h.id} is a dead end (in ${h.in}, out ${h.out})`);
+  }
 });
 
 test('hands are order-insensitive', () => {

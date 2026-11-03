@@ -11,6 +11,7 @@
 #   hands:       comma-separated connections, written leader-hand > follower-contact
 #                  L>R      leader's left holds follower's right hand
 #                  R>back   leader's right hand on follower's back
+#                  (contact points: L / R hand, back, waist)
 #                "" means no connection. Order does not matter.
 #   crossed:     none | leader_R_over_L | leader_L_over_R
 #   arms:        neutral | hammerlock_follower_R | hammerlock_follower_L | wrap
@@ -124,6 +125,15 @@
   orientation: shadow
   frame: closed
   hands: "L>L,R>R"
+  crossed: none
+  arms: neutral
+
+- id: shadow_waist
+  name: Shadow, hand on waist
+  short: Shadow waist
+  orientation: shadow
+  frame: closed
+  hands: "L>R,R>waist"
   crossed: none
   arms: neutral
 

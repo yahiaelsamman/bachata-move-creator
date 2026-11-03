@@ -26,9 +26,17 @@
   };
   let myCompounds = store.get('bmc.compounds', []);
   let g;
+  let dataErrors = [];   // problems in data/*.yaml
+  let myErrors = {};     // compound id -> problems with compounds saved in this browser
 
   function recompile() {
     g = MG.compile({ positions: BASE.positions, moves: [...BASE.moves, ...myCompounds] });
+    myErrors = {};
+    dataErrors = g.errors.filter((e) => {
+      const own = myCompounds.find((c) => e.includes(`"${c.id}"`));
+      if (own) (myErrors[own.id] = myErrors[own.id] || []).push(e);
+      return !own;
+    });
     if (!g.posById[state.startPos]) state.startPos = BASE.positions[0].id;
     state.strip = state.strip.filter((id) => g.moveById[id]);
   }
@@ -72,8 +80,8 @@
 
   function renderErrors() {
     const box = $('errors');
-    box.hidden = g.errors.length === 0;
-    box.textContent = g.errors.length ? 'Data problems:\n' + g.errors.join('\n') : '';
+    box.hidden = dataErrors.length === 0;
+    box.textContent = dataErrors.length ? 'Data problems:\n' + dataErrors.join('\n') : '';
   }
 
   function renderStrip(result) {
@@ -280,7 +288,10 @@
         'copy their YAML into data/moves.yaml to keep them for good.'));
       return;
     }
+    const broken = Object.entries(myErrors);
     box.replaceChildren(
+      broken.length ? h('div', { class: 'errors' },
+        'Broken compound moves (a part changed or was removed):\n' + broken.map(([, errs]) => errs.join('\n')).join('\n')) : '',
       h('pre', {}, myCompounds.map(compoundYaml).join('\n')),
       h('div', { class: 'actions' },
         h('button', {

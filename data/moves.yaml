@@ -99,7 +99,7 @@
 - id: follower-right-turn
   name: Follower right turn
   kind: move
-  from: [open_LR, open_RR]
+  from: [open_LR, open_RR, open_LL, open_RL]
   to: same
   counts: 4
   opposite: follower-left-turn
@@ -107,7 +107,7 @@
 - id: follower-left-turn
   name: Follower left turn
   kind: move
-  from: [open_LR, open_RR]
+  from: [open_LR, open_RR, open_LL, open_RL]
   to: same
   counts: 4
   opposite: follower-right-turn
@@ -201,6 +201,7 @@
   to: shadow
   counts: 4
   weight: {to: parallel}
+  opposite: cross-half-turn-shadow-left
   check: Direction of the half turn and which cross allows it.
 
 - id: shadow-exit
@@ -351,6 +352,333 @@
   kind: adjuster
   from: apart
   to: open_LR
+  counts: 0
+
+# ---------------------------------------------------------------- round 2: thin positions
+# Names come from public bachata syllabi (Bachata Library, BachataHub, Sydney Salsa
+# Classes, Library/University of Dance, Passion4Dancing). Those sources rarely state
+# start and end positions, so these are set to be physically possible, not canonical.
+
+# closed
+- id: left-turn-into-closed
+  name: Left turn into closed
+  kind: move
+  from: open_LR
+  to: closed
+  counts: 4
+  notes: Follower turns left; leader's right hand meets her back as she finishes.
+
+- id: madrid-step
+  name: Madrid step
+  kind: styling
+  from: [closed, shadow_waist]
+  counts: 4
+
+- id: double-slide
+  name: Double slide
+  kind: styling
+  from: [closed, shadow_waist, shadow]
+  counts: 4
+
+- id: forward-forward-back-back
+  name: Forward-forward-back-back
+  kind: styling
+  from: [closed, cuddle]
+  counts: 8
+
+- id: chest-isolation
+  name: Chest isolation (together)
+  kind: styling
+  from: [closed, shadow_waist]
+  counts: 4
+
+# shadow, hand on waist
+- id: half-turn-into-shadow
+  name: Half turn into shadow
+  kind: move
+  from: closed
+  to: shadow_waist
+  counts: 4
+  weight: {to: parallel}
+  notes: Follower turns right half way; leader's right hand slides to her waist.
+
+- id: shadow-entry-from-open
+  name: Shadow entry from open
+  kind: move
+  from: open_LR
+  to: shadow_waist
+  counts: 4
+  weight: {to: parallel}
+  notes: Leader steps behind on a check step while the follower keeps her basic.
+
+- id: shadow-push-out
+  name: Shadow push-out exit
+  kind: move
+  from: shadow_waist
+  to: open_LR
+  counts: 4
+  weight: {to: mirrored}
+
+- id: shadow-lateral-exit
+  name: Shadow lateral exit
+  kind: move
+  from: shadow_waist
+  to: open_LR
+  counts: 8
+  weight: {to: mirrored}
+
+- id: shadow-slingshot-exit
+  name: Shadow slingshot exit
+  kind: move
+  from: shadow_waist
+  to: open_LR
+  counts: 8
+  weight: {to: mirrored}
+
+- id: shadow-turn-to-closed
+  name: Shadow turn back to closed
+  kind: move
+  from: shadow_waist
+  to: closed
+  counts: 4
+  weight: {to: mirrored}
+
+- id: shadow-head-roll
+  name: Shadow head roll
+  kind: styling
+  from: shadow_waist
+  counts: 4
+
+- id: shadow-waist-walk
+  name: Shadow walk (hand on waist)
+  kind: styling
+  from: shadow_waist
+  counts: 4
+  weight: {from: parallel}
+
+# shadow, same hands
+- id: cross-half-turn-shadow-left
+  name: Crossed half turn into shadow (left)
+  kind: move
+  from: cross_Rtop
+  to: shadow
+  counts: 4
+  weight: {to: parallel}
+  opposite: cross-half-turn-shadow
+
+- id: shadow-turn-back-l-over-r
+  name: Shadow turn back (left over right)
+  kind: move
+  from: shadow
+  to: cross_Ltop
+  counts: 4
+  weight: {to: mirrored}
+  opposite: shadow-turn-back-r-over-l
+  notes: Follower turns back to face; the hands cross again.
+
+- id: shadow-turn-back-r-over-l
+  name: Shadow turn back (right over left)
+  kind: move
+  from: shadow
+  to: cross_Rtop
+  counts: 4
+  weight: {to: mirrored}
+  opposite: shadow-turn-back-l-over-r
+
+# hammerlock
+- id: crossed-hammerlock-entry
+  name: Hammerlock entry from crossed hands
+  kind: move
+  from: cross_Rtop
+  to: hammerlock_R
+  counts: 4
+  notes: Follower turns left with the right hand kept low, folding behind her back.
+
+- id: hammerlock-unwind-to-cross
+  name: Hammerlock unwind to crossed hands
+  kind: move
+  from: hammerlock_R
+  to: cross_Rtop
+  counts: 4
+
+- id: hammerlock-release-to-ll
+  name: Hammerlock release to L-L
+  kind: move
+  from: hammerlock_R
+  to: open_LL
+  counts: 4
+  notes: Release the right hand behind her back; she unwinds while you keep left-to-left.
+
+- id: hammerlock-hip-roll
+  name: Hammerlock hip roll
+  kind: styling
+  from: hammerlock_R
+  counts: 4
+
+# cuddle
+- id: left-turn-into-cuddle
+  name: Left turn into cuddle
+  kind: move
+  from: open_LR
+  to: cuddle
+  counts: 4
+  weight: {to: parallel}
+  notes: Left turn with the connection kept; leader catches her left hand as she wraps.
+
+- id: cuddle-walk
+  name: Cuddle walk forward and back
+  kind: styling
+  from: cuddle
+  counts: 8
+
+- id: cuddle-unwrap-to-closed
+  name: Cuddle unwrap to closed
+  kind: move
+  from: cuddle
+  to: closed
+  counts: 4
+  weight: {to: mirrored}
+  notes: Follower unwinds to face; leader lets go of her left hand and takes her back.
+
+- id: cuddle-slide-to-shadow
+  name: Cuddle slide to shadow
+  kind: move
+  from: cuddle
+  to: shadow_waist
+  counts: 4
+  opposite: shadow-wrap-into-cuddle
+  notes: Leader lets go of her left hand, steps behind, right hand to her waist.
+
+- id: shadow-wrap-into-cuddle
+  name: Shadow wrap into cuddle
+  kind: move
+  from: shadow_waist
+  to: cuddle
+  counts: 4
+  opposite: cuddle-slide-to-shadow
+  notes: Leader's right hand takes her left across her front.
+
+# neck wrap
+- id: arm-drape-to-neck
+  name: Arm drape to neck
+  kind: move
+  from: open_LR
+  to: neck_wrap
+  counts: 4
+  notes: Leader lifts her right hand over his head to his neck as she steps in; right hand to her back.
+
+- id: neck-slide-to-closed
+  name: Neck slide to closed
+  kind: adjuster
+  from: neck_wrap
+  to: closed
+  counts: 4
+  notes: Her hand slides down from the neck and the leader's left catches it.
+
+# crossed hands
+- id: behind-back-to-crossed
+  name: Behind-the-back hand change to crossed hands
+  kind: move
+  from: open_LR
+  to: cross_Rtop
+  counts: 8
+
+- id: crossed-matador
+  name: Crossed-hand matador
+  kind: move
+  from: [cross_Rtop, cross_Ltop]
+  to: same
+  counts: 8
+
+- id: crossed-double-face-loop
+  name: Crossed-hand double face loop
+  kind: move
+  from: [cross_Rtop, cross_Ltop]
+  to: same
+  counts: 8
+
+- id: hand-toss-top-r
+  name: Hand toss (right hand on top)
+  kind: move
+  from: cross_Rtop
+  to: open_LL
+  counts: 4
+  notes: Toss away the top right hand, keep left-to-left.
+
+- id: hand-toss-top-l
+  name: Hand toss (left hand on top)
+  kind: move
+  from: cross_Ltop
+  to: open_RR
+  counts: 4
+  notes: Toss away the top left hand, keep the handshake.
+
+- id: double-hand-toss
+  name: Double hand toss
+  kind: move
+  from: [cross_Rtop, cross_Ltop]
+  to: apart
+  counts: 4
+
+# right-to-left
+- id: hand-change-lr-to-rl
+  name: Hand change L-R to R-L
+  kind: adjuster
+  from: open_LR
+  to: open_RL
+  counts: 4
+  opposite: hand-change-rl-to-lr
+  notes: Right hand comes in, overlap, left releases.
+
+- id: hand-change-rl-to-lr
+  name: Hand change R-L to L-R
+  kind: adjuster
+  from: open_RL
+  to: open_LR
+  counts: 4
+  opposite: hand-change-lr-to-rl
+
+# double hands
+- id: dishrag
+  name: Dishrag
+  kind: move
+  from: double
+  to: same
+  counts: 8
+
+# apart
+- id: rollaway
+  name: Rollaway
+  kind: move
+  from: open_LR
+  to: apart
+  counts: 4
+
+- id: tandem-free-spins
+  name: Tandem free spins
+  kind: styling
+  from: apart
+  counts: 4
+
+- id: reconnect-closed
+  name: Reconnect to closed
+  kind: adjuster
+  from: apart
+  to: closed
+  counts: 0
+
+- id: reconnect-double
+  name: Reconnect to double hands
+  kind: adjuster
+  from: apart
+  to: double
+  counts: 0
+
+- id: reconnect-handshake
+  name: Reconnect to handshake
+  kind: adjuster
+  from: apart
+  to: open_RR
   counts: 0
 
 # ---------------------------------------------------------------- compound moves
