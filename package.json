@@ -5,7 +5,8 @@
   "scripts": {
     "test": "node --test test/*.test.mjs",
     "build": "node scripts/build.mjs",
-    "check": "node scripts/build.mjs --check"
+    "check": "node scripts/build.mjs --check",
+    "e2e": "node test/e2e/ui-fuzz.e2e.cjs"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

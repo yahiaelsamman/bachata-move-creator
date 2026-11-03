@@ -106,7 +106,7 @@ in or out, which shows where to add moves next.
 | `src/map.js` | Position map: deterministic force layout and SVG. |
 | `web/` | The page (`index.html`, `app.js`, `style.css`) and the generated `data.js`. |
 | `scripts/build.mjs` | Validates the YAML and writes `web/data.js`. |
-| `test/` | Node tests (`npm test`); CI runs them on every push. |
+| `test/` | Node tests (`npm test`); CI runs them on every push. `npm run e2e` runs a 400-step random UI test in a real browser (needs Playwright). |
 
 ## Publish with GitHub Pages
 
