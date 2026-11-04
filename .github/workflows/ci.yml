@@ -18,3 +18,20 @@ jobs:
         run: npm run check
       - name: Tests
         run: npm test
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Playwright is only needed here, so it isn't a project dependency.
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright@1.63.0
+          npx playwright install --with-deps chromium
+      - name: Browser tests (UI flows, page snapshot, random UI test)
+        run: npm run e2e
