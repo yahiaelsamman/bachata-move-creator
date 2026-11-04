@@ -117,6 +117,7 @@
     state.search = '';
     state.showAllInsert = false;
     App.render();
+    App.revealPanel();
   };
 
   // ------------------------------------------------------------ actions

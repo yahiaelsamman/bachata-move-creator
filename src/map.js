@@ -114,6 +114,26 @@
     return [node.x + dx * s, node.y + dy * s];
   }
 
+  /**
+   * One position and its direct neighbours: the position in the middle, the others in a circle.
+   * Readable on a phone, and tapping a neighbour re-centres on it.
+   */
+  function layoutFocus(g, full, centerId) {
+    const W = 400, H = 400;
+    const links = full.links.filter((l) => (l.from === centerId || l.to === centerId) && !isHubLink(g, l));
+    const around = [...new Set(links.flatMap((l) => [l.from, l.to]))].filter((id) => id !== centerId).sort();
+    const node = (id, x, y) => {
+      const label = full.nodes[id].label;
+      return { ...full.nodes[id], x, y, w: Math.max(60, label.length * 8.4 + 20) };
+    };
+    const nodes = { [centerId]: node(centerId, W / 2, H / 2) };
+    around.forEach((id, i) => {
+      const a = (2 * Math.PI * i) / around.length - Math.PI / 2;
+      nodes[id] = node(id, W / 2 + Math.cos(a) * 135, H / 2 + Math.sin(a) * 160);
+    });
+    return { nodes, links, width: W, height: H, focus: true };
+  }
+
   function mapSVG(g, layout, opts = {}) {
     const sel = opts.selected || null;
     const onPath = new Set((opts.path || []).filter((s) => s.from && s.to && s.from !== s.to).map((s) => s.from + '>' + s.to));
@@ -143,7 +163,7 @@
       return `<g class="mp-hit-wrap" data-link="${esc(l.from)}>${esc(l.to)}"><path d="${pathD}" class="mp-hit"/><path d="${pathD}" class="${cls}" style="stroke-width:${r1(width)}" marker-end="url(#${marker})"/><title>${esc(g.posById[l.from].name)} → ${esc(g.posById[l.to].name)}: ${esc(names)}</title></g>`;
     }).join('\n');
 
-    const nodeSvg = g.positions.map((p) => {
+    const nodeSvg = g.positions.filter((p) => layout.nodes[p.id]).map((p) => {
       const nd = layout.nodes[p.id];
       let cls = 'mp-node';
       if (p.id === sel) cls += ' mp-selected';
@@ -157,7 +177,7 @@
 </g>`;
     }).join('\n');
 
-    return `<svg viewBox="0 0 ${layout.width} ${layout.height}" class="posmap" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of positions">
+    return `<svg viewBox="0 0 ${layout.width} ${layout.height}" class="posmap${layout.focus ? ' focus' : ''}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of positions">
 <defs>${['mp-a', 'mp-a-path', 'mp-a-out', 'mp-a-in'].map((id) =>
     `<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="${id}"/></marker>`).join('')}</defs>
 ${linkSvg}
@@ -165,5 +185,5 @@ ${nodeSvg}
 </svg>`;
   }
 
-  return { layoutMap, mapSVG, linksOf, isHubLink };
+  return { layoutMap, layoutFocus, mapSVG, linksOf, isHubLink };
 });

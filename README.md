@@ -30,6 +30,11 @@ npm test
 
 ## What you can do
 
+The combo stays pinned at the top while you scroll. Below it are four tabs:
+**Build** (what can follow, move details and the leader view), **Map**,
+**Library** (all moves and positions) and **My moves**. Less-used actions (copy
+as text, save as compound, clear, start weight) are in the **More** menu.
+
 **Build combos**
 - **+ next move** lists everything that can follow where you are (A–Z, filter by
   name or kind).
@@ -50,7 +55,7 @@ npm test
   at the bottom facing up, she's placed from the orientation and frame, arms are
   drawn from the handholds, and the top hand is drawn thicker when hands are
   crossed. A selected move shows its start and end.
-- **Map of positions:** every position with arrows for the moves between them. Your
+- **Map of positions:** every position with arrows for the moves between them. On phones it opens on the current position and its neighbours (tap a neighbour to move on); **Whole map** shows everything. Your
   combo is drawn as a path. Click a position for its ways in and out, to start a
   new combo there, or to get the shortest routes there from the end of your
   combo. Tap an arrow to see its moves and add one.

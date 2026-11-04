@@ -18,7 +18,7 @@
   App.renderLibrary = function (result) {
     const g = App.g;
     const box = $('library');
-    if (!$('library-section').open) { box.replaceChildren(); return; }
+    if (!App.isTab('library')) return;
     const q = $('lib-search').value.trim().toLowerCase();
     const kind = $('lib-kind').value;
     const onlyCheck = $('lib-check').checked;
@@ -55,7 +55,6 @@
     $('lib-search').addEventListener('input', App.render);
     $('lib-kind').addEventListener('change', App.render);
     $('lib-check').addEventListener('change', App.render);
-    $('library-section').addEventListener('toggle', App.render);
   };
 
   App.renderPositions = function () {
@@ -63,7 +62,7 @@
     const healthById = Object.fromEntries(g.health.map((x) => [x.id, x]));
     const showPosition = (id) => {
       App.showOnMap(id);
-      document.querySelector('.map-section').scrollIntoView({ behavior: 'smooth' });
+      App.showTab('map');
     };
     $('positions').replaceChildren(h('div', { class: 'table-wrap' }, h('table', {},
       h('thead', {}, h('tr', {}, h('th', {}, ''), h('th', {}, 'Position'), h('th', {}, 'Notation'), h('th', {}, 'Ways in / out'))),

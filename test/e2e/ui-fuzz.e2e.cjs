@@ -12,26 +12,26 @@ const PAGE = 'file://' + path.resolve(__dirname, '../../web/index.html');
   let seed = 42; const rnd = (n) => { seed = (seed * 16807) % 2147483647; return seed % n; };
   const counts = {};
   const actions = [
-    ['option', async () => { const o = p.locator('#panel .options button'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
+    ['option', async () => { await p.click('#tab-build'); const o = p.locator('#panel .options button'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
     ['domino', async () => { const o = p.locator('.domino'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
-    ['action', async () => { const o = p.locator('#panel .actions button'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
+    ['action', async () => { await p.click('#tab-build'); const o = p.locator('#panel .actions button'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
     ['bridge', async () => { const o = p.locator('.joint.broken button'); if (await o.count()) await o.first().click(); }],
-    ['map', async () => { const o = p.locator('[data-pos]'); const n = await o.count(); await o.nth(rnd(n)).click({ force: true }); }],
-    ['mapinfo', async () => { const o = p.locator('#map-info button'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
+    ['map', async () => { await p.click('#tab-map'); const o = p.locator('[data-pos]'); const n = await o.count(); await o.nth(rnd(n)).click({ force: true }); }],
+    ['mapinfo', async () => { await p.click('#tab-map'); const o = p.locator('#map-info button'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
     ['undo', async () => { await p.keyboard.press('Control+z'); }],
     ['random', async () => { await p.click('#btn-random'); }],
     ['key', async () => { await p.keyboard.press(['ArrowLeft','ArrowRight','Delete','Escape'][rnd(4)]); }],
     ['start', async () => { const v = await p.$$eval('#start-pos option', os => os.map(o => o.value)); await p.selectOption('#start-pos', v[rnd(v.length)]); }],
-    ['chips', async () => { const o = p.locator('.chips button'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
-    ['save', async () => { await p.click('#btn-save'); }],
+    ['chips', async () => { const o = p.locator('.chips button:visible'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
+    ['save', async () => { await p.locator('details.menu').evaluate((d) => { d.open = true; }); await p.click('#btn-save'); }],
     ['level', async () => { await p.selectOption('#max-level', ['1', '2', '3'][rnd(3)]); }],
     ['library', async () => {
-      await p.locator('#library-section').evaluate((d) => { d.open = true; });
+      await p.click('#tab-library');
       await p.fill('#lib-search', ['', 'turn', 'shadow', 'hammer', 'zzz'][rnd(5)]);
       const o = p.locator('table.lib button'); const n = await o.count(); if (n) await o.nth(rnd(n)).click();
     }],
     ['addmove', async () => {
-      await p.locator('#my-section').evaluate((d) => { d.open = true; });
+      await p.click('#tab-mine');
       await p.fill('#move-form [name=name]', 'Fuzz move ' + rnd(1000));
       await p.selectOption('#move-form [name=kind]', ['move', 'styling', 'adjuster'][rnd(3)]);
       const chips = p.locator('.mf-chip'); const n = await chips.count(); await chips.nth(rnd(n)).click();
@@ -41,7 +41,12 @@ const PAGE = 'file://' + path.resolve(__dirname, '../../web/index.html');
       }
       await p.click('#move-form button[type=submit]');
     }],
-    ['text', async () => { if (!(await p.locator('#btn-text').isDisabled())) await p.click('#btn-text'); }],
+    ['text', async () => {
+      if (await p.locator('#btn-text').isDisabled()) return;
+      await p.locator('details.menu').evaluate((d) => { d.open = true; });
+      await p.click('#btn-text');
+    }],
+    ['tab', async () => { await p.click(['#tab-build', '#tab-map', '#tab-library', '#tab-mine'][rnd(4)]); }],
     ['practice', async () => { if (await p.locator('#btn-practice').isDisabled()) return; await p.click('#btn-practice'); if (await p.locator('dialog[open]').count()) { await p.click('.pr-nextbtn'); await p.click('.pr-nextbtn'); await p.keyboard.press('Escape'); } }],
   ];
   for (let i = 0; i < 400; i++) {

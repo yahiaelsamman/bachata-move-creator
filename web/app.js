@@ -11,8 +11,8 @@
     App.renderStrip(result);
     App.renderSummary(result);
     App.renderPanel(result);
-    App.renderMap(result);
-    App.renderLibrary(result);
+    if (App.isTab('map')) App.renderMap(result);      // hidden views are drawn when shown
+    if (App.isTab('library')) App.renderLibrary(result);
     syncToolbar(result);
   };
 
@@ -91,7 +91,7 @@
       const name = prompt('Name for this compound move:');
       if (!name) return;
       own.saveCompound(name);
-      $('my-section').open = true;
+      App.showTab('mine');
     });
   }
 
@@ -128,6 +128,7 @@
   App.recompile();
   App.loadCombo(initial);
   initToolbar();
+  App.initTabs();
   App.initMap();
   App.initMoveForm();
   App.initLibrary();

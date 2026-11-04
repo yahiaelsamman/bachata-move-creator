@@ -26,7 +26,7 @@
     --line: #3a3530;
     --accent: #f08a5d;
     --accent-soft: #3d261c;
-    --on-accent: #fff;
+    --on-accent: #1b1410;
     --warn: #f0b84d;
     --warn-soft: #3a2e14;
     --bad: #ff8a80;
@@ -59,6 +59,12 @@ th { color: var(--muted); font-weight: 500; }
 .small { font-size: 0.85rem; margin: 0; }
 .flag { color: var(--warn); }
 .flag.bad { color: var(--bad); }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; margin: -1px;
+}
+.section-gap { margin-top: 28px; }
 
 /* Cards: the panel, the map and the add-a-move form. */
 .panel, .map-section, .move-form {
@@ -114,8 +120,8 @@ button.primary:disabled { background: var(--surface); color: var(--muted); borde
 .lvl { letter-spacing: 1px; font-size: 0.7rem; color: var(--accent); margin-left: 2px; }
 
 /* ---------------------------------------------------------------- page: header, help, messages, toolbar */
-.sub { margin: 4px 0 16px; }
-.help { margin: -6px 0 14px; font-size: 0.9rem; }
+.sub { margin: 4px 0 6px; }
+.help { margin: 0 0 14px; font-size: 0.9rem; }
 .help summary { cursor: pointer; color: var(--accent); font-weight: 600; }
 .help ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
 
@@ -128,21 +134,57 @@ button.primary:disabled { background: var(--surface); color: var(--muted); borde
   flex-wrap: wrap;
   gap: 8px 12px;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 .toolbar label { display: flex; gap: 6px; align-items: center; color: var(--muted); min-width: 0; }
 .toolbar select { min-width: 0; max-width: 100%; }
 #start-pos { width: 210px; }
-.btn-group { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.btn-group { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .spacer { flex: 1; }
+
+/* "More" menu: less-used actions. */
+.menu { position: relative; }
+.menu summary {
+  list-style: none; cursor: pointer; padding: 6px 12px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--surface);
+}
+.menu summary::-webkit-details-marker { display: none; }
+.menu summary::after { content: " ▾"; color: var(--muted); }
+.menu[open] summary { border-color: var(--accent); }
+.menu-body {
+  position: absolute; right: 0; z-index: 20; margin-top: 6px; width: 260px;
+  display: grid; gap: 8px; padding: 12px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+.menu-body label { display: grid; gap: 4px; color: var(--muted); font-size: 0.85rem; }
+
+/* The combo stays at the top while scrolling. */
+.combo-sticky {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg);
+  padding: 6px 0 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Tabs */
+.tabs { display: flex; gap: 2px; margin: 10px 0 14px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tabs button {
+  border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none;
+  padding: 10px 14px; min-height: 44px; font-weight: 600; color: var(--muted); white-space: nowrap;
+}
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabs button:hover { color: var(--ink); }
 
 /* ---------------------------------------------------------------- strip */
 .strip {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: stretch;
-  gap: 12px 0;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
 }
+.strip > * { flex: 0 0 auto; }
 .joint {
   display: flex;
   align-items: center;
@@ -207,20 +249,21 @@ button.primary:disabled { background: var(--surface); color: var(--muted); borde
   font-size: 0.9rem;
 }
 
+.strip > .empty { flex: 1 1 auto; max-width: 720px; }
 .empty {
-  flex: 1 1 100%;
-  margin-top: 8px;
+  margin-left: 8px;
   border: 1.5px dashed var(--line);
   border-radius: var(--radius);
   padding: 14px 16px;
 }
 .empty p { margin: 0 0 10px; }
 .empty .actions { margin: 0; }
+.summary { margin: 2px 0 0; font-size: 0.85rem; }
 .summary:empty { display: none; }
-.keys { font-size: 0.78rem; margin: -4px 0 0; }
+.keys { font-size: 0.78rem; margin: 8px 0 0; }
 
 /* ---------------------------------------------------------------- panel */
-.panel { margin-top: 20px; }
+
 .panel-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
 .panel-head h2 { margin: 0; flex: 1; min-width: 200px; }
 .search { width: 100%; margin-bottom: 10px; }
@@ -274,12 +317,15 @@ button.primary:disabled { background: var(--surface); color: var(--muted); borde
 .sk-grip { fill: var(--ink); }
 
 /* ---------------------------------------------------------------- position map */
-.map-section { margin-top: 20px; }
+
 .map-head h2 { margin: 0 0 4px; }
 .map-head p { margin: 0 0 10px; font-size: 0.85rem; }
 .map-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 20px; align-items: start; }
 .map { overflow-x: auto; }
 .posmap { width: 100%; min-width: 520px; display: block; }
+.posmap.focus { min-width: 0; max-width: 520px; margin: 0 auto; }
+.posmap.focus .mp-node text { font-size: 14px; }
+.map-head .chips { margin: 0 0 10px; }
 .mp-link { fill: none; stroke: var(--muted); opacity: 0.45; }
 .mp-a { fill: var(--muted); }
 .mp-a-path, .mp-a-out { fill: var(--accent); }
@@ -304,8 +350,6 @@ button.primary:disabled { background: var(--surface); color: var(--muted); borde
 .map-info .options { grid-template-columns: 1fr; }
 
 /* ---------------------------------------------------------------- reference: library, positions */
-.ref { margin-top: 16px; }
-.ref summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 .lib-controls { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 6px 0 4px; }
 .lib-controls input[type="search"] { flex: 1 1 240px; }
 .lib-controls label { display: inline-flex; gap: 6px; align-items: center; }
@@ -316,7 +360,7 @@ td .small { font-size: 0.8rem; }
 .thumb .sketch { width: 64px; border-radius: 6px; }
 
 /* ---------------------------------------------------------------- my moves: add-a-move form */
-#my-section h3 { font-size: 1rem; margin: 18px 0 6px; }
+#view-mine h3 { font-size: 1rem; margin: 18px 0 6px; }
 .move-form { padding: 4px 16px 14px; margin-top: 8px; }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px 14px; }
 .form-grid label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 0.85rem; }
@@ -377,13 +421,20 @@ dialog.practice::backdrop { background: rgba(0, 0, 0, 0.45); }
   .map-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) {
-  .domino { width: calc(50vw - 40px); }
+  .domino { width: 140px; }
+  .domino.add { min-height: 80px; }
   .toolbar { gap: 8px; }
   .toolbar button, .toolbar select { padding: 5px 9px; font-size: 0.92rem; }
   h1 { font-size: 1.3rem; }
   .spacer { display: none; }
-  .toolbar label:first-child { width: 100%; }
-  #start-pos { flex: 1; width: auto; }
+  .sub { display: none; }
+  .toolbar label:first-child { flex: 1 1 55%; }
+  .toolbar label:nth-child(2) { flex: 1 1 35%; }
+  #start-pos, #max-level { flex: 1; width: 100%; }
   .options { grid-template-columns: 1fr; }
 }
 @media (hover: none) { .keys { display: none; } }
+/* Touch screens: comfortable tap targets. */
+@media (pointer: coarse) {
+  button:not(.link):not(.domino), select, input:not([type="checkbox"]):not([type="range"]), .menu summary { min-height: 44px; }
+}

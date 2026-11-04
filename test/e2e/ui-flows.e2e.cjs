@@ -36,9 +36,14 @@ const text = (page, sel) => page.locator(sel).innerText();
 const panelButton = (page, label) => page.locator('#panel button', { hasText: label }).first();
 const sectionOptions = (page, heading) => page.locator(`#panel h2:has-text("${heading}") ~ ul.options`).first().locator('button');
 const tick = (page) => page.waitForTimeout(30);
-async function openDetails(page, id) {
-  await page.locator('#' + id).evaluate((d) => { d.open = true; });
+async function openTab(page, name) {
+  await page.click('#tab-' + name);
   await tick(page);
+}
+/** Buttons in the "More" menu: open the menu first. */
+async function clickMore(page, sel) {
+  await page.locator('details.menu').evaluate((d) => { d.open = true; });
+  await page.click(sel);
 }
 
 // ---------------------------------------------------------------- flows
@@ -142,7 +147,7 @@ const flows = {
 
   async 'level filter hides harder moves'() {
     const page = await open();
-    await openDetails(page, 'library-section');
+    await openTab(page, 'library');
     const count = async () => Number((await text(page, '#library p')).match(/^(\d+) of/)[1]);
     const all = await count();
     await page.selectOption('#max-level', '1');
@@ -155,7 +160,7 @@ const flows = {
 
   async 'library search and add'() {
     const page = await open();
-    await openDetails(page, 'library-section');
+    await openTab(page, 'library');
     await page.fill('#lib-search', 'shadow');
     const rows = await page.locator('table.lib tbody tr').allInnerTexts();
     assert.ok(rows.length > 0);
@@ -167,6 +172,7 @@ const flows = {
 
   async 'map: positions and arrows'() {
     const page = await open();
+    await openTab(page, 'map');
     await page.locator('[data-pos="closed"]').dispatchEvent('click');
     assert.equal(await text(page, '#map-info h3'), 'Closed position');
     await page.locator('[data-link^="closed>"] .mp-hit').first().dispatchEvent('click');
@@ -178,12 +184,13 @@ const flows = {
 
   async 'add a move, use it and share it'() {
     const page = await open();
-    await openDetails(page, 'my-section');
+    await openTab(page, 'mine');
     await page.fill('#move-form [name=name]', 'Test move');
     await page.locator('.mf-chip', { has: page.locator('input[value="open_LR"]') }).click();
     await page.click('#move-form button[type=submit]');
     assert.match(await text(page, '#mf-status'), /^Saved "Test move"/);
     assert.match(await text(page, '#my-moves'), /Test move/);
+    await openTab(page, 'build');
     await page.locator('#panel .options button', { hasText: 'Test move' }).click();
     const hash = await page.evaluate(() => location.hash);
     assert.match(hash, /custom=/);
@@ -195,21 +202,21 @@ const flows = {
 
   async 'save as compound'() {
     const page = await open('#start=open_LR&weight=mirrored&moves=cross-body-lead,close-frame');
-    await page.click('#btn-save');
+    await clickMore(page, '#btn-save');
     assert.equal(await dominoCount(page), 1);
     assert.match(await text(page, '.domino:not(.add)'), /My combo/);
     assert.match(await page.locator('#compounds').textContent(), /name: "My combo"/);
-    assert.ok(await page.locator('#my-section').evaluate((d) => d.open));
+    assert.equal(await page.locator('#tab-mine').getAttribute('aria-selected'), 'true');
   },
 
   async 'a compound named with symbols only gets a readable id'() {
     const page = await open('#start=open_LR&weight=mirrored&moves=cross-body-lead,close-frame');
     page.promptAnswer = '***';
-    await page.click('#btn-save');
+    await clickMore(page, '#btn-save');
     // The page already shows this link (own compounds are spelled out), so change it to fire hashchange.
     await page.evaluate(() => { location.hash = '#moves=cross-body-lead,close-frame'; });
     await page.waitForFunction(() => document.querySelectorAll('.domino:not(.add)').length === 2);
-    await page.click('#btn-save');
+    await clickMore(page, '#btn-save');
     const yaml = await page.locator('#compounds pre').textContent();
     assert.match(yaml, /^- id: my-compound$/m);
     assert.match(yaml, /^- id: my-compound-2$/m);
@@ -276,8 +283,8 @@ const flows = {
 };
 
 // ---------------------------------------------------------------- golden text snapshot
-const VIEWS = ['#strip', '#summary', '#panel', '#map-info', '#notice', '#errors'];
-const DATA_VIEWS = ['#library', '#positions', '#my-moves', '#compounds'];
+const BUILD_VIEWS = ['#strip', '#summary', '#panel', '#notice', '#errors'];
+const TAB_VIEWS = { map: ['#map-info'], library: ['#library', '#positions'], mine: ['#my-moves', '#compounds'] };
 const SNAPSHOT_HASHES = {
   demo: DEMO,
   broken: '#start=shadow&weight=parallel&moves=basic,close-frame,cuddle-combo,dip',
@@ -294,16 +301,20 @@ async function snapshot() {
   const shots = {};
   for (const [name, hash] of Object.entries(SNAPSHOT_HASHES)) {
     const page = await open(hash);
-    for (const id of ['library-section', 'my-section']) await openDetails(page, id);
-    await page.locator('details.ref:not([open])').evaluateAll((ds) => ds.forEach((d) => { d.open = true; }));
-    await tick(page);
-    shots[name] = await capture(page, [...VIEWS, ...DATA_VIEWS]);
-    await page.locator('.domino').nth(1).click();
-    shots[name + ' / second domino'] = await capture(page, VIEWS);
+    // Each view lives in its own tab: show the tab, then capture what it shows.
+    const shot = await capture(page, BUILD_VIEWS);
+    for (const [tab, sels] of Object.entries(TAB_VIEWS)) {
+      await openTab(page, tab);
+      Object.assign(shot, await capture(page, sels));
+    }
+    shots[name] = shot;
+    await page.locator('.domino').nth(1).click();            // picking a domino shows the Build tab
+    shots[name + ' / second domino'] = await capture(page, BUILD_VIEWS);
     await page.locator('.domino:not(.add)').last().click();
-    shots[name + ' / last domino'] = await capture(page, VIEWS);
+    shots[name + ' / last domino'] = await capture(page, BUILD_VIEWS);
+    await openTab(page, 'map');
     await page.locator('[data-pos="closed"]').dispatchEvent('click');
-    shots[name + ' / map closed'] = await capture(page, VIEWS);
+    shots[name + ' / map closed'] = await capture(page, ['#map-info']);
     await page.close();
   }
   return shots;

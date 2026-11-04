@@ -18,7 +18,18 @@
     }
     strip.append(h('span', { class: 'joint', 'aria-hidden': 'true' }, '›'),
       button('+ next move', () => select(null), { class: 'domino add' + (state.selected === null ? ' selected' : '') }));
+    keepSelectedInView(strip);
   };
+
+  /** The strip scrolls sideways; keep the selected domino (or "+ next move") visible. */
+  function keepSelectedInView(strip) {
+    const el = strip.querySelector('.domino.selected');
+    if (!el || strip.scrollWidth <= strip.clientWidth) return;
+    const left = el.offsetLeft - strip.offsetLeft;
+    if (left < strip.scrollLeft || left + el.offsetWidth > strip.scrollLeft + strip.clientWidth) {
+      strip.scrollLeft = Math.max(0, left - (strip.clientWidth - el.offsetWidth) / 2);
+    }
+  }
 
   App.renderSummary = function (result) {
     const warnings = result.items.filter((it) => it.timingWarn || it.weightWarn).length;

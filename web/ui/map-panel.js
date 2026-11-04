@@ -6,10 +6,20 @@
   const { $, h, button, optionList, levelDots, posName, shortName, state, edit } = App;
   const moveName = (id) => App.g.moveById[id].name;
 
+  // Phones start with the focused view; the whole map is one tap away.
+  state.mapView = window.matchMedia('(max-width: 720px)').matches ? 'focus' : 'all';
+
   App.renderMap = function (result) {
     const path = result.items.filter((it) => !it.broken && it.from).map((it) => ({ from: it.from, to: it.to }));
     if (!path.length) path.push({ from: state.startPos, to: state.startPos });
-    $('map').innerHTML = PM.mapSVG(App.g, App.mapLayout, { selected: state.mapSelected, path });
+    const center = state.mapSelected || result.end;
+    const layout = state.mapView === 'focus' ? PM.layoutFocus(App.g, App.mapLayout, center) : App.mapLayout;
+    $('map-view').replaceChildren(
+      button(`Around ${shortName(center)}`, () => { state.mapView = 'focus'; App.render(); },
+        { class: state.mapView === 'focus' ? 'on' : '', 'aria-pressed': String(state.mapView === 'focus') }),
+      button('Whole map', () => { state.mapView = 'all'; App.render(); },
+        { class: state.mapView === 'all' ? 'on' : '', 'aria-pressed': String(state.mapView === 'all') }));
+    $('map').innerHTML = PM.mapSVG(App.g, layout, { selected: state.mapView === 'focus' ? center : state.mapSelected, path });
     renderMapInfo(result);
   };
 

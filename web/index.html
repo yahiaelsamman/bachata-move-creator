@@ -13,30 +13,25 @@
 <body>
   <header class="top">
     <h1>Bachata Move Creator</h1>
-    <p class="sub">Positions are the nodes, moves are the dominoes. Click the last domino to see what can follow.</p>
+    <p class="sub">Positions are the nodes, moves are the dominoes: each move starts where the last one ended.</p>
+    <details class="help">
+      <summary>How to use</summary>
+      <ol>
+        <li>Pick a <strong>start position</strong> (most combos start in open, left-to-right) and your <strong>level</strong>.</li>
+        <li>Add moves under <strong>What can follow</strong>. Only moves that fit where you are are listed, like dominoes.</li>
+        <li>Tap a domino to <strong>replace</strong> it, <strong>insert</strong> after it or remove it. A red <strong>bridge</strong> means two dominoes don't connect; tap it for ways to reconnect.</li>
+        <li>The <strong>leader view</strong> shows each position from above: you at the bottom, the follower above.</li>
+        <li><strong>Practice</strong> plays the combo on the beat. <strong>Random</strong> invents one; <strong>Share link</strong> sends it.</li>
+        <li>Explore on the <strong>Map</strong>, browse the <strong>Library</strong>, add your own under <strong>My moves</strong>.</li>
+      </ol>
+    </details>
   </header>
-
-  <details class="help">
-    <summary>How to use</summary>
-    <ol>
-      <li>Pick a <strong>start position</strong> (most combos start in open, left-to-right).</li>
-      <li>Add moves from <strong>What can follow</strong>. Only moves that fit the current position are listed, like dominoes.</li>
-      <li>Click any domino to <strong>replace</strong> it, <strong>insert</strong> after it or remove it. A red <strong>bridge</strong> marker means two dominoes don't connect; click it for ways to reconnect.</li>
-      <li>The <strong>leader view</strong> shows each position from above: you at the bottom, her above.</li>
-      <li><strong>Practice</strong> plays the combo on the beat. <strong>Share link</strong> sends it to someone.</li>
-      <li>Explore everything on the <strong>map</strong> and in the <strong>move library</strong>, and add your own moves under <strong>My moves</strong>.</li>
-    </ol>
-  </details>
 
   <div id="notice" class="notice" role="status" hidden></div>
   <div id="errors" class="errors" hidden></div>
 
   <section class="toolbar" aria-label="Combo controls">
-    <label>Start position <select id="start-pos"></select></label>
-    <label>Weight <select id="start-weight">
-      <option value="mirrored">mirrored</option>
-      <option value="parallel">parallel</option>
-    </select></label>
+    <label>Start <select id="start-pos"></select></label>
     <label>Level <select id="max-level" title="Hide moves above this level">
       <option value="3">all</option>
       <option value="2">up to intermediate</option>
@@ -44,36 +39,55 @@
     </select></label>
     <span class="spacer"></span>
     <span class="btn-group">
-      <button id="btn-undo" type="button" class="ghost" title="Undo (Ctrl+Z)" disabled>Undo</button>
-      <button id="btn-clear" type="button" class="ghost">Clear</button>
-    </span>
-    <span class="btn-group">
       <button id="btn-practice" type="button" class="primary" title="Step through the combo on the beat">Practice</button>
       <select id="random-length" aria-label="Length of random combos" title="Length of random combos">
-        <option value="16">16 counts</option>
-        <option value="32" selected>32 counts</option>
-        <option value="48">48 counts</option>
+        <option value="16">16 ct</option>
+        <option value="32" selected>32 ct</option>
+        <option value="48">48 ct</option>
       </select>
-      <button id="btn-random" type="button" title="A new combo in whole 8-counts that comes back to the start position">Random combo</button>
+      <button id="btn-random" type="button" title="A new combo in whole 8-counts that comes back to the start position">Random</button>
       <button id="btn-extend" type="button" title="Keep this combo and continue it, coming back to the start position">Extend</button>
-      <button id="btn-share" type="button">Share link</button>
-      <button id="btn-text" type="button" title="The combo as text, with its link">Copy as text</button>
-      <button id="btn-save" type="button">Save as compound</button>
+      <button id="btn-undo" type="button" class="ghost" title="Undo (Ctrl+Z)" disabled>Undo</button>
+      <details class="menu">
+        <summary>More</summary>
+        <div class="menu-body">
+          <button id="btn-share" type="button">Copy share link</button>
+          <button id="btn-text" type="button" title="The combo as text, with its link">Copy as text</button>
+          <button id="btn-save" type="button">Save as compound</button>
+          <button id="btn-clear" type="button">Clear combo</button>
+          <label>Start weight <select id="start-weight">
+            <option value="mirrored">mirrored</option>
+            <option value="parallel">parallel</option>
+          </select></label>
+          <p class="small muted">Weight: <em>mirrored</em> means leader and follower step on opposite feet (normal when facing). <em>Parallel</em> means the same foot (shadow, cuddle).</p>
+        </div>
+      </details>
     </span>
   </section>
 
-  <section class="strip-wrap" aria-label="Combo">
+  <section class="combo-sticky" aria-label="Your combo">
     <div id="strip" class="strip"></div>
     <p id="summary" class="summary"></p>
-    <p class="keys muted">Keys: ← → select · Del remove · Esc back to “next move” · Ctrl+Z undo</p>
+  </section>
+  <p id="status" class="visually-hidden" role="status"></p>
+
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button type="button" role="tab" id="tab-build" aria-controls="view-build">Build</button>
+    <button type="button" role="tab" id="tab-map" aria-controls="view-map">Map</button>
+    <button type="button" role="tab" id="tab-library" aria-controls="view-library">Library</button>
+    <button type="button" role="tab" id="tab-mine" aria-controls="view-mine">My moves</button>
+  </nav>
+
+  <section id="view-build" class="view" role="tabpanel" aria-labelledby="tab-build">
+    <div id="panel" class="panel"></div>
+    <p class="keys muted">Keys: ← → select · Del remove · Esc back to “what can follow” · Ctrl+Z undo</p>
   </section>
 
-  <section id="panel" class="panel" aria-live="polite"></section>
-
-  <section class="map-section" aria-label="Map of positions">
+  <section id="view-map" class="view map-section" role="tabpanel" aria-labelledby="tab-map" hidden>
     <div class="map-head">
       <h2>Map of positions</h2>
-      <p class="muted">Arrows are moves that change position (thicker = more moves). ↺ counts in-place moves. Your combo is drawn as a path. Arrows into Apart show when you select a position. Click a position.</p>
+      <p class="muted">Arrows are moves that change position (thicker = more moves). ↺ counts in-place moves. Your combo is drawn as a path. Tap a position or an arrow.</p>
+      <div id="map-view" class="chips" aria-label="Map view"></div>
     </div>
     <div class="map-grid">
       <div id="map" class="map"></div>
@@ -81,29 +95,25 @@
     </div>
   </section>
 
-  <details class="ref" id="library-section">
-    <summary>Move library</summary>
+  <section id="view-library" class="view" role="tabpanel" aria-labelledby="tab-library" hidden>
+    <h2>Move library</h2>
     <div class="lib-controls">
       <input id="lib-search" type="search" aria-label="Search moves" placeholder="Search moves, notes or positions…">
       <select id="lib-kind" aria-label="Kind">
         <option value="all">all kinds</option>
         <option value="move">move</option>
-        <option value="styling">styling</option>
-        <option value="adjuster">adjuster</option>
-        <option value="compound">compound</option>
+        <option value="styling">in place</option>
+        <option value="adjuster">connector</option>
+        <option value="compound">combo block</option>
       </select>
       <label class="small muted"><input type="checkbox" id="lib-check"> only ⚑ needs review</label>
     </div>
     <div id="library"></div>
-  </details>
-
-  <details class="ref">
-    <summary>Positions</summary>
+    <h2 class="section-gap">Positions</h2>
     <div id="positions"></div>
-  </details>
+  </section>
 
-  <details class="ref" id="my-section">
-    <summary>My moves and compounds</summary>
+  <section id="view-mine" class="view" role="tabpanel" aria-labelledby="tab-mine" hidden>
     <form id="move-form" class="move-form" autocomplete="off">
       <h3>Add a move</h3>
       <p class="muted small">Moves you add work right away in this browser. To keep them for good (and for everyone), copy their YAML into <code>data/moves.yaml</code>.</p>
@@ -111,8 +121,8 @@
         <label>Name <input name="name" required maxlength="60" placeholder="e.g. Hair comb"></label>
         <label>Kind <select name="kind">
           <option value="move">move</option>
-          <option value="styling">styling (same start and end)</option>
-          <option value="adjuster">adjuster (small connector)</option>
+          <option value="styling">in place (same start and end)</option>
+          <option value="adjuster">connector (hand change, catch, release)</option>
         </select></label>
         <label>Level <select name="level">
           <option value="1">1 · beginner</option>
@@ -133,7 +143,7 @@
     <div id="my-moves"></div>
     <h3>Compound moves</h3>
     <div id="compounds"></div>
-  </details>
+  </section>
 
   <script src="data.js"></script>
   <script src="../src/graph.js"></script>
@@ -149,6 +159,7 @@
   <script src="ui/map-panel.js"></script>
   <script src="ui/reference.js"></script>
   <script src="ui/my-moves.js"></script>
+  <script src="ui/layout.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
