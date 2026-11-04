@@ -55,10 +55,12 @@ as text, save as compound, clear, start weight) are in the **More** menu.
   at the bottom facing up, she's placed from the orientation and frame, arms are
   drawn from the handholds, and the top hand is drawn thicker when hands are
   crossed. A selected move shows its start and end.
-- **Map of positions:** every position with arrows for the moves between them. On phones it opens on the current position and its neighbours (tap a neighbour to move on); **Whole map** shows everything. Your
+- **Map of positions:** every position with arrows for the moves between them. Your
   combo is drawn as a path. Click a position for its ways in and out, to start a
   new combo there, or to get the shortest routes there from the end of your
-  combo. Tap an arrow to see its moves and add one.
+  combo. Tap an arrow to see its moves and add one. **Around …** shows just one
+  position and its neighbours (tap a neighbour to move on); it's the default on
+  phones. **Whole map** shows everything.
 
 **Practice**
 - **Practice** steps through the combo one big card at a time: the move, its counts
@@ -144,6 +146,7 @@ From the repository:
 | `web/ui/dom.js` | Small DOM helpers and the `App` object every UI file adds to. Read its header first. |
 | `web/ui/state.js` | The combo, undo, own moves, and every action that changes the combo (`App.edit`). |
 | `web/ui/strip.js`, `panel.js`, `map-panel.js`, `reference.js`, `my-moves.js` | One file per part of the page: dominoes, the panel under them, the map, library and positions, the add-a-move form. |
+| `web/ui/layout.js` | The four tabs, the More menu, and scrolling the panel into view on phones. |
 | `web/practice.js` | Practice mode (beat counter, click, spoken count). |
 | `web/sw.js` | Offline support. Lists every file the page loads. |
 | `scripts/build.mjs` | Validates the YAML and writes `web/data.js`. |
