@@ -1,10 +1,10 @@
 // Offline support: network first (so updates arrive), cache as fallback.
-const CACHE = 'bmc-v4';
+const CACHE = 'bmc-v5';
 const ASSETS = [
   './', 'index.html', 'style.css', 'data.js', 'practice.js', 'app.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon.svg',
-  '../src/graph.js', '../src/generator.js', '../src/sketch.js', '../src/map.js', '../src/share.js',
-  'ui/dom.js', 'ui/state.js', 'ui/strip.js', 'ui/panel.js', 'ui/map-panel.js', 'ui/reference.js', 'ui/my-moves.js', 'ui/layout.js',
+  '../src/graph.js', '../src/generator.js', '../src/sketch.js', '../src/motion.js', '../src/map.js', '../src/share.js',
+  'ui/dom.js', 'ui/state.js', 'ui/strip.js', 'ui/panel.js', 'ui/map-panel.js', 'ui/reference.js', 'ui/my-moves.js', 'ui/layout.js', 'ui/movie.js',
 ];
 
 self.addEventListener('install', (event) => {

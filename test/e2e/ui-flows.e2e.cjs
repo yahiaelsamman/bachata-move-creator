@@ -117,6 +117,49 @@ const flows = {
     assert.ok(await page.locator('#notice').isHidden());
   },
 
+  async 'a selected move plays in the leader view: play, finish, scrub'() {
+    const page = await open('#start=open_LR&weight=mirrored&moves=cross-body-lead,follower-right-turn');
+    await page.locator('.domino').nth(1).click();              // the follower right turn, starting on 1
+    const art = () => page.locator('.movie .sk-art').innerHTML();
+    const first = await art();
+    assert.equal(await text(page, '.mv-count'), 'count 1');
+    await page.locator('.mv-play').click();
+    await page.waitForTimeout(700);
+    assert.notEqual(await art(), first, 'the sketch moves while playing');
+    assert.equal(await text(page, '.mv-play'), '❚❚ Pause');
+    await page.waitForFunction(() => document.querySelector('.mv-play').textContent.includes('Play'), null, { timeout: 4000 });
+    assert.equal(await page.locator('.movie input[type=range]').inputValue(), '1000');
+    await page.locator('.movie input[type=range]').fill('500');
+    assert.equal(await text(page, '.mv-count'), 'count 3');
+    await page.locator('.movie input[type=range]').fill('0');
+    assert.equal(await art(), first, 'scrubbing back to 0 shows the start again');
+  },
+
+  async 'a connector (0 counts) gets a short animation; a combo block keeps start and end sketches'() {
+    const page = await open('#start=open_LR&weight=mirrored&moves=catch-second-hand,classic-opener');
+    await page.locator('.domino').nth(0).click();
+    assert.equal(await text(page, '.mv-count'), 'start');
+    await page.locator('.mv-play').click();
+    await page.waitForFunction(() => document.querySelector('.mv-count').textContent === 'end', null, { timeout: 3000 });
+    await page.locator('.domino').nth(1).click();
+    assert.equal(await page.locator('.movie').count(), 0);
+    assert.ok(await page.locator('.leader-view .sk-fig').count() >= 1);
+  },
+
+  async 'practice animates the sketch in time with the beat'() {
+    const page = await open('#start=open_LR&weight=mirrored&moves=follower-right-turn,follower-left-turn');
+    await page.click('#btn-practice');
+    await page.locator('.pr-countin').uncheck();
+    const before = await page.locator('.pr-art').innerHTML();
+    await page.click('.pr-play');
+    await page.waitForTimeout(800);
+    assert.notEqual(await page.locator('.pr-art').innerHTML(), before);
+    await page.click('.pr-play');                              // pause stops the animation
+    const paused = await page.locator('.pr-art').innerHTML();
+    await page.waitForTimeout(400);
+    assert.equal(await page.locator('.pr-art').innerHTML(), paused);
+  },
+
   async 'keyboard focus survives a redraw'() {
     const page = await open('#start=open_LR&weight=mirrored&moves=cross-body-lead');
     await page.locator('#panel .options button').first().focus();
@@ -273,10 +316,11 @@ const flows = {
     await page.click('#btn-practice');
     assert.equal(await page.locator('dialog[open]').count(), 1);
     assert.equal(await text(page, '.pr-name'), 'Cross body lead');
-    assert.match(await text(page, '.pr-sketches'), /Start and end: Open, left-to-right/);
+    assert.match(await text(page, '.pr-sketches'), /Open, left-to-right → Open, left-to-right/);
     await page.click('.pr-nextbtn');
     assert.equal(await text(page, '.pr-name'), 'Close frame');
-    assert.equal(await page.locator('.pr-sketches svg').count(), 2);
+    assert.equal(await page.locator('.pr-sketches svg').count(), 1);          // one animated sketch
+    assert.match(await text(page, '.pr-sketches'), /Open, left-to-right → Closed position/);
     await page.click('.pr-nextbtn'); // loops back to the start by default
     assert.equal(await text(page, '.pr-name'), 'Cross body lead');
     await page.keyboard.press('Escape');

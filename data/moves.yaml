@@ -30,6 +30,9 @@
 #             (e.g. [dile que no (Spanish), "smena (Russian)"])
 #   source    optional: where the move is described (short text or URLs)
 #   check     set when the start/end in this draft needs a dancer's review
+#   turn      optional, for the animation: {follower: degrees, leader: degrees}, clockwise seen from
+#             above is positive (a right turn is 360, a left half turn -180). Without it the turn is
+#             read from the name ("Follower right turn (double)") or the notes ("turns left").
 #   sequence  (compound only) list of move ids. These are live references, so
 #             the start, end and counts are computed from the parts.
 #

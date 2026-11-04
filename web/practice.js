@@ -20,6 +20,7 @@
   const savePrefs = () => { try { localStorage.setItem('bmc.practice', JSON.stringify(prefs)); } catch { /* ignore */ } };
 
   let dlg, steps = [], idx = 0, beat = 0, timer = null, audio = null, view = null, countIn = 0, wakeLock = null;
+  let raf = null, lastTickAt = 0;   // the animated sketch follows the beat between ticks
   const q = (selector) => dlg.querySelector(selector);
   // Click, count-in and loop are on unless turned off; counting aloud is off unless turned on.
   const isOn = (name) => (name === 'voice' ? Boolean(prefs.voice) : prefs[name] !== false);
@@ -121,13 +122,18 @@
       const svg = view.sketch(id);
       return svg ? `<figure><div>${svg}</div><figcaption>${label}: ${esc(view.posName(id))}</figcaption></figure>` : '';
     };
+    // One animated sketch of the move (start to end), or the start and end sketches if animation isn't available.
+    const sketches = view.frame
+      ? `<figure class="pr-movie"><div class="pr-art">${view.frame(it, 0)}</div>` +
+        `<figcaption>${esc(view.posName(it.from))} → ${esc(view.posName(it.to))}</figcaption></figure>`
+      : firstFrom === lastTo ? sk(firstFrom, 'Start and end') : sk(firstFrom, 'Start') + sk(lastTo, 'End');
     q('.pr-card').innerHTML = `
       ${extras.length ? `<p class="pr-extra">First, on the fly: ${extras.map((x) => esc(x.move.name)).join(' › ')}</p>` : ''}
       <h2 class="pr-name">${esc(m.name)}</h2>
       <p class="pr-meta"><span class="badge k-${esc(m.kind)}">${esc(view.kindLabel(m.kind))}</span> ${m.counts} counts · beats ${window.MoveGraph.beatRange(it.beat, m.counts)}</p>
       ${after.length ? `<p class="pr-extra">Then, on the fly: ${after.map((x) => esc(x.move.name)).join(' › ')}</p>` : ''}
       ${m.notes ? `<p class="pr-notes">${esc(m.notes)}</p>` : ''}
-      <div class="pr-sketches">${firstFrom === lastTo ? sk(firstFrom, 'Start and end') : sk(firstFrom, 'Start') + sk(lastTo, 'End')}</div>`;
+      <div class="pr-sketches">${sketches}</div>`;
     const nextStep = steps[idx + 1] || (loops() ? steps[0] : null);
     q('.pr-next').textContent = nextStep ? `Next: ${nextStep.it.move.name}` : 'Last move';
     paintBeats();
@@ -195,7 +201,22 @@
     click(current === 0 || current === 4);
     say(current);
     paintBeats();
+    lastTickAt = performance.now();
     beat++;
+  }
+
+  /** Between ticks, move the sketch smoothly through the current count. */
+  function animate(now) {
+    raf = null;
+    if (!timer || !view.frame) return;
+    const step = steps[idx];
+    const art = q('.pr-art');
+    if (step && art && step.it.move.counts && !countIn && beat > 0) {
+      const beatMs = 60000 / (Number(q('.pr-bpm').value) || 124);
+      const t = (beat - 1 + Math.min(1, (now - lastTickAt) / beatMs)) / step.it.move.counts;
+      art.innerHTML = view.frame(step.it, Math.min(1, t));
+    }
+    raf = requestAnimationFrame(animate);
   }
 
   function start() {
@@ -205,6 +226,7 @@
     keepAwake(true);
     timer = setInterval(tick, 60000 / bpm);
     tick();
+    if (!raf) raf = requestAnimationFrame(animate);
     q('.pr-play').textContent = 'Pause';
   }
 
@@ -218,6 +240,8 @@
 
   function stop() {
     if (timer) clearInterval(timer);
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
     countIn = 0;
     keepAwake(false);
     try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch { /* ignore */ }

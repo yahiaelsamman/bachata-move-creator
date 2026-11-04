@@ -4,7 +4,10 @@
  * of the picture). Everything is derived from the position's attributes, so a
  * sketch that looks wrong points at a position whose data is wrong.
  *
- * sketchSVG(position) -> SVG markup string (no DOM needed).
+ *   sketchSVG(position) -> SVG markup string (no DOM needed)
+ *   placeBodies(position) -> { leader, follower }   where the two dancers stand
+ *   armsFor(position, leader, follower) -> arms      the hand connections between them
+ *   drawSVG(layout, { bounds }) -> SVG               used by the animation (src/motion.js)
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
@@ -62,13 +65,26 @@
       });
   }
 
-  /** Layout of both dancers and every arm, in picture coordinates. */
-  function layout(p) {
+  /** Where the two dancers stand for a position (leader at the bottom, facing up). */
+  function placeBodies(p) {
     const o = ORIENTATION[p.orientation] || ORIENTATION.facing;
     const sideways = Math.abs(o.dir[0]) > 0.5;
     const d = (sideways ? SIDE_DISTANCE : DISTANCE)[p.frame] ?? DISTANCE.open;
-    const leader = body([LEADER.x, LEADER.y], [0, -1]);
-    const follower = body(add([LEADER.x, LEADER.y], mul(o.dir, d)), o.face);
+    return {
+      leader: body([LEADER.x, LEADER.y], [0, -1]),
+      follower: body(add([LEADER.x, LEADER.y], mul(o.dir, d)), o.face),
+      label: o.label,
+    };
+  }
+
+  /** Layout of both dancers and every arm, in picture coordinates. */
+  function layout(p) {
+    const { leader, follower, label } = placeBodies(p);
+    return { leader, follower, label, ...armsFor(p, leader, follower) };
+  }
+
+  /** The hand connections of a position, drawn between two dancers wherever they stand. */
+  function armsFor(p, leader, follower) {
     const fr = right(follower.face);
 
     // Where each of the follower's hands ends up, before connections.
@@ -133,7 +149,7 @@
     if (top) {
       arms.sort((a, b) => (a.who === 'leader' && a.hand === top) - (b.who === 'leader' && b.hand === top));
     }
-    return { leader, follower, arms, top, label: o.label };
+    return { arms, top };
   }
 
   function dancer(b, cls, labelText, labelBelow) {
@@ -146,8 +162,28 @@
 </g>`;
   }
 
+  /**
+   * Picture area: fixed scale, cropped to the content. Close positions get a shorter picture, not
+   * bigger dancers, so distances stay comparable between sketches.
+   */
+  function boundsOf(L) {
+    const ys = [L.follower.c[1] - 34, L.leader.c[1] - 70, ...L.arms.map((a) => a.to[1] - 8)];
+    const xs = [L.follower.c[0], L.leader.c[0], ...L.arms.map((a) => a.to[0])];
+    return {
+      top: Math.max(0, Math.min(...ys)),
+      bottom: Math.max(L.leader.c[1] + 36, L.follower.c[1] + 36),
+      // Usually 15..165; wider only when someone stands further out to the side.
+      left: Math.min(15, Math.min(...xs) - 30),
+      right: Math.max(W - 15, Math.max(...xs) + 30),
+    };
+  }
+
   function sketchSVG(p, opts = {}) {
-    const L = layout(p);
+    return drawSVG(layout(p), opts);
+  }
+
+  /** Draw a layout. `opts.bounds` fixes the picture area (an animation keeps one frame for the whole move). */
+  function drawSVG(L, opts = {}) {
     const eye = L.leader.c;
     const fov = `M${pt(eye)} L${pt(add(eye, [-80, -128]))} A150 150 0 0 1 ${pt(add(eye, [80, -128]))} Z`;
     const arms = L.arms.map((a) => {
@@ -157,14 +193,10 @@
         (a.grip ? `<circle cx="${r1(a.grip[0])}" cy="${r1(a.grip[1])}" r="3.2" class="sk-grip"/>` : '');
     }).join('\n  ');
     const title = opts.title ? `<title>${esc(opts.title)}</title>` : '';
-    // Fixed scale, cropped to the content: close positions get a shorter picture,
-    // not bigger dancers, so distances stay comparable between sketches.
     const behind = L.follower.c[1] > L.leader.c[1] + 5; // follower behind the leader
-    const ys = [L.follower.c[1] - 34, L.leader.c[1] - 70, ...L.arms.map((a) => a.to[1] - 8)];
-    const top = Math.max(0, Math.min(...ys));
-    const bottom = Math.max(L.leader.c[1] + 36, L.follower.c[1] + 36);
-    const x0 = 15;
-    const vw = W - 30;
+    const { top, bottom, left, right: rightEdge } = opts.bounds || boundsOf(L);
+    const x0 = left ?? 15;
+    const vw = (rightEdge ?? W - 15) - x0;
     return `<svg viewBox="${x0} ${r1(top)} ${vw} ${r1(bottom - top)}" class="sketch" role="img" xmlns="http://www.w3.org/2000/svg">${title}
   <path d="${fov}" class="sk-fov"/>
   ${dancer(L.follower, 'follower', 'follower', behind)}
@@ -190,5 +222,5 @@
     return parts.join(', ') + '.';
   }
 
-  return { sketchSVG, describe, layout };
+  return { sketchSVG, describe, layout, placeBodies, armsFor, body, boundsOf, drawSVG };
 });

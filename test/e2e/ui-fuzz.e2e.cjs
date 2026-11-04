@@ -46,6 +46,12 @@ const PAGE = 'file://' + path.resolve(__dirname, '../../web/index.html');
       await p.locator('details.menu').evaluate((d) => { d.open = true; });
       await p.click('#btn-text');
     }],
+    ['movie', async () => {
+      const play = p.locator('.mv-play:visible');
+      if (!(await play.count())) return;
+      if (rnd(2)) await play.click();
+      else await p.locator('.movie input[type=range]').fill(String(rnd(1001)));
+    }],
     ['tab', async () => { await p.click(['#tab-build', '#tab-map', '#tab-library', '#tab-mine'][rnd(4)]); }],
     ['practice', async () => { if (await p.locator('#btn-practice').isDisabled()) return; await p.click('#btn-practice'); if (await p.locator('dialog[open]').count()) { await p.click('.pr-nextbtn'); await p.click('.pr-nextbtn'); await p.keyboard.press('Escape'); } }],
   ];

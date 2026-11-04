@@ -316,6 +316,12 @@ button.primary:disabled { background: var(--surface); color: var(--muted); borde
 .sk-top { stroke-width: 5.5; }
 .sk-grip { fill: var(--ink); }
 
+/* Animated leader view */
+.mv-controls { display: flex; align-items: center; gap: 8px; margin: 6px 0 4px; max-width: 230px; }
+.mv-controls input[type="range"] { flex: 1; min-width: 0; padding: 0; accent-color: var(--accent); }
+.mv-play { white-space: nowrap; padding: 4px 10px; }
+.mv-count { font-size: 0.8rem; color: var(--muted); min-width: 52px; font-variant-numeric: tabular-nums; }
+
 /* ---------------------------------------------------------------- position map */
 
 .map-head h2 { margin: 0 0 4px; }

@@ -79,7 +79,7 @@
       const result = App.evaluate();
       if (!result.items.length) return alert('Add some moves first.');
       if (!requireUnbroken(result)) return;
-      window.Practice.open(result.items, { posName, sketch: practiceSketch, kindLabel: (k) => App.KIND_LABEL[k] || k }, state.selected ?? 0);
+      window.Practice.open(result.items, { posName, sketch: practiceSketch, frame: App.moveFrame, kindLabel: (k) => App.KIND_LABEL[k] || k }, state.selected ?? 0);
     });
     $('btn-share').addEventListener('click', (ev) => App.copyText(pageUrl(), ev.currentTarget, 'Link copied'));
     $('btn-print').addEventListener('click', () => window.print());
