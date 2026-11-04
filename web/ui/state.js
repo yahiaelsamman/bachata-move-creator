@@ -62,11 +62,17 @@
 
   /** Apply a combo from a link or from this browser's storage. Unknown values keep the current ones. */
   App.loadCombo = function (combo) {
+    const problems = [];
     if (App.g.posById[combo.startPos]) state.startPos = combo.startPos;
+    else if (combo.startPos) problems.push(`unknown start position "${combo.startPos}"`);
     if (['mirrored', 'parallel'].includes(combo.startWeight)) state.startWeight = combo.startWeight;
     state.strip = Array.isArray(combo.strip) ? [...combo.strip] : [];
     state.selected = null;
+    const unknown = state.strip.filter((id) => !App.g.moveById[id]);
+    if (unknown.length) problems.push(`${unknown.length} unknown move${unknown.length > 1 ? 's' : ''} (${unknown.join(', ')})`);
     dropUnknownMoves();
+    // Say what was left out instead of silently "repairing" the link.
+    if (problems.length) own.addNote(`Left out of this combo: ${problems.join('; ')}.`);
   };
 
   App.evaluate = () => MG.evaluateStrip(App.g, state.startPos, state.startWeight, state.strip);
@@ -157,12 +163,21 @@
     errors: {},            // own move or compound id -> its problems, set by recompile()
     importNote: '',        // what the last shared link added
 
+    addNote(text) { own.importNote = own.importNote ? `${own.importNote} ${text}` : text; },
+
+    /** Moves that came with a shared link. Only moves that work with this version's positions are kept. */
     importShared(custom) {
       const fresh = (custom || []).filter((m) => !own.moves.some((x) => x.id === m.id));
       if (!fresh.length) return;
-      own.moves = own.moves.concat(fresh);
-      store.set('bmc.moves', own.moves);
-      own.importNote = `Added ${fresh.length} move${fresh.length > 1 ? 's' : ''} from the shared link: ${fresh.map((m) => m.name).join(', ')}. They're under "My moves".`;
+      const test = MG.compile({ positions: BASE.positions, moves: [...BASE.moves, ...own.moves, ...fresh] });
+      const works = fresh.filter((m) => !test.errors.some((e) => e.includes(`"${m.id}"`)));
+      const broken = fresh.filter((m) => !works.includes(m));
+      if (works.length) {
+        own.moves = own.moves.concat(works);
+        store.set('bmc.moves', own.moves);
+        own.addNote(`Added ${works.length} move${works.length > 1 ? 's' : ''} from the shared link: ${works.map((m) => m.name).join(', ')}. They're under "My moves".`);
+      }
+      if (broken.length) own.addNote(`Not added (they don't fit this version's positions): ${broken.map((m) => m.name).join(', ')}.`);
     },
     addMove(move) {
       own.moves.push(move);

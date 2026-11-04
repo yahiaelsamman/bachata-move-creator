@@ -76,16 +76,7 @@ window.App = {};
     return parts.length ? parts.join(', ') : 'no change';
   };
 
-  /** Beats a move covers in the 8-count, e.g. "5-8, 1-4" for an 8-count move that starts on 5. */
-  App.beatRange = (startBeat, counts) => {
-    const runs = [];
-    for (let k = 0; k < counts; k++) {
-      const b = ((startBeat - 1 + k) % 8) + 1;
-      const run = runs[runs.length - 1];
-      if (run && b === run[1] + 1) run[1] = b; else runs.push([b, b]);
-    }
-    return runs.map(([a, z]) => (a === z ? `${a}` : `${a}-${z}`)).join(', ');
-  };
+  App.beatRange = window.MoveGraph.beatRange;
   App.levelDots = (lvl) => h('span', { class: 'lvl', title: App.LEVEL_NAME[lvl] || '' }, '●'.repeat(lvl) + '○'.repeat(3 - lvl));
   App.moveLabel = (m) => [m.name, ' ', App.badge(m.kind)];
   App.posName = (id) => (App.g.posById[id] ? App.g.posById[id].name : '?');

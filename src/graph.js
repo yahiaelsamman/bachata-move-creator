@@ -378,6 +378,17 @@
     return back ? ids.concat(back) : ids;
   }
 
+  /** Beats a move covers in the 8-count, e.g. "5-8, 1-4" for an 8-count move that starts on 5. */
+  function beatRange(startBeat, counts) {
+    const runs = [];
+    for (let k = 0; k < counts; k++) {
+      const b = ((startBeat - 1 + k) % 8) + 1;
+      const run = runs[runs.length - 1];
+      if (run && b === run[1] + 1) run[1] = b; else runs.push([b, b]);
+    }
+    return runs.map(([a, z]) => (a === z ? `${a}` : `${a}-${z}`)).join(', ');
+  }
+
   const ORIENTATION_ABBR = {
     facing: 'FEO', shadow: 'SHD', reverse_shadow: 'RSHD', side_by_side_L: 'SBS-L',
     side_by_side_R: 'SBS-R', hip_to_hip: 'H2H', back_to_back: 'B2B',
@@ -394,6 +405,6 @@
 
   return {
     ATTRS, KINDS, canonHands, positionKey, matchPattern, compile, evaluateStrip, isTransition, loopMoves,
-    nextMoves, alternatives, findBridges, randomWalk, randomCombo, notation,
+    nextMoves, alternatives, findBridges, randomWalk, randomCombo, notation, beatRange,
   };
 });

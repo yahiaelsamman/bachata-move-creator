@@ -439,3 +439,15 @@ dialog.practice::backdrop { background: rgba(0, 0, 0, 0.45); }
   button:not(.link):not(.domino), select, input:not([type="checkbox"]):not([type="range"]), .menu summary { min-height: 44px; }
 }
 .legend { margin: -4px 0 10px; }
+
+/* ---------------------------------------------------------------- print: a one-page combo sheet */
+@media print {
+  body { max-width: none; padding: 0; background: #fff; color: #000; }
+  .help, .toolbar, .tabs, .view, .keys, #notice, #errors, .domino.add, .start-pill + .joint { display: none !important; }
+  .sub { display: none; }
+  .combo-sticky { position: static; border: 0; }
+  .strip { flex-wrap: wrap; overflow: visible; gap: 10px 0; }
+  .domino { break-inside: avoid; border-color: #999; }
+  .summary { font-size: 11pt; color: #000; }
+}
+.sk-arm { fill: none; stroke-linejoin: round; }

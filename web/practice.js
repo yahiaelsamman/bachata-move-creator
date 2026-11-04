@@ -19,9 +19,11 @@
   })();
   const savePrefs = () => { try { localStorage.setItem('bmc.practice', JSON.stringify(prefs)); } catch { /* ignore */ } };
 
-  let dlg, steps = [], idx = 0, beat = 0, timer = null, audio = null, view = null;
+  let dlg, steps = [], idx = 0, beat = 0, timer = null, audio = null, view = null, countIn = 0, wakeLock = null;
   const q = (selector) => dlg.querySelector(selector);
-  const loops = () => prefs.loop !== false;
+  // Click, count-in and loop are on unless turned off; counting aloud is off unless turned on.
+  const isOn = (name) => (name === 'voice' ? Boolean(prefs.voice) : prefs[name] !== false);
+  const loops = () => isOn('loop');
 
   /** Fold 0-count moves into the next counted move ("then on the fly: …"). */
   function buildSteps(items) {
@@ -63,6 +65,7 @@
         <label>Tempo <input type="range" class="pr-bpm" min="80" max="160" step="2"> <span class="pr-bpm-val"></span> bpm</label>
         <label><input type="checkbox" class="pr-sound"> Click</label>
         <label><input type="checkbox" class="pr-voice"> Count aloud</label>
+        <label><input type="checkbox" class="pr-countin"> Count-in (5-6-7-8)</label>
         <label><input type="checkbox" class="pr-loop"> Loop</label>
       </div>`;
     document.body.append(dlg);
@@ -78,10 +81,9 @@
       q('.pr-bpm-val').textContent = bpm.value;
       if (timer) { stop(); start(); }
     });
-    // Checkboxes mirror prefs.sound, prefs.voice and prefs.loop (loop is on unless turned off).
-    for (const name of ['sound', 'voice', 'loop']) {
+    for (const name of ['sound', 'voice', 'countin', 'loop']) {
       const box = q('.pr-' + name);
-      box.checked = name === 'loop' ? loops() : Boolean(prefs[name]);
+      box.checked = isOn(name);
       box.addEventListener('change', () => { prefs[name] = box.checked; savePrefs(); });
     }
     if (!('speechSynthesis' in window)) q('.pr-voice').closest('label').hidden = true;
@@ -122,7 +124,7 @@
     q('.pr-card').innerHTML = `
       ${extras.length ? `<p class="pr-extra">First, on the fly: ${extras.map((x) => esc(x.move.name)).join(' › ')}</p>` : ''}
       <h2 class="pr-name">${esc(m.name)}</h2>
-      <p class="pr-meta"><span class="badge k-${esc(m.kind)}">${esc(m.kind)}</span> ${m.counts} counts · starts on ${it.beat}</p>
+      <p class="pr-meta"><span class="badge k-${esc(m.kind)}">${esc(view.kindLabel(m.kind))}</span> ${m.counts} counts · beats ${window.MoveGraph.beatRange(it.beat, m.counts)}</p>
       ${after.length ? `<p class="pr-extra">Then, on the fly: ${after.map((x) => esc(x.move.name)).join(' › ')}</p>` : ''}
       ${m.notes ? `<p class="pr-notes">${esc(m.notes)}</p>` : ''}
       <div class="pr-sketches">${firstFrom === lastTo ? sk(firstFrom, 'Start and end') : sk(firstFrom, 'Start') + sk(lastTo, 'End')}</div>`;
@@ -139,12 +141,14 @@
     const current = (start + beat) % 8;
     dlg.querySelectorAll('.pr-beats span').forEach((el, k) => {
       const inMove = ((k - start + 8) % 8) < Math.min(n, 8);
-      el.className = (inMove ? 'in' : '') + (timer && k === current ? ' now' : '');
+      // During the count-in, 5-6-7-8 light up before the first move starts.
+      const counting = countIn > 0 && k === 8 - countIn;
+      el.className = (inMove ? 'in' : '') + ((timer && !countIn && k === current) || counting ? ' now' : '');
     });
   }
 
   function click(accent) {
-    if (!prefs.sound) return;
+    if (!isOn('sound')) return;
     try {
       audio = audio || new (window.AudioContext || window.webkitAudioContext)();
       const o = audio.createOscillator();
@@ -173,6 +177,14 @@
   function tick() {
     const step = steps[idx];
     if (!step) return stop();
+    if (countIn > 0) {                       // "five, six, seven, eight" before the first move
+      const k = 8 - countIn;
+      paintBeats();
+      click(k === 4);
+      say(k);
+      countIn--;
+      return;
+    }
     const n = step.it.move.counts;
     if (beat >= n) {
       const last = idx === steps.length - 1;
@@ -189,13 +201,25 @@
   function start() {
     const bpm = Number(q('.pr-bpm').value) || 124;
     if (audio && audio.state === 'suspended') audio.resume();
-    tick();
+    countIn = beat === 0 && isOn('countin') ? 4 : 0;
+    keepAwake(true);
     timer = setInterval(tick, 60000 / bpm);
+    tick();
     q('.pr-play').textContent = 'Pause';
+  }
+
+  /** Keep the phone screen on while practice plays (where the browser allows it). */
+  function keepAwake(on) {
+    try {
+      if (on && navigator.wakeLock && !wakeLock) navigator.wakeLock.request('screen').then((l) => { wakeLock = l; }, () => {});
+      if (!on && wakeLock) { wakeLock.release(); wakeLock = null; }
+    } catch { /* not supported */ }
   }
 
   function stop() {
     if (timer) clearInterval(timer);
+    countIn = 0;
+    keepAwake(false);
     try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch { /* ignore */ }
     timer = null;
     if (dlg) {

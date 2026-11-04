@@ -41,7 +41,7 @@
   function renderMessages() {
     const note = $('notice');
     note.hidden = !own.importNote;
-    note.textContent = own.importNote;
+    note.replaceChildren(own.importNote, ' ', App.button('Dismiss', () => { own.importNote = ''; renderMessages(); }, { class: 'link' }));
     const box = $('errors');
     box.hidden = App.dataErrors.length === 0;
     box.textContent = App.dataErrors.length ? 'Data problems:\n' + App.dataErrors.join('\n') : '';
@@ -79,13 +79,14 @@
       const result = App.evaluate();
       if (!result.items.length) return alert('Add some moves first.');
       if (!requireUnbroken(result)) return;
-      window.Practice.open(result.items, { posName, sketch: practiceSketch }, state.selected ?? 0);
+      window.Practice.open(result.items, { posName, sketch: practiceSketch, kindLabel: (k) => App.KIND_LABEL[k] || k }, state.selected ?? 0);
     });
     $('btn-share').addEventListener('click', (ev) => App.copyText(pageUrl(), ev.currentTarget, 'Link copied'));
+    $('btn-print').addEventListener('click', () => window.print());
     $('btn-text').addEventListener('click', (ev) => {
       const result = App.evaluate();
       if (!result.items.length) return;
-      App.copyText(Share.comboText(result, posName(state.startPos), posName(result.end), pageUrl()), ev.currentTarget);
+      App.copyText(Share.comboText(result, posName(state.startPos), posName(result.end), pageUrl(), window.MoveGraph.beatRange), ev.currentTarget);
     });
     $('btn-save').addEventListener('click', () => {
       if (state.strip.length < 2) return alert('Add at least two dominoes first.');
@@ -117,6 +118,7 @@
     if (!combo) return;
     if (combo.custom.length) { own.importShared(combo.custom); App.reloadData(); }
     edit.load(combo);
+    renderMessages();
   }
 
   // Offline support where service workers are allowed (https or localhost, not file://).

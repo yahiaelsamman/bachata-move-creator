@@ -90,11 +90,14 @@
   }
 
   /** The combo as a short text message, ending with its link. `result` is MoveGraph.evaluateStrip(...). */
-  function comboText(result, startName, endName, url) {
-    const parts = result.items.filter((it) => it.move)
-      .map((it) => `${it.move.name} (${it.move.counts ? it.move.counts : 'on the fly'})`);
-    return `Bachata combo, starting in ${startName}:\n${parts.join(' › ')}\n` +
-      `${result.totalCounts} counts, ends in ${endName}.\n${url}`;
+  /** The combo as text for a chat message: one move per line with its beats, then the link. */
+  function comboText(result, startName, endName, url, beatRange) {
+    const lines = result.items.filter((it) => it.move).map((it, i) => {
+      const when = it.move.counts ? `${it.move.counts} ct, beats ${beatRange(it.beat, it.move.counts)}` : 'on the fly';
+      return `${i + 1}. ${it.move.name} (${when})`;
+    });
+    return `Bachata combo (${result.totalCounts} counts), starting in ${startName}:\n${lines.join('\n')}\n` +
+      `Ends in ${endName}.\n${url}`;
   }
 
   return { encodeMoves, decodeMoves, isValidOwnMove, parseHash, buildHash, uniqueId, moveYaml, compoundYaml, comboText };

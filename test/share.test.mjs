@@ -74,11 +74,20 @@ test('YAML exports parse back to the same move', () => {
   assert.deepEqual(yaml.load(S.compoundYaml(c)), [{ ...c, kind: 'compound' }]);
 });
 
-test('comboText lists the moves with their counts and ends with the link', () => {
+test('comboText lists one move per line with its beats and ends with the link', () => {
   const result = {
-    items: [{ move: { name: 'Cross body lead', counts: 8 } }, { move: { name: 'Catch', counts: 0 } }, { missing: true }],
+    items: [{ move: { name: 'Cross body lead', counts: 8 }, beat: 5 }, { move: { name: 'Catch', counts: 0 }, beat: 5 }, { missing: true }],
     totalCounts: 8,
   };
-  assert.equal(S.comboText(result, 'Open', 'Closed', 'https://x/#m'),
-    'Bachata combo, starting in Open:\nCross body lead (8) › Catch (on the fly)\n8 counts, ends in Closed.\nhttps://x/#m');
+  const beatRange = require('../src/graph.js').beatRange;
+  assert.equal(S.comboText(result, 'Open', 'Closed', 'https://x/#m', beatRange),
+    'Bachata combo (8 counts), starting in Open:\n1. Cross body lead (8 ct, beats 5-8, 1-4)\n2. Catch (on the fly)\nEnds in Closed.\nhttps://x/#m');
+});
+
+test('beatRange names the beats a move covers', () => {
+  const { beatRange } = require('../src/graph.js');
+  assert.equal(beatRange(1, 8), '1-8');
+  assert.equal(beatRange(5, 8), '5-8, 1-4');
+  assert.equal(beatRange(5, 4), '5-8');
+  assert.equal(beatRange(1, 16), '1-8, 1-8');
 });

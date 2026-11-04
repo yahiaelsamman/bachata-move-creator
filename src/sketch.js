@@ -33,6 +33,7 @@
 
   const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
   const mul = (a, k) => [a[0] * k, a[1] * k];
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
   const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
   const right = (f) => [-f[1], f[0]]; // screen coords, y grows downwards
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
@@ -79,18 +80,37 @@
       fHand.L = add(add(follower.c, mul(follower.face, 13)), mul(fr, 9));
     }
     if (p.arms === 'follower_R_behind_leader_neck') fHand.R = add(leader.c, [0, 9]);
+    if (p.arms === 'wrap_follower_R') fHand.R = add(add(follower.c, mul(follower.face, 13)), mul(fr, -9));
+    // The leader's own hand behind his back.
+    const lHand = {};
+    if (p.arms === 'hammerlock_leader_L') lHand.L = add(leader.c, mul(leader.face, -13));
+
+    // A hand reaching the far side of the follower's body goes around her side, not through her.
+    const side = (from) => {
+      const a = add(follower.c, mul(fr, -18)), b = add(follower.c, mul(fr, 18));
+      return dist(from, a) < dist(from, b) ? a : b;
+    };
+    const backOf = (from) => add(add(follower.c, mul(follower.face, -11)), mul(sub(side(from), follower.c), 0.35));
+    const around = (from, to) => (dist(from, to) > dist(from, follower.c) + 4 ? side(from) : null);
+    // Crossed or braided hands: keep the two grips a little apart so both show.
+    const twisted = p.crossed && p.crossed !== 'none';
+    const top = p.crossed === 'leader_R_over_L' ? 'R' : p.crossed === 'leader_L_over_R' ? 'L' : null;
+    const spread = (lh) => (!twisted ? [0, 0] : [0, (lh === (top || 'R') ? -6 : 6)]);
 
     const arms = [];
     const used = new Set();
     for (const { leader: lh, follower: target } of parseHands(p.hands)) {
       const from = leader.shoulder[lh] || leader.c;
       let grip;
+      let via = null;
       if (target === 'L' || target === 'R') {
-        grip = fHand[target] || mid(from, follower.shoulder[target]);
+        grip = fHand[target] || lHand[lh] || add(mid(from, follower.shoulder[target]), spread(lh));
+        if (fHand[target]) via = around(from, grip);
         arms.push({ who: 'follower', hand: target, from: follower.shoulder[target], to: grip });
         used.add(target);
       } else if (target === 'back') {
-        grip = add(follower.c, mul(follower.face, -11));
+        grip = backOf(from);
+        via = around(from, grip);
       } else if (target === 'waist') {
         const a = add(follower.c, mul(fr, -15));
         const b = add(follower.c, mul(fr, 15));
@@ -100,7 +120,7 @@
       } else {
         grip = follower.c;
       }
-      arms.push({ who: 'leader', hand: lh, from, to: grip, grip: target === 'L' || target === 'R' ? grip : null });
+      arms.push({ who: 'leader', hand: lh, from, via, to: grip, grip: target === 'L' || target === 'R' ? grip : null });
     }
     // Follower hands placed by `arms` but not held by the leader (e.g. behind his neck).
     for (const hnd of ['L', 'R']) {
@@ -110,7 +130,6 @@
     }
 
     // Crossed hands: draw the top hand last so it sits over the other.
-    const top = p.crossed === 'leader_R_over_L' ? 'R' : p.crossed === 'leader_L_over_R' ? 'L' : null;
     if (top) {
       arms.sort((a, b) => (a.who === 'leader' && a.hand === top) - (b.who === 'leader' && b.hand === top));
     }
@@ -133,7 +152,8 @@
     const fov = `M${pt(eye)} L${pt(add(eye, [-80, -128]))} A150 150 0 0 1 ${pt(add(eye, [80, -128]))} Z`;
     const arms = L.arms.map((a) => {
       const isTop = L.top && a.who === 'leader' && a.hand === L.top;
-      return `<line x1="${r1(a.from[0])}" y1="${r1(a.from[1])}" x2="${r1(a.to[0])}" y2="${r1(a.to[1])}" class="sk-arm sk-arm-${a.who}${isTop ? ' sk-top' : ''}"/>` +
+      const points = [a.from, a.via, a.to].filter(Boolean).map(pt).join(' ');
+      return `<polyline points="${points}" class="sk-arm sk-arm-${a.who}${isTop ? ' sk-top' : ''}"/>` +
         (a.grip ? `<circle cx="${r1(a.grip[0])}" cy="${r1(a.grip[1])}" r="3.2" class="sk-grip"/>` : '');
     }).join('\n  ');
     const title = opts.title ? `<title>${esc(opts.title)}</title>` : '';

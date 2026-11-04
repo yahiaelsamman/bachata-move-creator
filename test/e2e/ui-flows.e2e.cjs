@@ -107,6 +107,16 @@ const flows = {
     assert.deepEqual(await stripIds(page), parts);
   },
 
+  async 'a link with unknown moves says what was left out'() {
+    const page = await open('#start=nowhere&weight=mirrored&moves=cross-body-lead,not-a-move');
+    assert.equal(await dominoCount(page), 1);
+    const note = await text(page, '#notice');
+    assert.match(note, /unknown start position "nowhere"/);
+    assert.match(note, /1 unknown move \(not-a-move\)/);
+    await page.locator('#notice button', { hasText: 'Dismiss' }).click();
+    assert.ok(await page.locator('#notice').isHidden());
+  },
+
   async 'keyboard focus survives a redraw'() {
     const page = await open('#start=open_LR&weight=mirrored&moves=cross-body-lead');
     await page.locator('#panel .options button').first().focus();
