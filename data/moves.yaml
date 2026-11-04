@@ -304,7 +304,7 @@
   notes: "On 5 the arms swap (the leader's left goes up in front of the follower, the right goes down behind) as the follower turns; on 6-7-8 the arm positions keep swapping like windmill sails. Long elbows, low shoulders."
   aka: [windmill turn, propeller, "melnitsa (Russian)"]
   source: bachatamap.ru/moderna/rotations/turns/mill/
-  check: "End hold assumed double hands; direction of her turn not stated."
+  check: "End hold assumed double hands; direction of the follower's turn not stated."
 
 - id: dishrag
   name: Dishrag
@@ -587,7 +587,7 @@
   notes: "Small chest circles or side-to-side isolations while the feet keep the basic; the leader starts it and keeps the hand on the follower's back soft."
 
 - id: paseala
-  name: Paseala (walk her out and back)
+  name: Paseala (walk the follower out and back)
   kind: styling
   level: 2
   from: closed
@@ -709,7 +709,7 @@
   source: bachatamap.ru/moderna/rotations/turns/half-turn/
 
 - id: pinza-into-shadow
-  name: Shadow entry (from pinza, walk around her)
+  name: Shadow entry (from pinza, walk around the follower)
   kind: move
   level: 3
   from: closed
@@ -823,9 +823,9 @@
   opposite: shadow-take-both-hands
   notes: "The leader lets go of the left hands, passes the follower's right hand to the left hand and puts the right hand on the follower's waist."
 
-# ---------------------------------------------------------------- shadow, her hand on your neck
+# ---------------------------------------------------------------- shadow, follower's hand on your neck
 - id: shadow-hand-to-neck
-  name: Shadow neck entry (her hand to your neck)
+  name: Shadow neck entry (follower's hand to your neck)
   kind: move
   level: 2
   from: shadow_waist
@@ -1210,7 +1210,7 @@
   notes: "Same unwind, but the leader's right hand stays on the follower's back so the couple lands in closed position."
 
 - id: wrap-catch-left
-  name: Catch (her left hand, in the wrap)
+  name: Catch (follower's left hand, in the wrap)
   kind: adjuster
   level: 2
   from: wrap_R

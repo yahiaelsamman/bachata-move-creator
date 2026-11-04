@@ -147,7 +147,7 @@
     const vw = W - 30;
     return `<svg viewBox="${x0} ${r1(top)} ${vw} ${r1(bottom - top)}" class="sketch" role="img" xmlns="http://www.w3.org/2000/svg">${title}
   <path d="${fov}" class="sk-fov"/>
-  ${dancer(L.follower, 'follower', 'her', behind)}
+  ${dancer(L.follower, 'follower', 'follower', behind)}
   ${dancer(L.leader, 'leader', 'you', !behind)}
   ${arms}
 </svg>`;
@@ -160,10 +160,13 @@
     if (p.frame === 'closed') parts.push('close');
     else if (p.frame === 'apart') parts.push('no connection');
     if (L.top) parts.push(`your ${L.top === 'R' ? 'right' : 'left'} hand on top`);
-    if (p.arms === 'hammerlock_follower_R') parts.push('her right arm behind her back');
-    if (p.arms === 'hammerlock_follower_L') parts.push('her left arm behind her back');
-    if (p.arms === 'wrap') parts.push('her arms wrapped in front of her');
-    if (p.arms === 'follower_R_behind_leader_neck') parts.push('her right hand behind your neck');
+    if (p.arms === 'hammerlock_follower_R') parts.push("the follower's right arm behind the back");
+    if (p.arms === 'hammerlock_follower_L') parts.push("the follower's left arm behind the back");
+    if (p.arms === 'wrap') parts.push("the follower's arms wrapped in front");
+    if (p.arms === 'follower_R_behind_leader_neck') parts.push("the follower's right hand behind your neck");
+    if (p.arms === 'wrap_follower_R') parts.push("the follower's right arm wrapped across the waist");
+    if (p.arms === 'hammerlock_leader_L') parts.push('your left arm behind your back');
+    if (p.crossed === 'braid') parts.push('both hands twisted into a braid');
     return parts.join(', ') + '.';
   }
 

@@ -132,7 +132,7 @@ window.BACHATA_DATA = {
   },
   {
    "id": "full_contact",
-   "name": "Full contact (both hands on her back)",
+   "name": "Full contact (both hands on the follower's back)",
    "short": "Full contact",
    "orientation": "facing",
    "frame": "closed",
@@ -162,7 +162,7 @@ window.BACHATA_DATA = {
   },
   {
    "id": "hammerlock_R",
-   "name": "Hammerlock (follower's right arm behind her back)",
+   "name": "Hammerlock (follower's right arm behind the back)",
    "short": "Hammerlock",
    "orientation": "facing",
    "frame": "semi",
@@ -178,7 +178,7 @@ window.BACHATA_DATA = {
   },
   {
    "id": "hammerlock_L",
-   "name": "Hammerlock, left arm (follower's left arm behind her back)",
+   "name": "Hammerlock, left arm (follower's left arm behind the back)",
    "short": "Hammerlock L",
    "orientation": "facing",
    "frame": "semi",
@@ -193,7 +193,7 @@ window.BACHATA_DATA = {
   },
   {
    "id": "hammerlock_leader_L",
-   "name": "Leader's hammerlock (his left arm behind his back)",
+   "name": "Leader's hammerlock (leader's left arm behind the back)",
    "short": "Leader hammerlock",
    "orientation": "facing",
    "frame": "semi",
@@ -271,7 +271,7 @@ window.BACHATA_DATA = {
   },
   {
    "id": "shadow_neck",
-   "name": "Shadow, her hand behind your neck",
+   "name": "Shadow, follower's hand behind your neck",
    "short": "Shadow neck",
    "orientation": "shadow",
    "frame": "closed",
@@ -739,7 +739,7 @@ window.BACHATA_DATA = {
     "melnitsa (Russian)"
    ],
    "source": "bachatamap.ru/moderna/rotations/turns/mill/",
-   "check": "End hold assumed double hands; direction of her turn not stated."
+   "check": "End hold assumed double hands; direction of the follower's turn not stated."
   },
   {
    "id": "dishrag",
@@ -1096,7 +1096,7 @@ window.BACHATA_DATA = {
   },
   {
    "id": "paseala",
-   "name": "Paseala (walk her out and back)",
+   "name": "Paseala (walk the follower out and back)",
    "kind": "styling",
    "level": 2,
    "from": "closed",
@@ -1274,7 +1274,7 @@ window.BACHATA_DATA = {
   },
   {
    "id": "pinza-into-shadow",
-   "name": "Shadow entry (from pinza, walk around her)",
+   "name": "Shadow entry (from pinza, walk around the follower)",
    "kind": "move",
    "level": 3,
    "from": "closed",
@@ -1427,7 +1427,7 @@ window.BACHATA_DATA = {
   },
   {
    "id": "shadow-hand-to-neck",
-   "name": "Shadow neck entry (her hand to your neck)",
+   "name": "Shadow neck entry (follower's hand to your neck)",
    "kind": "move",
    "level": 2,
    "from": "shadow_waist",
@@ -1907,7 +1907,7 @@ window.BACHATA_DATA = {
   },
   {
    "id": "wrap-catch-left",
-   "name": "Catch (her left hand, in the wrap)",
+   "name": "Catch (follower's left hand, in the wrap)",
    "kind": "adjuster",
    "level": 2,
    "from": "wrap_R",

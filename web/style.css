@@ -438,3 +438,4 @@ dialog.practice::backdrop { background: rgba(0, 0, 0, 0.45); }
 @media (pointer: coarse) {
   button:not(.link):not(.domino), select, input:not([type="checkbox"]):not([type="range"]), .menu summary { min-height: 44px; }
 }
+.legend { margin: -4px 0 10px; }

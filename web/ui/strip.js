@@ -32,7 +32,7 @@
   }
 
   App.renderSummary = function (result) {
-    const warnings = result.items.filter((it) => it.timingWarn || it.weightWarn).length;
+    const warnings = result.items.filter((it) => it.timingWarn || it.weightWarn || it.phraseWarn).length;
     const breaks = result.items.filter((it) => it.broken).length;
     $('summary').textContent = state.strip.length
       ? `${state.strip.length} dominoes · ${result.totalCounts} counts (${(result.totalCounts / 8).toFixed(1)} × 8) · ` +
@@ -61,6 +61,7 @@
     }
     const flags = [];
     if (it.timingWarn) flags.push(h('span', { class: 'flag', title: 'Starts mid-phrase' }, ` · starts on ${it.beat}`));
+    if (it.phraseWarn) flags.push(h('span', { class: 'flag', title: 'An 8-count move that starts on 5 runs across two phrases. Add a 4-count move before it.' }, ' · starts on 5'));
     if (it.weightWarn) flags.push(h('span', { class: 'flag', title: 'Weight mismatch' }, ` · needs ${App.g.weightOf(m.id).from}`));
     if (m.check) flags.push(h('span', { class: 'flag', title: m.check }, ' · ⚑'));
     return button([
@@ -73,11 +74,9 @@
     });
   }
 
-  /** "1→4" style range within the 8-count; 0-count adjusters happen on the fly. */
+  /** Counts and the beats they cover, e.g. "8 ct · 5-8, 1-4"; 0-count connectors happen on the fly. */
   function countLabel(it) {
     const n = it.move.counts;
-    if (!n) return 'on the fly';
-    const end = ((it.countFrom + n - 1) % 8) + 1;
-    return `${n} ct · ${it.beat}→${end}`;
+    return n ? `${n} ct · ${App.beatRange(it.beat, n)}` : 'on the fly';
   }
 })(window.App);

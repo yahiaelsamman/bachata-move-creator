@@ -63,7 +63,29 @@ window.App = {};
     App.button([h('span', {}, r.label), h('span', { class: 'to' }, r.sub)], r.onclick, { disabled: r.disabled, title: r.title }))));
 
   App.LEVEL_NAME = { 1: 'beginner', 2: 'intermediate', 3: 'advanced' };
-  App.badge = (kind) => h('span', { class: `badge k-${kind}` }, kind);
+  /** What each kind is called on screen (the data keeps the short internal names). */
+  App.KIND_LABEL = { move: 'move', styling: 'in place', adjuster: 'connector', compound: 'combo block' };
+  App.badge = (kind) => h('span', { class: `badge k-${kind}` }, App.KIND_LABEL[kind] || kind);
+
+  /** Weight in words: "mirrored" = opposite feet (normal facing), "parallel" = same foot. */
+  const FEET = { mirrored: 'opposite feet (mirrored)', parallel: 'the same foot (parallel)' };
+  App.weightText = (w) => {
+    const parts = [];
+    if (w.from) parts.push(`needs ${FEET[w.from]}`);
+    if (w.to) parts.push(`ends on ${FEET[w.to]}`);
+    return parts.length ? parts.join(', ') : 'no change';
+  };
+
+  /** Beats a move covers in the 8-count, e.g. "5-8, 1-4" for an 8-count move that starts on 5. */
+  App.beatRange = (startBeat, counts) => {
+    const runs = [];
+    for (let k = 0; k < counts; k++) {
+      const b = ((startBeat - 1 + k) % 8) + 1;
+      const run = runs[runs.length - 1];
+      if (run && b === run[1] + 1) run[1] = b; else runs.push([b, b]);
+    }
+    return runs.map(([a, z]) => (a === z ? `${a}` : `${a}-${z}`)).join(', ');
+  };
   App.levelDots = (lvl) => h('span', { class: 'lvl', title: App.LEVEL_NAME[lvl] || '' }, '●'.repeat(lvl) + '○'.repeat(3 - lvl));
   App.moveLabel = (m) => [m.name, ' ', App.badge(m.kind)];
   App.posName = (id) => (App.g.posById[id] ? App.g.posById[id].name : '?');

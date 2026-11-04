@@ -78,7 +78,7 @@
           h('td', { class: health.thin ? 'flag' : '' }, `${health.in} / ${health.out}`));
       })))),
     h('p', { class: 'muted small' }, 'Notation: FEO facing each other · SHD shadow (leader behind) · SBS-R/L side by side, follower on the right/left · ' +
-      'open / semi / closed / apart = distance · L>R leader\'s left holds follower\'s right · R>back leader\'s right hand on her back · ' +
+      'open / semi / closed / apart = distance · L>R leader\'s left holds follower\'s right · R>back leader\'s right hand on the follower\'s back · ' +
       'cross R/L = leader\'s right hand on top.'),
     h('p', { class: 'muted small' }, 'Ways in/out count distinct moves that change position. Aim for at least 3 each. Click a name to see it on the map.'));
   };

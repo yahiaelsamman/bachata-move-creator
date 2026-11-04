@@ -33,7 +33,7 @@
 
   function kindChips() {
     return h('div', { class: 'chips' }, ['all', 'move', 'styling', 'adjuster', 'compound'].map((k) =>
-      button(k, () => { state.kindFilter = k; App.render(); }, { class: state.kindFilter === k ? 'on' : '' })));
+      button(App.KIND_LABEL[k] || k, () => { state.kindFilter = k; App.render(); }, { class: state.kindFilter === k ? 'on' : '' })));
   }
 
   function nextPanel(end) {
@@ -51,16 +51,17 @@
     return h('div', {},
       h('div', { class: 'panel-head' }, h('h2', {}, `What can follow ${posName(end)}`), kindChips()),
       search,
+      h('p', { class: 'legend muted small' }, '↺ same = stays in this position · → = where it ends · ●○○ beginner, ●●○ intermediate, ●●● advanced'),
       options.length
         ? optionList(options.map((e) => {
           const m = g.moveById[e.move];
           return {
             label: moveLabel(m),
-            sub: [destination(e), ` · ${m.counts} ct `, levelDots(m.level)],
+            sub: [destination(e), m.counts ? ` · ${m.counts} ct ` : ' · on the fly ', levelDots(m.level)],
             onclick: () => { state.search = ''; edit.add([m.id]); },
           };
         }))
-        : h('p', { class: 'muted' }, 'Nothing matches. This position needs more moves in data/moves.yaml.'));
+        : h('p', { class: 'muted' }, 'No moves fit here at this level. Try a higher level, or add your own under My moves.'));
   }
 
   /** The selected domino: facts and actions, then a bridge (if broken) or replacements, then insertions. */
@@ -84,11 +85,12 @@
     const w = g.weightOf(m.id);
     const row = (term, ...value) => [h('dt', {}, term), h('dd', {}, ...value)];
     return h('dl', {},
-      row('From', posName(it.from), h('br'), h('code', {}, MG.notation(g.posById[it.from]))),
-      row('To', posName(it.to), h('br'), h('code', {}, MG.notation(g.posById[it.to]))),
-      row('Counts', `${m.counts} (starts on beat ${it.beat})`),
+      row('From', h('span', { title: MG.notation(g.posById[it.from]) }, posName(it.from))),
+      row('To', h('span', { title: MG.notation(g.posById[it.to]) }, posName(it.to))),
+      row('Counts', m.counts ? `${m.counts}, on beats ${App.beatRange(it.beat, m.counts)}` : 'none (happens on the fly)',
+        it.phraseWarn ? h('span', { class: 'flag' }, ' · starts on 5: add a 4-count move before it to start on 1') : null),
       row('Level', levelDots(m.level), ' ', LEVEL_NAME[m.level] || ''),
-      row('Weight', `${w.from || 'any'} → ${w.to || 'unchanged'}` + (it.weightWarn ? ` (you arrive ${it.weightIn})` : '')),
+      row('Weight', App.weightText(w) + (it.weightWarn ? ` (you arrive on ${it.weightIn === 'parallel' ? 'the same foot' : 'opposite feet'})` : '')),
       m.opposite ? row('Opposite', moveName(m.opposite)) : null,
       m.sequence ? row('Made of', m.sequence.map(moveName).join(' › ')) : null,
       m.notes ? row('Notes', m.notes) : null);
@@ -114,7 +116,7 @@
           sub: `${path.length} step${path.length > 1 ? 's' : ''}`,
           onclick: () => edit.insert(i, path),
         })))
-        : h('p', { class: 'muted' }, 'No bridge within 3 moves. Remove this domino or add an adjuster to the data.'),
+        : h('p', { class: 'muted' }, 'No way to reconnect within 3 moves. Remove this domino, or add a connector under My moves.'),
     ];
   }
 

@@ -16,8 +16,8 @@
 #   crossed:     none | leader_R_over_L | leader_L_over_R
 #                | braid (double hands with the two arm pairs twisted round each other)
 #   arms:        neutral | hammerlock_follower_R | hammerlock_follower_L | wrap
-#                | wrap_follower_R (her right arm across her waist, one-hand wrap)
-#                | hammerlock_leader_L (the leader's left arm behind his own back)
+#                | wrap_follower_R (the follower's right arm across the waist, one-hand wrap)
+#                | hammerlock_leader_L (the leader's own left arm behind the back)
 #                | follower_R_behind_leader_neck
 #
 # Optional, for people (not part of the node's identity):
@@ -125,7 +125,7 @@
   aka: [embrace, "zakrytaya pozitsiya (Russian)"]
 
 - id: full_contact
-  name: Full contact (both hands on her back)
+  name: Full contact (both hands on the follower's back)
   short: Full contact
   orientation: facing
   frame: closed
@@ -148,7 +148,7 @@
   aka: ["na zatylke partnera (Russian)"]
 
 - id: hammerlock_R
-  name: Hammerlock (follower's right arm behind her back)
+  name: Hammerlock (follower's right arm behind the back)
   short: Hammerlock
   orientation: facing
   frame: semi
@@ -159,7 +159,7 @@
   aka: [candado (Spanish), Brezel (German), "khamerlok / setenta (Russian)"]
 
 - id: hammerlock_L
-  name: Hammerlock, left arm (follower's left arm behind her back)
+  name: Hammerlock, left arm (follower's left arm behind the back)
   short: Hammerlock L
   orientation: facing
   frame: semi
@@ -170,7 +170,7 @@
   aka: [tour espagnol (French), "khamerlok devushki (Russian)"]
 
 - id: hammerlock_leader_L
-  name: Leader's hammerlock (his left arm behind his back)
+  name: Leader's hammerlock (leader's left arm behind the back)
   short: Leader hammerlock
   orientation: facing
   frame: semi
@@ -226,7 +226,7 @@
   aka: [sombra (Spanish), "tenevaya pozitsiya (Russian)"]
 
 - id: shadow_neck
-  name: Shadow, her hand behind your neck
+  name: Shadow, follower's hand behind your neck
   short: Shadow neck
   orientation: shadow
   frame: closed

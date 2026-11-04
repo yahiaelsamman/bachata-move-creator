@@ -284,6 +284,8 @@
         weightIn: weight,
         weightWarn: Boolean(w.from && weight && w.from !== weight),
         timingWarn: m.counts > 0 && beat !== 1 && beat !== 5,
+        // An 8-count figure that starts on 5 runs across two phrases.
+        phraseWarn: m.counts >= 8 && m.counts % 8 === 0 && beat === 5,
       };
       count += m.counts || 0;
       if (w.to) weight = w.to;
