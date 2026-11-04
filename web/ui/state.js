@@ -97,6 +97,7 @@
     lastSnap = snap;
     persist();
     App.render();
+    App.announce(document.getElementById('summary').textContent || 'Combo is empty.');
   };
 
   App.undo = function () {

@@ -27,6 +27,35 @@ window.App = {};
   };
   const h = App.h;
 
+  /**
+   * Redraws replace elements, which would drop keyboard focus to the page. Remember the focused
+   * element by id, or by its text and position inside the nearest element with an id, and focus
+   * the same (or the nearest equivalent) element afterwards.
+   */
+  App.rememberFocus = function () {
+    const el = document.activeElement;
+    if (!el || el === document.body) return null;
+    if (el.id) return { id: el.id };
+    const box = el.parentElement && el.parentElement.closest('[id]');
+    if (!box) return null;
+    const same = [...box.querySelectorAll(el.tagName)];
+    return { box: box.id, tag: el.tagName, text: el.textContent.trim(), index: same.indexOf(el) };
+  };
+
+  App.restoreFocus = function (key) {
+    if (!key || (document.activeElement && document.activeElement !== document.body)) return;
+    let el = key.id && document.getElementById(key.id);
+    if (!el && key.box) {
+      const box = document.getElementById(key.box);
+      const same = box ? [...box.querySelectorAll(key.tag)].filter((x) => !x.disabled) : [];
+      el = same.find((x) => x.textContent.trim() === key.text) || same[Math.min(key.index, same.length - 1)];
+    }
+    if (el && el.offsetParent !== null) el.focus({ preventScroll: true });
+  };
+
+  /** A short message for screen readers (the page itself is not a live region). */
+  App.announce = (text) => { const s = document.getElementById('status'); if (s) s.textContent = text; };
+
   App.button = (label, onclick, attrs = {}) => h('button', { type: 'button', onclick, ...attrs }, label);
 
   /** A grid of option buttons. Each row: { label, sub, onclick, disabled, title }. */

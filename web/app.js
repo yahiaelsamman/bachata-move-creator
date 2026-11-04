@@ -4,8 +4,9 @@
   const Share = window.ComboShare;
   const { $, h, posName, state, store, edit, own } = App;
 
-  /** Redraw everything that depends on the combo. */
+  /** Redraw everything that depends on the combo. Keyboard focus survives the redraw. */
   App.render = function () {
+    const focus = App.rememberFocus();
     const result = App.evaluate();
     if (state.selected !== null && state.selected >= state.strip.length) state.selected = null;
     App.renderStrip(result);
@@ -14,6 +15,7 @@
     if (App.isTab('map')) App.renderMap(result);      // hidden views are drawn when shown
     if (App.isTab('library')) App.renderLibrary(result);
     syncToolbar(result);
+    App.restoreFocus(focus);
   };
 
   /** Redraw what only changes with the data (own moves and compounds added or deleted). */

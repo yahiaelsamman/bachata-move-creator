@@ -107,6 +107,16 @@ const flows = {
     assert.deepEqual(await stripIds(page), parts);
   },
 
+  async 'keyboard focus survives a redraw'() {
+    const page = await open('#start=open_LR&weight=mirrored&moves=cross-body-lead');
+    await page.locator('#panel .options button').first().focus();
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Enter');
+    assert.equal(await dominoCount(page), 3);
+    assert.equal(await page.evaluate(() => document.activeElement.closest('#panel') !== null), true);
+    assert.match(await page.locator('#status').textContent(), /^3 dominoes/);
+  },
+
   async 'a break can be bridged'() {
     const page = await open(DEMO);
     await page.locator('.joint.broken button').first().click();
