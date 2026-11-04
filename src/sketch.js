@@ -83,9 +83,15 @@
     return { leader, follower, label, ...armsFor(p, leader, follower) };
   }
 
-  /** The hand connections of a position, drawn between two dancers wherever they stand. */
-  function armsFor(p, leader, follower) {
+  /**
+   * The hand connections of a position, drawn between two dancers wherever they stand.
+   * A hand on the follower's back or waist goes to the nearer side of her body; `opts.sides`
+   * ({ L: 1 | -1, R: ... }, +1 = the follower's right side) fixes that side instead, so a hand
+   * doesn't flip sides while she turns in an animation. Each leader arm reports its `side`.
+   */
+  function armsFor(p, leader, follower, opts = {}) {
     const fr = right(follower.face);
+    const sides = opts.sides || {};
 
     // Where each of the follower's hands ends up, before connections.
     const fHand = {};
@@ -102,12 +108,10 @@
     if (p.arms === 'hammerlock_leader_L') lHand.L = add(leader.c, mul(leader.face, -13));
 
     // A hand reaching the far side of the follower's body goes around her side, not through her.
-    const side = (from) => {
-      const a = add(follower.c, mul(fr, -18)), b = add(follower.c, mul(fr, 18));
-      return dist(from, a) < dist(from, b) ? a : b;
-    };
-    const backOf = (from) => add(add(follower.c, mul(follower.face, -11)), mul(sub(side(from), follower.c), 0.35));
-    const around = (from, to) => (dist(from, to) > dist(from, follower.c) + 4 ? side(from) : null);
+    const sideSign = (from, lh) => sides[lh] || (dist(from, add(follower.c, fr)) < dist(from, sub(follower.c, fr)) ? 1 : -1);
+    const side = (from, lh, r = 18) => add(follower.c, mul(fr, r * sideSign(from, lh)));
+    const backOf = (from, lh) => add(add(follower.c, mul(follower.face, -11)), mul(sub(side(from, lh), follower.c), 0.35));
+    const around = (from, to, lh) => (dist(from, to) > dist(from, follower.c) + 4 ? side(from, lh) : null);
     // Crossed or braided hands: keep the two grips a little apart so both show.
     const twisted = p.crossed && p.crossed !== 'none';
     const top = p.crossed === 'leader_R_over_L' ? 'R' : p.crossed === 'leader_L_over_R' ? 'L' : null;
@@ -121,22 +125,20 @@
       let via = null;
       if (target === 'L' || target === 'R') {
         grip = fHand[target] || lHand[lh] || add(mid(from, follower.shoulder[target]), spread(lh));
-        if (fHand[target]) via = around(from, grip);
+        if (fHand[target]) via = around(from, grip, lh);
         arms.push({ who: 'follower', hand: target, from: follower.shoulder[target], to: grip });
         used.add(target);
       } else if (target === 'back') {
-        grip = backOf(from);
-        via = around(from, grip);
+        grip = backOf(from, lh);
+        via = around(from, grip, lh);
       } else if (target === 'waist') {
-        const a = add(follower.c, mul(fr, -15));
-        const b = add(follower.c, mul(fr, 15));
-        grip = dist(from, a) < dist(from, b) ? a : b;
+        grip = side(from, lh, 15);
       } else if (target === 'shoulder') {
         grip = follower.shoulder[lh === 'L' ? 'R' : 'L'];
       } else {
         grip = follower.c;
       }
-      arms.push({ who: 'leader', hand: lh, from, via, to: grip, grip: target === 'L' || target === 'R' ? grip : null });
+      arms.push({ who: 'leader', hand: lh, from, via, to: grip, grip: target === 'L' || target === 'R' ? grip : null, side: sideSign(from, lh) });
     }
     // Follower hands placed by `arms` but not held by the leader (e.g. behind his neck).
     for (const hnd of ['L', 'R']) {

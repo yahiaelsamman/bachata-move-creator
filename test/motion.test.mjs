@@ -77,10 +77,10 @@ test('one picture area for the whole move (it does not jump between frames)', ()
 });
 
 test('turn directions are read from names', () => {
-  assert.deepEqual(M.turnsOf(move('follower-right-turn')), { follower: 360, leader: 0, free: null });
-  assert.deepEqual(M.turnsOf(move('follower-left-turn')), { follower: -360, leader: 0, free: null });
+  assert.deepEqual(M.turnsOf(move('follower-right-turn')), { follower: 360, leader: 0, couple: 0, free: null });
+  assert.deepEqual(M.turnsOf(move('follower-left-turn')), { follower: -360, leader: 0, couple: 0, free: null });
   assert.equal(M.turnsOf(move('follower-double-right-turn')).follower, 720);
-  assert.deepEqual(M.turnsOf(move('leader-right-turn')), { follower: 0, leader: 360, free: null });
+  assert.deepEqual(M.turnsOf(move('leader-right-turn')), { follower: 0, leader: 360, couple: 0, free: null });
   assert.equal(M.turnsOf(move('leader-left-turn')).leader, -360);
   assert.equal(M.turnsOf({ name: 'Shadow entry (half left turn, from open)' }).follower, -180);
 });
@@ -100,17 +100,62 @@ test('the lead note gives the direction when the name does not', () => {
   assert.equal(M.turnsOf({ name: 'Mystery', notes: 'Hold the left hand.' }).follower, 0);
 });
 
-test('a couple turn changes nothing from the leader\'s point of view', () => {
-  assert.deepEqual(M.turnsOf(move('couple-turn')), { follower: 0, leader: 0, free: null });
-  const e = edgeOf('couple-turn');
-  assert.ok(near(frame(e, 0.5).follower.c, frame(e, 0).follower.c));
+test('a couple turn turns the whole couple, and ends where it started', () => {
+  assert.deepEqual(M.turnsOf(move('couple-turn')), { follower: 0, leader: 0, couple: 360, free: null });
+  assert.equal(M.turnsOf({ name: 'Spin', notes: 'Both pivot together to the left.' }).couple, -360);
+  for (const e of g.edgesByMove['couple-turn']) {
+    const half = frame(e, 0.5);
+    assert.ok(near(half.leader.face, [0, 1], 1e-6), `${e.from}: halfway the leader faces down`);
+    assert.ok(half.leader.c[1] < half.follower.c[1], `${e.from}: halfway the couple has swapped sides of the picture`);
+    const start = frame(e, 0), end = frame(e, 1);
+    assert.ok(near(end.leader.c, start.leader.c) && near(end.follower.c, start.follower.c) && near(end.follower.face, start.follower.face));
+  }
+});
+
+test('hands kept through a move travel smoothly from the start hold to the end hold', () => {
+  const STEPS = 50;
+  for (const e of moveEdges) {
+    let prev = null;
+    for (let k = 0; k <= STEPS; k++) {
+      const arms = new Map(frame(e, k / STEPS).arms.map((a) => [a.who + a.hand, a.to]));
+      if (prev) {
+        for (const [hand, to] of arms) {
+          const before = prev.get(hand);
+          if (!before) continue;                                   // a hand that just took hold
+          const jump = Math.hypot(to[0] - before[0], to[1] - before[1]);
+          assert.ok(jump < 16, `${e.move} ${e.from} -> ${e.to}: ${hand} jumps ${jump.toFixed(1)}px at t=${k / STEPS}`);
+        }
+      }
+      prev = arms;
+    }
+  }
+});
+
+test('the unwrap unwinds: halfway the hands are between the wrap and double hands', () => {
+  const e = edgeOf('cuddle-unwrap');
+  const leaderHands = (t) => frame(e, t).arms.filter((a) => a.who === 'leader');
+  const [start, half, end] = [leaderHands(0), leaderHands(0.5), leaderHands(1)];
+  assert.equal(half.length, 2);
+  for (const h of ['L', 'R']) {
+    const at = (list) => list.find((a) => a.hand === h).to;
+    assert.ok(!near(at(half), at(start), 1) && !near(at(half), at(end), 1), `${h} hand is on its way`);
+  }
+});
+
+test('hold changes happen in the middle of a move', () => {
+  assert.equal(M.holdChange(0), 0);
+  assert.equal(M.holdChange(0.25), 0);
+  assert.equal(M.holdChange(0.5), 0.5);
+  assert.equal(M.holdChange(0.75), 1);
+  assert.equal(M.holdChange(1), 1);
+  for (let k = 1; k <= 100; k++) assert.ok(M.holdChange(k / 100) >= M.holdChange((k - 1) / 100));
 });
 
 test('an explicit turn field wins over the name; bad values are ignored', () => {
-  assert.deepEqual(M.turnsOf({ name: 'Follower right turn', turn: { follower: -720 } }), { follower: -720, leader: 0, free: null });
-  assert.deepEqual(M.turnsOf({ name: 'X', turn: { follower: 'lots', leader: Infinity } }), { follower: 0, leader: 0, free: null });
-  assert.deepEqual(M.turnsOf(undefined), { follower: 0, leader: 0, free: null });
-  assert.deepEqual(M.turnsOf({}), { follower: 0, leader: 0, free: null });
+  assert.deepEqual(M.turnsOf({ name: 'Follower right turn', turn: { follower: -720 } }), { follower: -720, leader: 0, couple: 0, free: null });
+  assert.deepEqual(M.turnsOf({ name: 'X', turn: { follower: 'lots', leader: Infinity } }), { follower: 0, leader: 0, couple: 0, free: null });
+  assert.deepEqual(M.turnsOf(undefined), { follower: 0, leader: 0, couple: 0, free: null });
+  assert.deepEqual(M.turnsOf({}), { follower: 0, leader: 0, couple: 0, free: null });
 });
 
 test('a right turn really turns clockwise, a quarter per quarter of the move', () => {
@@ -157,4 +202,7 @@ test('totalRotation keeps the wanted direction and lands on the end facing', () 
   assert.equal(M.totalRotation(90, -90, 180), 180);
   assert.equal(M.totalRotation(90, -90, 0), 180);   // shortest; exactly opposite counts as +180
   assert.equal(M.shortest(170, -170), 20);
+  assert.equal(M.totalRotation(-90, 90, 360), 180);    // only half a turn needed: a half turn right
+  assert.equal(M.totalRotation(-90, 90, -360), -180);
+  assert.equal(M.totalRotation(90, 90, 720), 720);
 });
