@@ -33,7 +33,7 @@ npm test
 **Build combos**
 - **+ next move** lists everything that can follow where you are (A–Z, filter by
   name or kind).
-- **Random combo** walks the graph and finds its way back to the start position.
+- **Random combo** builds 16, 32 or 48 counts in whole 8-counts (8-count moves start on 1) and comes back to the start position. It never drops both hands to reconnect, never undoes the move it just made, and uses each in-place move at most once. **Extend** keeps your combo and continues it.
 - **Examples** load the compound moves from the data as a starting point.
 
 **Edit combos**
@@ -130,6 +130,7 @@ From the repository:
 | Path | What it is |
 |---|---|
 | `src/graph.js` | Core: compiles rules into edges, evaluates a strip, bridges, alternatives, random combos. Runs in Node and the browser. |
+| `src/generator.js` | Random combos: whole 8-counts, back to the start, no teleport or undo, each in-place move at most once. |
 | `src/sketch.js` | Leader-view SVG drawn from a position's attributes. |
 | `src/map.js` | Position map: deterministic force layout and SVG. |
 | `src/share.js` | Share links (with moves added in the app), YAML and text exports. |

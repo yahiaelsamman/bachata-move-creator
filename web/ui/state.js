@@ -31,6 +31,7 @@
     mapSelected: null,
     mapLink: null,         // { from, to } of a tapped map arrow
     maxLevel: [1, 2, 3].includes(store.get('bmc.maxLevel', 3)) ? store.get('bmc.maxLevel', 3) : 3,
+    randomCounts: [16, 32, 48].includes(store.get('bmc.randomCounts', 32)) ? store.get('bmc.randomCounts', 32) : 32,
   };
   App.g = null;            // set by recompile()
   App.mapLayout = null;    // set by recompile()
@@ -119,6 +120,10 @@
   };
 
   // ------------------------------------------------------------ actions
+  /** A random combo in whole 8-counts, optionally continuing the given moves. */
+  const generate = (prefix) => window.ComboGenerator.generate(App.g, state.startPos,
+    { counts: state.randomCounts, maxLevel: state.maxLevel, prefix });
+
   /** Everything a user can do to the combo. Each one ends in commit(). */
   const edit = App.edit = {
     add(ids) { state.strip.push(...ids); state.selected = null; App.commit(); },
@@ -135,7 +140,8 @@
     cut(i) { state.strip.length = i + 1; state.selected = null; App.commit(); },
     setStrip(ids, selected = null) { state.strip = [...ids]; state.selected = selected; App.commit(); },
     clear() { edit.setStrip([]); },
-    random() { edit.setStrip(MG.randomCombo(App.g, state.startPos, { steps: 4, maxLevel: state.maxLevel })); },
+    random() { edit.setStrip(generate([])); },
+    extend() { edit.setStrip(generate(state.strip)); },
     setStart(id) { state.startPos = id; App.commit(); },
     setWeight(w) { state.startWeight = w; App.commit(); },
     startNewComboAt(id) { state.startPos = id; edit.clear(); },

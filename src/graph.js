@@ -336,7 +336,9 @@
       };
       walk(from, [], new Set([from]));
     }
+    const throughApart = (path) => path.some((id) => (g.edgesByMove[id] || []).some((e) => g.posById[e.to].frame === 'apart'));
     const score = (path) => [
+      throughApart(path) ? 1 : 0,     // "drop both hands and reconnect" is the last resort
       path.length,
       path.filter((id) => g.moveById[id].kind !== 'adjuster').length,
       path.reduce((s, id) => s + g.moveById[id].counts, 0),

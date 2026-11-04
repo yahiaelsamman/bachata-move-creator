@@ -13,7 +13,7 @@
     App.renderPanel(result);
     App.renderMap(result);
     App.renderLibrary(result);
-    syncToolbar();
+    syncToolbar(result);
   };
 
   /** Redraw what only changes with the data (own moves and compounds added or deleted). */
@@ -24,7 +24,7 @@
     App.renderCompounds();
   };
 
-  function syncToolbar() {
+  function syncToolbar(result) {
     $('start-pos').value = state.startPos;
     $('start-weight').value = state.startWeight;
     $('max-level').value = String(state.maxLevel);
@@ -33,6 +33,7 @@
     $('btn-practice').disabled = empty;
     $('btn-text').disabled = empty;
     $('btn-clear').disabled = empty;
+    $('btn-extend').disabled = empty || result.items.some((it) => it.broken);
   }
 
   function renderMessages() {
@@ -66,6 +67,12 @@
     $('btn-undo').addEventListener('click', App.undo);
     $('btn-clear').addEventListener('click', edit.clear);
     $('btn-random').addEventListener('click', edit.random);
+    $('btn-extend').addEventListener('click', edit.extend);
+    $('random-length').value = String(state.randomCounts);
+    $('random-length').addEventListener('change', (ev) => {
+      state.randomCounts = Number(ev.target.value);
+      store.set('bmc.randomCounts', state.randomCounts);
+    });
     $('btn-practice').addEventListener('click', () => {
       const result = App.evaluate();
       if (!result.items.length) return alert('Add some moves first.');

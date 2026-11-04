@@ -49,7 +49,13 @@
     </span>
     <span class="btn-group">
       <button id="btn-practice" type="button" class="primary" title="Step through the combo on the beat">Practice</button>
-      <button id="btn-random" type="button" title="Random combo that comes back to the start position">Random combo</button>
+      <select id="random-length" aria-label="Length of random combos" title="Length of random combos">
+        <option value="16">16 counts</option>
+        <option value="32" selected>32 counts</option>
+        <option value="48">48 counts</option>
+      </select>
+      <button id="btn-random" type="button" title="A new combo in whole 8-counts that comes back to the start position">Random combo</button>
+      <button id="btn-extend" type="button" title="Keep this combo and continue it, coming back to the start position">Extend</button>
       <button id="btn-share" type="button">Share link</button>
       <button id="btn-text" type="button" title="The combo as text, with its link">Copy as text</button>
       <button id="btn-save" type="button">Save as compound</button>
@@ -131,6 +137,7 @@
 
   <script src="data.js"></script>
   <script src="../src/graph.js"></script>
+  <script src="../src/generator.js"></script>
   <script src="../src/sketch.js"></script>
   <script src="../src/map.js"></script>
   <script src="../src/share.js"></script>
