@@ -89,7 +89,9 @@ const flows = {
   },
 
   async 'examples load their parts; a compound expands into its parts'() {
-    const parts = ['cross-body-lead', 'follower-right-turn', 'close-frame', 'dip'];
+    // Read the parts from the data so editing the example doesn't break this test.
+    const moves = require('js-yaml').load(fs.readFileSync(path.join(__dirname, '../../data/moves.yaml'), 'utf8'));
+    const parts = moves.find((m) => m.id === 'classic-opener').sequence;
     const empty = await open();
     await empty.locator('.empty button', { hasText: 'Example: Classic opener' }).click();
     assert.deepEqual(await stripIds(empty), parts);
