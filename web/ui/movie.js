@@ -110,7 +110,7 @@
       ariaLabel: `Position in ${it.move.name}`,
       label: (s, t) => (s.counts ? `count ${countAt(s, t)}` : t < 0.5 ? 'start' : 'end'),
     });
-    return h('figure', { class: 'sk-fig movie' }, art, controls,
+    return h('figure', { class: 'sk-fig movie' }, art, controls, App.heightKey(),
       h('figcaption', {}, h('strong', {}, 'Start: '), posName(it.from), h('br'), h('strong', {}, 'End: '), posName(it.to)));
   };
 
@@ -129,7 +129,7 @@
       onSegment: (s) => highlight(s ? s.index : null),
     });
     const breaks = result.items.filter((it) => it.broken).length;
-    return h('figure', { class: 'sk-fig movie combo-movie' }, art, controls,
+    return h('figure', { class: 'sk-fig movie combo-movie' }, art, controls, App.heightKey(),
       h('figcaption', {}, h('strong', {}, 'Whole combo: '), `${result.items.length} moves, ${result.totalCounts} counts`,
         breaks ? h('span', { class: 'flag' }, ` · ${breaks} break${breaks > 1 ? 's' : ''}: the picture jumps there`) : null));
   };

@@ -1,5 +1,5 @@
 // Offline support: network first (so updates arrive), cache as fallback.
-const CACHE = 'bmc-v6';
+const CACHE = 'bmc-v7';
 const ASSETS = [
   './', 'index.html', 'style.css', 'data.js', 'practice.js', 'app.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon.svg',

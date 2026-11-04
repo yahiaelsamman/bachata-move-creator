@@ -140,14 +140,17 @@
     // follower goes round him the other way. A leader turn on the spot is drawn as the leader spinning.
     const leaderSpins = turns.leader && samePlace;
     const orbit = !leaderSpins && turns.leader ? totalRotation(aFrom, aTo, -turns.leader) : shortest(aFrom, aTo);
-    const dist = lerp(Math.hypot(...rel(A)), Math.hypot(...rel(B)), t);
+    // The dancers close in (or open out) while the hands change, so a new hold is in reach when it is taken.
+    const dist = lerp(Math.hypot(...rel(A)), Math.hypot(...rel(B)), holdChange(t));
     let center = [L0[0] + dist * unit(aFrom + orbit * t)[0], L0[1] + dist * unit(aFrom + orbit * t)[1]];
 
     const fFrom = angleOf(A.follower.face), fTo = angleOf(B.follower.face);
     const fTurn = turnFor(turns, 'follower', fFrom, fTo);
-    const fAngle = fFrom + fTurn * t;
+    // A turn gets going once the hands are up (see raiseHandsForTurn) and settles at the end.
+    const spin = turnProgress(t);
+    const fAngle = fFrom + fTurn * spin;
     const lFrom = angleOf(A.leader.face);
-    const lAngle = lFrom + (leaderSpins ? turns.leader : 0) * t;
+    const lAngle = lFrom + (leaderSpins ? turns.leader : 0) * spin;
 
     if (passesRightSide(move)) {
       // Swing out to the leader's right side and back (a curve through a point beside him).
@@ -162,14 +165,73 @@
     if (turns.couple) {
       // Both turn together: turn the whole couple about the point between them.
       const pivot = lerpPt(leader.c, follower.c, 0.5);
-      const spin = (b) => SK.body(rotateAbout(b.c, pivot, turns.couple * t), unit(angleOf(b.face) + turns.couple * t));
-      leader = spin(leader);
-      follower = spin(follower);
+      const turnCouple = (b) => SK.body(rotateAbout(b.c, pivot, turns.couple * t), unit(angleOf(b.face) + turns.couple * t));
+      leader = turnCouple(leader);
+      follower = turnCouple(follower);
     }
     const holds = blendHolds(from, to, leader, follower, t);
-    raiseHandsForTurn(holds.arms, leader, follower, { follower: fTurn, leader: turns.leader }, t);
-    holds.arms = withinReach(holds.arms, leader, follower, new Set([...Limits.allowedBehind(from), ...Limits.allowedBehind(to)]));
-    return { leader, follower, label: (t < 0.5 ? A : B).label, ...holds };
+    const behindOk = new Set([...Limits.allowedBehind(from), ...Limits.allowedBehind(to)]);
+    raiseHandsForTurn(holds.arms, leader, follower, { follower: fTurn, leader: turns.leader }, t, behindOk);
+    holds.arms = holds.arms.map((a) => roundBody(a, a.who === 'leader' ? follower : leader));
+    for (const a of holds.arms) {           // her hand stays in his
+      const f = a.who === 'leader' && a.grip && holds.arms.find((x) => x.who === 'follower' && x.hand === a.holds && x.heldBy === a.hand);
+      if (f) { f.to = a.to; a.grip = a.to; }
+    }
+    holds.arms = withinReach(holds.arms, leader, follower, behindOk);
+    // Crossed hands at the start or the end: which hand is on top (the body-limit check needs both).
+    const crossing = [SK.layout(from).top, SK.layout(to).top].filter(Boolean);
+    return { leader, follower, label: (t < 0.5 ? A : B).label, ...holds, crossing };
+  }
+
+  /**
+   * An arm at waist or shoulder height that would go straight through the partner's body goes round
+   * the nearer side of it instead (a hand sliding round her waist while she turns).
+   */
+  function roundBody(a, partner) {
+    if ((a.h || 0) >= Limits.RAISED || (a.via && a.viaH >= 1)) return a;
+    const hit = (p) => Limits.inside(p, partner, 0.6);
+    const through = (path) => {
+      for (let k = 1; k < path.length; k++) for (let i = 1; i < 24; i++) if (hit(lerpPt(path[k - 1], path[k], i / 24))) return true;
+      return false;
+    };
+    if (!through([a.from, a.via, a.to].filter(Boolean)) || hit(a.to)) return a;
+    // Push the elbow (or the middle of the arm) straight out from her centre until the arm is clear,
+    // so the route changes smoothly from frame to frame.
+    const base = a.via || lerpPt(a.from, a.to, 0.5);
+    let dir = [base[0] - partner.c[0], base[1] - partner.c[1]];
+    if (Math.hypot(...dir) < 1e-6) dir = [a.from[0] - partner.c[0], a.from[1] - partner.c[1]];
+    const base0 = Math.atan2(dir[1], dir[0]);
+    // Turn the direction a little at a time if straight out isn't clear: first towards the side the
+    // arm comes from (so mirrored moves take mirrored routes), then the other way.
+    const toFrom = [a.from[0] - partner.c[0], a.from[1] - partner.c[1]];
+    const pref = Math.sign(dir[0] * toFrom[1] - dir[1] * toFrom[0]) || 1;
+    for (let k = 0; k <= 24; k++) {
+      const turn = (k % 2 ? pref : -pref) * Math.ceil(k / 2) * (Math.PI / 24);
+      const u = [Math.cos(base0 + turn), Math.sin(base0 + turn)];
+      for (let r = 12; r <= 34; r += 1) {
+        const via = [partner.c[0] + u[0] * r, partner.c[1] + u[1] * r];
+        const fitted = Limits.shortenAround(a.from, via, a.to);
+        if (!through([a.from, fitted.via, fitted.to]) && !hit(fitted.to)) return { ...a, ...fitted };
+      }
+    }
+    return a;
+  }
+
+  /** A point moved from a to b round a centre c (angle and distance from c change smoothly). */
+  function roundLerp(a, b, c, s) {
+    const ang = (p) => Math.atan2(p[1] - c[1], p[0] - c[0]);
+    const r = (p) => Math.hypot(p[0] - c[0], p[1] - c[1]);
+    let d = ang(b) - ang(a);
+    d = ((d + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
+    const th = ang(a) + d * s;
+    const rr = lerp(r(a), r(b), s);
+    return [c[0] + rr * Math.cos(th), c[1] + rr * Math.sin(th)];
+  }
+
+  /** How far through its turn a dancer is at t: a slow start and end, the same at t = 0.5. */
+  function turnProgress(t) {
+    const x = clamp01((t - 0.06) / 0.88);
+    return x * x * (3 - 2 * x);
   }
 
   /** The follower arm holding the same grip as a leader arm. */
@@ -220,16 +282,18 @@
    * follows the shoulders round instead of wrapping around the body. Seen from above, the grip moves
    * to just in front of that dancer's head for the middle of the turn, within both arms' reach.
    */
-  function raiseHandsForTurn(arms, leader, follower, turns, t) {
+  function raiseHandsForTurn(arms, leader, follower, turns, t, behindOk = new Set()) {
     const who = Math.abs(turns.follower) >= 180 ? 'follower' : Math.abs(turns.leader) >= 180 ? 'leader' : null;
     if (!who) return;
     const w = Math.sin(Math.PI * clamp01((t - 0.08) / 0.84));
     if (w < 1e-6) return;
-    const ease = Math.min(1, w / 0.25);   // near the start and end of the turn, hand over gradually to the normal grip
+    const ease = clamp01((w - 0.08) / 0.22);   // near the start and end of the turn, hand over gradually to the normal grip
     for (const a of arms) {
       if (a.who !== 'leader' || !a.grip) continue;
       const f = partnerArm(arms, a);
       if (!f) continue;
+      // A hand that folds behind a back (a hammerlock) stays low: that is what folds the arm.
+      if (behindOk.has('follower' + f.hand) || behindOk.has('leader' + a.hand)) continue;
       const turner = who === 'follower' ? follower : leader;
       const partnerShoulder = who === 'follower' ? leader.shoulder[a.hand] : follower.shoulder[f.hand];
       const halo = lerpPt(turner.c, partnerShoulder, 0.25);
@@ -239,7 +303,10 @@
       const natural = Limits.fitGrip(free(a.from, leader.face), free(f.from, follower.face), lerpPt(a.from, f.from, 0.5));
       const grip = lerpPt(a.to, lerpPt(natural, halo, w), ease);
       a.to = a.grip = f.to = grip;
-      a.via = null;
+      // The hands are up before the turn gets going (otherwise the arm would wind round the body).
+      a.h = f.h = lerp(a.h || 0, 2, Math.min(1, w / 0.1));
+      // An arm round her body lifts along its way until it is above her shoulders.
+      if (a.h > Limits.OVER_SHOULDERS) a.via = null;
       // Hands up over a head: seen from above the arms may point any way (withinReach still keeps them
       // in reach). The hands only start rising from a grip that is already fine, so nothing jumps.
       a.limit = f.limit = -1;
@@ -282,17 +349,52 @@
       if (!b) { if (s < 0.5) arms.push(a); continue; }
       const viaA = a.via || lerpPt(a.from, a.to, 0.5);
       const viaB = b.via || lerpPt(b.from, b.to, 0.5);
-      const to = lerpPt(a.to, b.to, s);
+      // A hand on her body (back, waist, a hand round her) slides round her, not through her.
+      const onBody = a.who === 'leader' && (a.via || b.via || ['back', 'waist', 'shoulder'].includes(a.holds));
+      const to = onBody ? roundLerp(a.to, b.to, follower.c, s) : lerpPt(a.to, b.to, s);
       arms.push({
         ...(s < 0.5 ? a : b),
         from: lerpPt(a.from, b.from, s),
-        via: a.via || b.via ? lerpPt(viaA, viaB, s) : null,
+        via: a.via || b.via ? (onBody ? roundLerp(viaA, viaB, follower.c, s) : lerpPt(viaA, viaB, s)) : null,
         to,
         grip: (s < 0.5 ? a.grip : b.grip) ? to : null,
+        h: lerp(a.h || 0, b.h || 0, s),
       });
     }
     for (const b of B.arms) if (!inA.has(key(b)) && s >= 0.5) arms.push(b);
+    // Joined hands stay joined: her hand is where his is.
+    for (const a of arms) {
+      if (a.who !== 'leader' || !a.grip) continue;
+      const f = arms.find((x) => x.who === 'follower' && x.hand === a.holds && x.heldBy === a.hand);
+      if (f) f.to = a.to;
+    }
     return { arms, top: s < 0.5 ? A.top : B.top };
+  }
+
+  /**
+   * A hand kept low while its dancer turns folds behind the back only when the turn goes away from
+   * that hand: the right arm folds in a left turn, the left arm in a right turn (towards the hand it
+   * wraps across the front instead). An unwind turns the other way. Returns what is wrong, or null.
+   */
+  function foldProblem(move, from, to) {
+    const before = Limits.allowedBehind(from), after = Limits.allowedBehind(to);
+    const turns = turnsOf(move);
+    for (const who of ['follower', 'leader']) {
+      if (!turns[who] || turns.free === who) continue;
+      for (const hand of ['L', 'R']) {
+        const k = who + hand;
+        if (k === 'followerR' && /neck/.test(String(from.arms) + String(to.arms))) continue;
+        const folds = after.has(k) && !before.has(k), unfolds = before.has(k) && !after.has(k);
+        if (!folds && !unfolds) continue;
+        const away = hand === 'R' ? -1 : 1;              // the turn direction that folds this arm
+        const wanted = folds ? away : -away;
+        if (Math.sign(turns[who]) !== wanted) {
+          const dir = (d) => (d > 0 ? 'right' : 'left');
+          return `the ${who}'s ${hand === 'R' ? 'right' : 'left'} arm ${folds ? 'folds behind the back' : 'unfolds'} in a ${dir(turns[who])} turn; that needs a ${dir(wanted)} turn`;
+        }
+      }
+    }
+    return null;
   }
 
   /** One picture area for the whole move, so the drawing doesn't jump while it plays. */
@@ -306,5 +408,5 @@
     return SK.drawSVG(frameAt(move, from, to, t), { bounds });
   }
 
-  return { turnsOf, frameAt, movieBounds, frameSVG, totalRotation, shortest, holdChange };
+  return { turnsOf, frameAt, movieBounds, frameSVG, totalRotation, shortest, holdChange, foldProblem };
 });

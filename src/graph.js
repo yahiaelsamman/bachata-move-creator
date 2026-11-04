@@ -370,12 +370,17 @@
 
   /** Random combo that, when possible, finds its way back to the start position. */
   function randomCombo(g, start, { steps = 5, home = true, rng = Math.random, maxLevel = 3 } = {}) {
-    const ids = randomWalk(g, start, steps, rng, maxLevel);
-    if (!home) return ids;
-    const end = evaluateStrip(g, start, 'mirrored', ids).end;
-    if (end === start) return ids;
-    const back = findBridges(g, end, start, { limit: 1, maxLevel })[0] || findBridges(g, end, start, { limit: 1 })[0];
-    return back ? ids.concat(back) : ids;
+    let ids = [];
+    // A walk that wandered too far to bridge back in a few moves is walked again (shorter each time).
+    for (let attempt = 0; attempt < 12; attempt++) {
+      ids = randomWalk(g, start, Math.max(1, steps - Math.floor(attempt / 3)), rng, maxLevel);
+      if (!home) return ids;
+      const end = evaluateStrip(g, start, 'mirrored', ids).end;
+      if (end === start) return ids;
+      const back = findBridges(g, end, start, { limit: 1, maxLevel })[0] || findBridges(g, end, start, { limit: 1 })[0];
+      if (back) return ids.concat(back);
+    }
+    return ids;
   }
 
   /** Beats a move covers in the 8-count, e.g. "5-8, 1-4" for an 8-count move that starts on 5. */

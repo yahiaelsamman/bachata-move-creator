@@ -23,12 +23,19 @@
   };
 
   /** Top-down sketch of a position as the leader sees it. */
+  /** The key to the hand dots (how high a hand is). */
+  App.heightKey = function () {
+    const key = h('div', { class: 'sk-key-row' });
+    key.innerHTML = SK.heightKey();
+    return key;
+  };
+
   App.sketchFigure = function (posId, caption) {
     const p = App.g.posById[posId];
     if (!p) return null;
     const art = h('div', { class: 'sk-art' });
     art.innerHTML = SK.sketchSVG(p, { title: p.name });
-    return h('figure', { class: 'sk-fig' }, art,
+    return h('figure', { class: 'sk-fig' }, art, App.heightKey(),
       h('figcaption', {}, h('strong', {}, caption + ': '), p.name, h('br'), h('span', { class: 'muted' }, SK.describe(p))));
   };
 

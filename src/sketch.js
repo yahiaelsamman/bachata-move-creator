@@ -32,6 +32,9 @@
     back_to_back:   { dir: [0, 1], face: [0, 1], label: 'back to back' },
   };
   const DISTANCE = { closed: 36, semi: 48, open: 86, apart: 108 };
+  // How high a hand on the body is (0 = waist, 1 = shoulder, 2 = over the head). The hand on her back
+  // in closed position is on the shoulder blade.
+  const CONTACT_HEIGHT = { back: 1, waist: 0, shoulder: 1 };
   const SIDE_DISTANCE = { closed: 46, semi: 54, open: 80, apart: 96 };
 
   const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
@@ -39,6 +42,7 @@
   const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
   const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
   const right = (f) => [-f[1], f[0]]; // screen coords, y grows downwards
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   const r1 = (n) => Math.round(n * 10) / 10;
   const esc = (s) => String(s).replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
@@ -69,7 +73,9 @@
   function placeBodies(p) {
     const o = ORIENTATION[p.orientation] || ORIENTATION.facing;
     const sideways = Math.abs(o.dir[0]) > 0.5;
-    const d = (sideways ? SIDE_DISTANCE : DISTANCE)[p.frame] ?? DISTANCE.open;
+    let d = (sideways ? SIDE_DISTANCE : DISTANCE)[p.frame] ?? DISTANCE.open;
+    // In a hammerlock the couple stands closer: the hand behind a back has to be reached round a body.
+    if (/^hammerlock_/.test(p.arms || '') && p.frame === 'semi') d = 40;
     return {
       leader: body([LEADER.x, LEADER.y], [0, -1]),
       follower: body(add([LEADER.x, LEADER.y], mul(o.dir, d)), o.face),
@@ -95,14 +101,24 @@
 
     // Where each of the follower's hands ends up, before connections.
     const fHand = {};
-    if (p.arms === 'hammerlock_follower_R') fHand.R = add(follower.c, mul(follower.face, -13));
-    if (p.arms === 'hammerlock_follower_L') fHand.L = add(follower.c, mul(follower.face, -13));
+    // A folded arm (hammerlock): the hand at the small of her back, a little towards the other side.
+    if (p.arms === 'hammerlock_follower_R') fHand.R = add(add(follower.c, mul(follower.face, -11)), mul(fr, -6));
+    if (p.arms === 'hammerlock_follower_L') fHand.L = add(add(follower.c, mul(follower.face, -11)), mul(fr, 6));
     if (p.arms === 'wrap') {
       fHand.R = add(add(follower.c, mul(follower.face, 13)), mul(fr, -9));
       fHand.L = add(add(follower.c, mul(follower.face, 13)), mul(fr, 9));
     }
-    if (p.arms === 'follower_R_behind_leader_neck') fHand.R = add(leader.c, [0, 9]);
+    // Her hand behind the back of the leader's neck (the arm is bent, see below).
+    const neck = p.arms === 'follower_R_behind_leader_neck';
+    if (neck) fHand.R = add(leader.c, mul(leader.face, -5));
     if (p.arms === 'wrap_follower_R') fHand.R = add(add(follower.c, mul(follower.face, 13)), mul(fr, -9));
+    // Side by side in a cuddle, the leader's hand on her far side gets there with his arm round her
+    // back, the elbow out past her far shoulder.
+    const rel = sub(follower.c, leader.c);
+    const beside = Math.abs(dot(rel, right(leader.face))) > Math.abs(dot(rel, leader.face));
+    const farSide = dist(leader.c, follower.shoulder.R) > dist(leader.c, follower.shoulder.L) ? 'R' : 'L';
+    const overShoulder = p.arms === 'wrap' && beside
+      ? add(add(follower.shoulder[farSide], mul(fr, farSide === 'R' ? 2 : -2)), mul(follower.face, -7)) : null;
     // The leader's own hand behind his back.
     const lHand = {};
     if (p.arms === 'hammerlock_leader_L') lHand.L = add(leader.c, mul(leader.face, -13));
@@ -112,10 +128,18 @@
     const side = (from, lh, r = 18) => add(follower.c, mul(fr, r * sideSign(from, lh)));
     const backOf = (from, lh) => add(add(follower.c, mul(follower.face, -11)), mul(sub(side(from, lh), follower.c), 0.35));
     const around = (from, to, lh) => (dist(from, to) > dist(from, follower.c) + 4 ? side(from, lh) : null);
+    // To a hand behind her back: round her side and a little behind it, so the arm hugs her back.
+    const aroundBack = (from, lh) => add(side(from, lh, 20), mul(follower.face, -5));
+    // The leader's own hand behind his back, held by her: her arm goes round his side.
+    const aroundLeader = (lh) => add(add(leader.c, mul(right(leader.face), lh === 'L' ? -22 : 22)), mul(leader.face, -5));
     // Crossed or braided hands: keep the two grips a little apart so both show.
     const twisted = p.crossed && p.crossed !== 'none';
     const top = p.crossed === 'leader_R_over_L' ? 'R' : p.crossed === 'leader_L_over_R' ? 'L' : null;
     const spread = (lh) => (!twisted ? [0, 0] : [0, (lh === (top || 'R') ? -6 : 6)]);
+    // The braid: both pairs still hold left-to-right and right-to-left, but twisted round each other,
+    // so seen from above each grip has swapped to the other side and both pairs of arms cross.
+    const braid = p.crossed === 'braid';
+    const otherSide = { L: 'R', R: 'L' };
 
     // Body limits: a hand may only go behind its own back where the position says so (hammerlocks).
     const behindOk = Limits.allowedBehind(p);
@@ -125,6 +149,11 @@
       return { shoulder: b.shoulder[hand], face: b.face, hand, mayGoBehind: mayGoBehind(who, hand) };
     };
 
+    // How high each hand is: 0 = waist or hip, 1 = shoulder, 2 = over the head (turns, see motion.js).
+    const heightOf = (fh) => (neck && fh === 'R' ? 1 : 0);
+    // Her arm wrapped across her own front (cuddle, sweetheart, one-hand wrap): it lies on her body.
+    const wrapped = (fh) => p.arms === 'wrap' || (p.arms === 'wrap_follower_R' && fh === 'R');
+
     const arms = [];
     const used = new Set();
     for (const { leader: lh, follower: target } of parseHands(p.hands)) {
@@ -132,13 +161,21 @@
       let grip;
       let via = null;
       if (target === 'L' || target === 'R') {
-        grip = fHand[target] || lHand[lh] || add(mid(from, follower.shoulder[target]), spread(lh));
-        if (fHand[target]) via = around(from, grip, lh);
+        const aim = braid ? follower.shoulder[otherSide[target]] : follower.shoulder[target];
+        const start = braid ? leader.shoulder[otherSide[lh]] : from;
+        grip = fHand[target] || lHand[lh] || add(mid(start, aim), spread(lh));
+        const folded = behindOk.has('follower' + target);
+        if (fHand[target]) via = overShoulder && target === (farSide === 'R' ? 'L' : 'R') ? overShoulder : folded ? aroundBack(from, lh) : around(from, grip, lh);
+        let fVia = null;
+        if (lHand[lh]) {
+          fVia = aroundLeader(lh);
+          ({ via: fVia, to: grip } = Limits.shortenAround(follower.shoulder[target], fVia, grip));
+        }
         // Joined hands: a hand going round the partner's body is pulled in to arm length; any other
         // grip is moved to where both arms reach without a hand going behind its own back.
         if (via) ({ via, to: grip } = Limits.shortenAround(from, via, grip));
-        else grip = Limits.fitGrip(armOf('leader', lh), armOf('follower', target), grip);
-        arms.push({ who: 'follower', hand: target, from: follower.shoulder[target], to: grip, heldBy: lh });
+        else if (!fVia) grip = Limits.fitGrip(armOf('leader', lh), armOf('follower', target), grip);
+        arms.push({ who: 'follower', hand: target, from: follower.shoulder[target], via: fVia, to: grip, heldBy: lh, h: heightOf(target), acrossFront: wrapped(target) || undefined });
         used.add(target);
       } else if (target === 'back') {
         grip = backOf(from, lh);
@@ -151,12 +188,17 @@
       } else {
         grip = follower.c;
       }
-      arms.push({ who: 'leader', hand: lh, from, via, to: grip, grip: target === 'L' || target === 'R' ? grip : null, side: sideSign(from, lh), holds: target });
+      const h = target === 'L' || target === 'R' ? heightOf(target) : CONTACT_HEIGHT[target] ?? 0;
+      arms.push({ who: 'leader', hand: lh, from, via, viaH: via && via === overShoulder ? 1 : undefined, to: grip, grip: target === 'L' || target === 'R' ? grip : null, side: sideSign(from, lh), holds: target, h });
     }
-    // Follower hands placed by `arms` but not held by the leader (e.g. behind his neck).
+    // Follower hands placed by `arms` but not held by the leader (e.g. behind his neck): the arm bends
+    // at the elbow, which goes out to her side and up.
     for (const hnd of ['L', 'R']) {
       if (fHand[hnd] && !used.has(hnd)) {
-        arms.push({ who: 'follower', hand: hnd, from: follower.shoulder[hnd], to: fHand[hnd] });
+        const from = follower.shoulder[hnd];
+        const out = mul(fr, hnd === 'R' ? 1 : -1);
+        const via = neck && hnd === 'R' ? Limits.elbow(from, fHand[hnd], out) : null;
+        arms.push({ who: 'follower', hand: hnd, from, via, viaH: via ? 1 : undefined, to: fHand[hnd], h: heightOf(hnd) });
       }
     }
 
@@ -193,6 +235,26 @@
     };
   }
 
+  /** The dot for a hand: bigger the higher it is, with a ring when it is over the head. */
+  function handDot(p, h = 0, touch = false) {
+    const r = 2.6 + 1.3 * Math.max(0, Math.min(2, h));
+    return `<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="${r1(r)}" class="sk-grip${touch ? ' sk-touch' : ''}"/>` +
+      (h >= 1.75 ? `<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="${r1(r + 2.6)}" class="sk-high"/>` : '');
+  }
+
+  /** The key to the dots (an SVG strip to put under a sketch). */
+  function heightKey() {
+    const items = [[0, 'waist'], [1, 'shoulder'], [2, 'over the head']];
+    let x = 6;
+    const parts = items.map(([h, label]) => {
+      const pad = h >= 1.75 ? 9 : 5;
+      const out = handDot([x + pad, 9], h) + `<text x="${x + pad * 2 + 4}" y="12.5" class="sk-key">${label}</text>`;
+      x += pad * 2 + 12 + label.length * 5.2;
+      return out;
+    });
+    return `<svg viewBox="0 0 ${Math.round(x)} 18" class="sk-legend" role="img" aria-label="Dot size shows how high the hand is: waist, shoulder, over the head" xmlns="http://www.w3.org/2000/svg">${parts.join('')}</svg>`;
+  }
+
   function sketchSVG(p, opts = {}) {
     return drawSVG(layout(p), opts);
   }
@@ -204,8 +266,9 @@
     const arms = L.arms.map((a) => {
       const isTop = L.top && a.who === 'leader' && a.hand === L.top;
       const points = [a.from, a.via, a.to].filter(Boolean).map(pt).join(' ');
-      return `<polyline points="${points}" class="sk-arm sk-arm-${a.who}${isTop ? ' sk-top' : ''}"/>` +
-        (a.grip ? `<circle cx="${r1(a.grip[0])}" cy="${r1(a.grip[1])}" r="3.2" class="sk-grip"/>` : '');
+      // A dot where the hand is: a grip on the leader's arm, a hand on the body, or her free hand on him.
+      const dot = a.grip || (a.who === 'leader' ? a.to : a.heldBy ? null : a.to);
+      return `<polyline points="${points}" class="sk-arm sk-arm-${a.who}${isTop ? ' sk-top' : ''}"/>` + (dot ? handDot(dot, a.h, !a.grip) : '');
     }).join('\n  ');
     const title = opts.title ? `<title>${esc(opts.title)}</title>` : '';
     const behind = L.follower.c[1] > L.leader.c[1] + 5; // follower behind the leader
@@ -229,13 +292,14 @@
     if (L.top) parts.push(`your ${L.top === 'R' ? 'right' : 'left'} hand on top`);
     if (p.arms === 'hammerlock_follower_R') parts.push("the follower's right arm behind the back");
     if (p.arms === 'hammerlock_follower_L') parts.push("the follower's left arm behind the back");
-    if (p.arms === 'wrap') parts.push("the follower's arms wrapped in front");
+    if (p.arms === 'wrap') parts.push(L.follower && Math.abs(L.follower.c[0] - L.leader.c[0]) > 30
+      ? "the follower's arms wrapped in front, your right arm round the follower's back to the far hip" : "the follower's arms wrapped in front");
     if (p.arms === 'follower_R_behind_leader_neck') parts.push("the follower's right hand behind your neck");
     if (p.arms === 'wrap_follower_R') parts.push("the follower's right arm wrapped across the waist");
     if (p.arms === 'hammerlock_leader_L') parts.push('your left arm behind your back');
-    if (p.crossed === 'braid') parts.push('both hands twisted into a braid');
+    if (p.crossed === 'braid') parts.push('both pairs of arms twisted round each other (a braid)');
     return parts.join(', ') + '.';
   }
 
-  return { sketchSVG, describe, layout, placeBodies, armsFor, body, boundsOf, drawSVG };
+  return { sketchSVG, describe, layout, placeBodies, armsFor, body, boundsOf, drawSVG, heightKey, CONTACT_HEIGHT };
 });

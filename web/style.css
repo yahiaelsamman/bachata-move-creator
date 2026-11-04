@@ -460,3 +460,7 @@ dialog.practice::backdrop { background: rgba(0, 0, 0, 0.45); }
 .domino.playing { box-shadow: 0 0 0 3px var(--styling); }
 .combo-movie .mv-count { min-width: 0; flex: 1 1 100%; order: 3; }
 .combo-movie .mv-controls { flex-wrap: wrap; }
+.sk-touch { fill: var(--ink); opacity: .75; }
+.sk-high { fill: none; stroke: var(--ink); stroke-width: 1.4; }
+.sk-legend { display: block; height: 18px; max-width: 230px; margin-top: 2px; }
+.sk-key { font-size: 9.5px; fill: var(--muted, #666); }

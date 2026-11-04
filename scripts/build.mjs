@@ -18,13 +18,15 @@ export function loadData() {
   return { positions: read('positions.yaml'), moves: read('moves.yaml') };
 }
 
-/** Moves whose animation breaks a body limit somewhere (overlap, reach, a hand behind its back). */
+/** Moves whose animation breaks a body limit somewhere (overlap, reach, a hand behind its back, an arm through a body or arm), or that fold an arm with the wrong turn. */
 export function realismReport(g) {
   const out = [];
   for (const e of g.edges) {
     const m = g.moveById[e.move];
     if (m.kind === 'compound') continue;
     const A = g.posById[e.from], B = g.posById[e.to];
+    const fold = Motion.foldProblem(m, A, B);
+    if (fold) { out.push(`${m.id} (${e.from} -> ${e.to}): ${fold}`); continue; }
     const allowed = new Set([...Limits.allowedBehind(A), ...Limits.allowedBehind(B)]);
     for (let k = 0; k <= 20; k++) {
       const found = Limits.problems(Motion.frameAt(m, A, B, k / 20), allowed);

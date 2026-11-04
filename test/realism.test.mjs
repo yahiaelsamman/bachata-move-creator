@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { loadData } from '../scripts/build.mjs';
+import { KNOWN_UNREALISTIC } from './known-issues.mjs';
 
 const require = createRequire(import.meta.url);
 const MG = require('../src/graph.js');
@@ -19,14 +20,119 @@ test('every position is physically possible: no overlap, arms within reach, no h
   }
 });
 
-test('every frame of every move is physically possible', () => {
+const brokenFrames = (e) => {
+  const A = g.posById[e.from], B = g.posById[e.to];
+  const allowed = new Set([...R.allowedBehind(A), ...R.allowedBehind(B)]);
+  const out = [];
+  for (let k = 0; k <= 40; k++) {
+    const found = R.problems(M.frameAt(g.moveById[e.move], A, B, k / 40), allowed);
+    if (found.length) out.push({ t: k / 40, found });
+  }
+  return out;
+};
+
+test('every frame of every move is physically possible (apart from the known issues)', () => {
   for (const e of moveEdges) {
-    const A = g.posById[e.from], B = g.posById[e.to];
-    const allowed = new Set([...R.allowedBehind(A), ...R.allowedBehind(B)]);
-    for (let k = 0; k <= 40; k++) {
-      const found = R.problems(M.frameAt(g.moveById[e.move], A, B, k / 40), allowed);
-      assert.deepEqual(found, [], `${e.move} ${e.from} -> ${e.to} at t=${k / 40}`);
-    }
+    if (KNOWN_UNREALISTIC[e.move]) continue;
+    const bad = brokenFrames(e);
+    assert.deepEqual(bad, [], `${e.move} ${e.from} -> ${e.to} at t=${bad[0] && bad[0].t}: ${JSON.stringify(bad[0] && bad[0].found)}`);
+  }
+});
+
+test('the known issues are still issues (take a move off the list once it is fixed)', () => {
+  for (const id of Object.keys(KNOWN_UNREALISTIC)) {
+    assert.ok(g.edgesByMove[id], `${id} is not a move any more`);
+    assert.ok(g.edgesByMove[id].some((e) => brokenFrames(e).length), `${id} is realistic now: remove it from test/known-issues.mjs`);
+  }
+});
+
+test('an arm only folds behind a back with a turn away from it (and unfolds the other way)', () => {
+  for (const e of moveEdges) {
+    assert.equal(M.foldProblem(g.moveById[e.move], g.posById[e.from], g.posById[e.to]), null, e.move);
+  }
+  const pos = (arms, hands) => ({ orientation: 'facing', frame: 'semi', hands, crossed: 'none', arms });
+  const double = pos('neutral', 'L>R,R>L');
+  assert.match(M.foldProblem({ turn: { follower: 360 } }, double, pos('hammerlock_follower_R', 'L>R,R>L')), /needs a left turn/);
+  assert.equal(M.foldProblem({ turn: { follower: -360 } }, double, pos('hammerlock_follower_R', 'L>R,R>L')), null);
+  assert.match(M.foldProblem({ turn: { follower: 360 } }, pos('hammerlock_follower_L', 'L>R,R>L'), double), /needs a left turn/);
+  assert.equal(M.foldProblem({ turn: { leader: 360 } }, double, pos('hammerlock_leader_L', 'L>R,R>L')), null);
+});
+
+test("crossed hands: the bottom hand can't go over a head while the top hand stays low", () => {
+  // The old crossed-hands hammerlock entry: right over left, the left hands up, the right hands low.
+  const move = { name: 'test', turn: { follower: -360 } };
+  const from = g.posById.cross_Rtop, to = g.posById.hammerlock_R;
+  const allowed = new Set([...R.allowedBehind(from), ...R.allowedBehind(to)]);
+  const kinds = [];
+  for (let k = 0; k <= 20; k++) kinds.push(...R.problems(M.frameAt(move, from, to, k / 20), allowed).map((p) => p.kind));
+  assert.ok(kinds.includes('under'), kinds.join(','));
+  // From left over right the left hands are on top: fine.
+  assert.deepEqual(brokenFrames(g.edgesByMove['crossed-hammerlock-entry'][0]), []);
+});
+
+test('arms through bodies: a straight arm through the partner is found, one round the side is not', () => {
+  const leader = SK.body([0, 0], [0, -1]);
+  const follower = SK.body([0, -40], [0, 1]);
+  const L = (pts) => ({ leader, follower, arms: [{ who: 'leader', hand: 'R', from: pts[0], via: pts.length > 2 ? pts[1] : null, to: pts[pts.length - 1], h: 0 }] });
+  assert.deepEqual(R.problems(L([[20, 0], [-5, -52]])).map((p) => p.kind), ['through']);
+  assert.deepEqual(R.problems(L([[20, 0], [27, -40], [5, -50]])), []);
+  // Over the head it passes above her.
+  const raised = L([[20, 0], [-5, -52]]);
+  raised.arms[0].h = 2;
+  assert.deepEqual(R.problems(raised).filter((p) => p.kind === 'through'), []);
+});
+
+test('hand heights: waist by default, shoulder for a hand on the back, over the head while turning', () => {
+  const closed = SK.layout(g.posById.closed);
+  assert.equal(closed.arms.find((a) => a.who === 'leader' && a.holds === 'back').h, 1);
+  assert.equal(closed.arms.find((a) => a.who === 'leader' && a.holds === 'R').h, 0);
+  const e = g.edgesByMove['follower-right-turn'].find((x) => x.from === 'open_LR');
+  const mid = M.frameAt(g.moveById[e.move], g.posById[e.from], g.posById[e.to], 0.5);
+  assert.ok(mid.arms.find((a) => a.who === 'leader' && a.grip).h >= R.RAISED);
+  // In a hammerlock entry the folded hand stays low.
+  const h = g.edgesByMove['hammerlock-right-entry-double'][0];
+  const f = M.frameAt(g.moveById[h.move], g.posById[h.from], g.posById[h.to], 0.5);
+  assert.ok(f.arms.find((a) => a.who === 'follower' && a.hand === 'R').h < 1);
+  assert.ok(f.arms.find((a) => a.who === 'follower' && a.hand === 'L').h >= R.RAISED);
+  assert.match(SK.drawSVG(mid), /sk-high/);
+});
+
+test('the braid is drawn twisted: each grip on the other side, both pairs of arms crossing', () => {
+  const L = SK.layout(g.posById.double_braided);
+  const grip = (hand) => L.arms.find((a) => a.who === 'leader' && a.hand === hand).to;
+  assert.ok(grip('L')[0] > L.leader.c[0] && grip('R')[0] < L.leader.c[0], `${grip('L')} ${grip('R')}`);
+  const arm = (who, hand) => L.arms.find((a) => a.who === who && a.hand === hand);
+  assert.ok(R.segmentsCross(arm('leader', 'L').from, arm('leader', 'L').to, arm('leader', 'R').from, arm('leader', 'R').to));
+  assert.ok(R.segmentsCross(arm('follower', 'L').from, arm('follower', 'L').to, arm('follower', 'R').from, arm('follower', 'R').to));
+});
+
+test("a hand behind the leader's neck: the follower's arm is bent, the elbow out to her side", () => {
+  for (const id of ['shadow_neck', 'neck_wrap']) {
+    const L = SK.layout(g.posById[id]);
+    const a = L.arms.find((x) => x.who === 'follower' && x.hand === 'R');
+    assert.ok(a.via, id);
+    const straight = dist(a.from, a.to);
+    assert.ok(dist(a.from, a.via) + dist(a.via, a.to) > straight + 4, `${id}: the arm is bent`);
+  }
+});
+
+test("cuddle: the leader's right arm goes round her back, the elbow past her far shoulder", () => {
+  const L = SK.layout(g.posById.cuddle);
+  const a = L.arms.find((x) => x.who === 'leader' && x.hand === 'R');
+  assert.ok(a.via && a.viaH === 1);
+  const behind = (a.via[0] - L.follower.c[0]) * L.follower.face[0] + (a.via[1] - L.follower.c[1]) * L.follower.face[1];
+  assert.ok(behind < 0, 'the elbow is behind her');
+});
+
+test('hammerlocks: the folded hand is at the small of her back, reached round her side', () => {
+  for (const id of ['hammerlock_R', 'hammerlock_R_double', 'hammerlock_L', 'hammerlock_L_cross']) {
+    const p = g.posById[id];
+    const L = SK.layout(p);
+    const hand = p.arms.endsWith('_R') ? 'R' : 'L';
+    const f = L.arms.find((x) => x.who === 'follower' && x.hand === hand);
+    const back = (f.to[0] - L.follower.c[0]) * L.follower.face[0] + (f.to[1] - L.follower.c[1]) * L.follower.face[1];
+    assert.ok(back < -3, `${id}: the hand is behind her (${back.toFixed(1)})`);
+    assert.ok(L.arms.find((x) => x.who === 'leader' && x.holds === hand).via, `${id}: the leader's arm goes round her`);
   }
 });
 

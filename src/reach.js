@@ -69,6 +69,21 @@
     return { via, to: second > rest ? add(via, mul(sub(to, via), rest / second)) : to };
   }
 
+  /**
+   * Where the elbow is for a bent arm from `shoulder` to `hand` (upper arm and forearm half an arm
+   * each), bending towards `outwards`. A hand at full stretch gives a straight arm.
+   */
+  function elbow(shoulder, hand, outwards) {
+    const v = sub(hand, shoulder);
+    const d = Math.min(len(v), ARM);
+    if (d < 1e-6) return add(shoulder, mul(outwards, ARM / 2));
+    const u = mul(v, 1 / len(v));
+    let n = right(u);
+    if (dot(n, outwards) < 0) n = mul(n, -1);
+    const up = Math.sqrt(Math.max(0, (ARM / 2) ** 2 - (d / 2) ** 2));
+    return add(add(shoulder, mul(u, d / 2)), mul(n, up));
+  }
+
   /** Is point p inside body b's outline (scaled by k)? */
   function inside(p, b, k = 1) {
     const d = sub(p, b.c);
@@ -118,13 +133,66 @@
 
   const pathLength = (pts) => pts.slice(1).reduce((s, p, i) => s + len(sub(p, pts[i])), 0);
 
+  const RAISED = 1.5;            // a hand this high (see sketch.js: 0 waist, 1 shoulder, 2 over the head) is over a head
+  const OVER_SHOULDERS = 1.05;   // an arm with the hand this high goes over the partner's shoulders, not through her
+
+  /** Do segments ab and cd cross? */
+  function segmentsCross(a, b, c, d) {
+    const side = (p, q, r) => Math.sign((q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]));
+    return side(a, b, c) * side(a, b, d) < 0 && side(c, d, a) * side(c, d, b) < 0;
+  }
+
   /**
-   * What is still physically wrong in a frame: [{ kind: 'overlap' | 'reach' | 'behind', who, hand, amount }].
+   * Does an arm go through a body? Seen from above an arm that hugs a body cuts its outline a little,
+   * so only the inner part of the body counts (k). An arm's own shoulder is on its own body's edge, so
+   * the first few units of its own arm don't count. A hand allowed behind its own back (a hammerlock)
+   * lies across that back, so its own body doesn't count for it.
+   */
+  function armThroughBody(pts, b, skipStart, k = 0.55) {
+    for (let i = 1; i < pts.length; i++) {
+      const p = pts[i - 1], q = pts[i];
+      const n = Math.max(2, Math.ceil(len(sub(q, p)) / 2));
+      for (let j = 1; j <= n; j++) {
+        const x = add(p, mul(sub(q, p), j / n));
+        if (len(sub(x, pts[0])) < skipStart) continue;
+        if (inside(x, b, k)) return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * What is still physically wrong in a frame:
+   *   overlap  the bodies overlap
+   *   reach    an arm longer than an arm
+   *   behind   a hand behind its own back where the position doesn't allow it
+   *   through  an arm at waist or shoulder height going through a body
+   *   under    crossed hands: the bottom hand goes up over a head while the top one stays low, so its
+   *            arm would pass through the arm on top
    * `allowedBehind` lists hands that may go behind their own back in this position (hammerlocks).
    */
   function problems(L, allowedBehind = new Set()) {
     const out = [];
     if (bodiesOverlap(L.leader, L.follower)) out.push({ kind: 'overlap' });
+    for (const a of L.arms) {
+      if ((a.h || 0) > OVER_SHOULDERS) continue;
+      const pts = [a.from, a.via, a.to].filter(Boolean);
+      const own = a.who === 'leader' ? L.leader : L.follower;
+      const other = a.who === 'leader' ? L.follower : L.leader;
+      // A segment at shoulder height or above (an elbow over a shoulder, a hand reaching up behind a
+      // neck) goes over the shoulders, not through the chest.
+      const overShoulder = a.via && a.viaH >= 1;
+      const lowPts = !overShoulder ? pts : (a.h || 0) >= 1 ? [] : [a.via, a.to];
+      if (lowPts.length > 1 && armThroughBody(lowPts, other, 0)) out.push({ kind: 'through', who: a.who, hand: a.hand, body: 'partner' });
+      else if (!allowedBehind.has(a.who + a.hand) && !a.acrossFront && armThroughBody(pts, own, 8, 0.5)) out.push({ kind: 'through', who: a.who, hand: a.hand, body: 'own' });
+    }
+    for (const top of L.crossing || (L.top ? [L.top] : [])) {
+      const arm = (hand) => L.arms.find((x) => x.who === 'leader' && x.hand === hand && x.grip);
+      const upper = arm(top), lower = arm(top === 'R' ? 'L' : 'R');
+      if (upper && lower && (lower.h || 0) >= RAISED && (upper.h || 0) < 1) {
+        out.push({ kind: 'under', who: 'leader', hand: lower.hand });
+      }
+    }
     for (const a of L.arms) {
       const me = a.who === 'leader' ? L.leader : L.follower;
       const pts = [a.from, a.via, a.to].filter(Boolean);
@@ -141,5 +209,5 @@
     return out;
   }
 
-  return { ARM, BEHIND, BODY, allowedBehind, fitGrip, intoReach, shortenAround, bodiesOverlap, separate, problems, inside };
+  return { ARM, BEHIND, BODY, RAISED, OVER_SHOULDERS, allowedBehind, elbow, segmentsCross, fitGrip, intoReach, shortenAround, bodiesOverlap, separate, problems, inside };
 });

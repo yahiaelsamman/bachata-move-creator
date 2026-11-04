@@ -162,14 +162,14 @@ window.BACHATA_DATA = {
   },
   {
    "id": "hammerlock_R",
-   "name": "Hammerlock (follower's right arm behind the back)",
-   "short": "Hammerlock",
+   "name": "Hammerlock, right arm (crossed hands)",
+   "short": "Hammerlock R (cross)",
    "orientation": "facing",
    "frame": "semi",
    "hands": "L>L,R>R",
    "crossed": "none",
    "arms": "hammerlock_follower_R",
-   "notes": "The follower's right hand is held at the hip behind the back, never pushed up; left hands joined in front.",
+   "notes": "Left-to-left and right-to-right. The follower's right arm is folded behind the back: the leader's right hand reaches round the follower's left side and holds it at the small of the back, never pushed up. The left hands are joined in front.",
    "aka": [
     "candado (Spanish)",
     "Brezel (German)",
@@ -177,15 +177,37 @@ window.BACHATA_DATA = {
    ]
   },
   {
+   "id": "hammerlock_R_double",
+   "name": "Hammerlock, right arm (double hands)",
+   "short": "Hammerlock R",
+   "orientation": "facing",
+   "frame": "semi",
+   "hands": "L>R,R>L",
+   "crossed": "none",
+   "arms": "hammerlock_follower_R",
+   "notes": "Double hands, the follower's right arm folded behind the back: the leader's left hand reaches round the follower's right side and holds it at the small of the back. The leader's right holds the follower's left in front. The mirror of the left-arm hammerlock."
+  },
+  {
+   "id": "hammerlock_L_cross",
+   "name": "Hammerlock, left arm (crossed hands)",
+   "short": "Hammerlock L (cross)",
+   "orientation": "facing",
+   "frame": "semi",
+   "hands": "L>L,R>R",
+   "crossed": "none",
+   "arms": "hammerlock_follower_L",
+   "notes": "Left-to-left and right-to-right. The follower's left arm is folded behind the back: the leader's left hand reaches round the follower's right side and holds it at the small of the back. The right hands are joined in front. The mirror of the crossed-hands right-arm hammerlock."
+  },
+  {
    "id": "hammerlock_L",
-   "name": "Hammerlock, left arm (follower's left arm behind the back)",
+   "name": "Hammerlock, left arm (double hands)",
    "short": "Hammerlock L",
    "orientation": "facing",
    "frame": "semi",
    "hands": "L>R,R>L",
    "crossed": "none",
    "arms": "hammerlock_follower_L",
-   "notes": "The follower's left hand is held at the hip behind the back; the leader's left holds the follower's right in front.",
+   "notes": "Double hands, the follower's left arm folded behind the back: the leader's right hand reaches round the follower's left side and holds it at the small of the back, never pushed up. The leader's left holds the follower's right in front.",
    "aka": [
     "tour espagnol (French)",
     "khamerlok devushki (Russian)"
@@ -1596,10 +1618,11 @@ window.BACHATA_DATA = {
    "name": "Hammerlock entry (from crossed hands)",
    "kind": "move",
    "level": 2,
-   "from": "cross_Rtop",
+   "from": "cross_Ltop",
    "to": "hammerlock_R",
    "counts": 4,
-   "notes": "The leader leads the follower's left turn with the right hands kept low, so the follower's right arm folds behind the back. Safety: keep the hand at hip height, never push it up.",
+   "opposite": "hammerlock-unwind-to-cross",
+   "notes": "From left over right, the leader raises the left hands (they are on top) and leads the follower's left turn under them, keeping the right hands low at the hip, so the follower's right arm folds behind the back. (From right over left the left hands are underneath and can't go up through the right arms.) Safety: keep the hand at hip height, never push it up.",
    "aka": [
     "drop za spinu (Russian, throw behind the back)"
    ],
@@ -1611,9 +1634,10 @@ window.BACHATA_DATA = {
    "kind": "move",
    "level": 2,
    "from": "hammerlock_R",
-   "to": "cross_Rtop",
+   "to": "cross_Ltop",
    "counts": 4,
-   "notes": "The left hands lift and the leader leads a right turn so the follower's arm comes out from behind the back; the hands end right over left."
+   "opposite": "crossed-hammerlock-entry",
+   "notes": "The left hands lift and the leader leads a right turn so the follower's arm comes out from behind the back; the left hands stay on top, so the hands end left over right."
   },
   {
    "id": "hammerlock-release-to-ll",
@@ -1633,6 +1657,111 @@ window.BACHATA_DATA = {
    "from": "hammerlock_R",
    "counts": 4,
    "notes": "Stay close in the hammerlock and roll the hips together over 4 counts. Safety: keep the follower's hand at the hip, no pull on the arm."
+  },
+  {
+   "id": "crossed-hammerlock-left-entry",
+   "name": "Hammerlock entry (left arm, from crossed hands)",
+   "kind": "move",
+   "level": 2,
+   "from": "cross_Rtop",
+   "to": "hammerlock_L_cross",
+   "counts": 4,
+   "opposite": "hammerlock-left-unwind-to-cross",
+   "notes": "From right over left, the leader raises the right hands (they are on top) and leads the follower's right turn under them, keeping the left hands low at the hip, so the follower's left arm folds behind the back. Safety: keep the hand at hip height, never push it up."
+  },
+  {
+   "id": "hammerlock-left-unwind-to-cross",
+   "name": "Hammerlock unwind (left arm, to crossed hands)",
+   "kind": "move",
+   "level": 2,
+   "from": "hammerlock_L_cross",
+   "to": "cross_Rtop",
+   "counts": 4,
+   "opposite": "crossed-hammerlock-left-entry",
+   "notes": "The right hands lift and the leader leads a left turn so the follower's left arm comes out from behind the back; the right hands stay on top, so the hands end right over left."
+  },
+  {
+   "id": "hammerlock-left-entry-from-ll",
+   "name": "Hammerlock entry (left arm, from L-L)",
+   "kind": "move",
+   "level": 2,
+   "from": "open_LL",
+   "to": "hammerlock_L_cross",
+   "counts": 4,
+   "turn": {
+    "follower": 360
+   },
+   "opposite": "hammerlock-left-exit-to-ll",
+   "notes": "The mirror of the hammerlock entry from the handshake: the leader leads the follower's left hand low across the waist into a right turn; the arm folds behind the back and the leader's right picks up the follower's right. Safety: keep the hand at hip height, never push it up the back."
+  },
+  {
+   "id": "hammerlock-left-exit-to-ll",
+   "name": "Hammerlock exit (left arm, to L-L)",
+   "kind": "move",
+   "level": 2,
+   "from": "hammerlock_L_cross",
+   "to": "open_LL",
+   "counts": 4,
+   "turn": {
+    "follower": -360
+   },
+   "opposite": "hammerlock-left-entry-from-ll",
+   "notes": "Let go of the right hands; the leader leads the follower to unwind with a left turn, keeping left-to-left, and the arm comes back out in front."
+  },
+  {
+   "id": "hammerlock-left-cross-release",
+   "name": "Hammerlock release (left arm, to handshake)",
+   "kind": "adjuster",
+   "level": 2,
+   "from": "hammerlock_L_cross",
+   "to": "open_RR",
+   "counts": 0,
+   "notes": "The leader lets go of the hand behind the follower's back; the arm simply comes back and right-to-right stays."
+  },
+  {
+   "id": "hammerlock-right-entry-double",
+   "name": "Hammerlock entry (right arm, from double hands)",
+   "kind": "move",
+   "level": 2,
+   "from": "double",
+   "to": "hammerlock_R_double",
+   "counts": 4,
+   "opposite": "hammerlock-right-unwind-double",
+   "notes": "The leader raises the right arm and keeps the left at waist height; the follower turns left under the right hands and the follower's right arm ends behind the back. Safety: keep the hand at the hip, never push it up."
+  },
+  {
+   "id": "hammerlock-right-entry-from-lr",
+   "name": "Hammerlock entry (right arm, from L-R)",
+   "kind": "move",
+   "level": 2,
+   "from": "open_LR",
+   "to": "hammerlock_R_double",
+   "counts": 4,
+   "turn": {
+    "follower": -360
+   },
+   "notes": "The mirror of the left-arm entry from R-L: the leader turns the follower left with the left hand low, so the follower's right arm folds behind the back, and catches the follower's left hand with the right. Safety: no force on the arm."
+  },
+  {
+   "id": "hammerlock-right-unwind-double",
+   "name": "Hammerlock unwind (right arm, to double hands)",
+   "kind": "move",
+   "level": 2,
+   "from": "hammerlock_R_double",
+   "to": "double",
+   "counts": 4,
+   "opposite": "hammerlock-right-entry-double",
+   "notes": "The leader lifts the right hand; the follower unwinds with a full right turn and both hands come back in front."
+  },
+  {
+   "id": "hammerlock-right-release-double",
+   "name": "Hammerlock release (right arm, to R-L)",
+   "kind": "move",
+   "level": 2,
+   "from": "hammerlock_R_double",
+   "to": "open_RL",
+   "counts": 4,
+   "notes": "The leader lets go of the hand behind the follower's back; the follower unwinds while right-to-left stays."
   },
   {
    "id": "hammerlock-left-entry",
@@ -1660,6 +1789,9 @@ window.BACHATA_DATA = {
    "from": "open_RL",
    "to": "hammerlock_L",
    "counts": 4,
+   "turn": {
+    "follower": 360
+   },
    "notes": "The leader turns the follower right with the right hand low, so the follower's left arm folds behind the back, and catches the follower's right hand with the left. Safety: no force on the arm."
   },
   {
@@ -1695,6 +1827,9 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "hammerlock_leader_L",
    "counts": 4,
+   "turn": {
+    "leader": 360
+   },
    "opposite": "leader-hammerlock-dive-exit",
    "notes": "The leader raises the right hand to make a window and turns right on 1-2-3 under it; the leader's left hand travels down and ends behind the leader's own back, tap 4. Hook grip, no squeezing.",
    "aka": [
