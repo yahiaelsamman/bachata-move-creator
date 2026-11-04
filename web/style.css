@@ -457,3 +457,6 @@ dialog.practice::backdrop { background: rgba(0, 0, 0, 0.45); }
   .summary { font-size: 11pt; color: #000; }
 }
 .sk-arm { fill: none; stroke-linejoin: round; }
+.domino.playing { box-shadow: 0 0 0 3px var(--styling); }
+.combo-movie .mv-count { min-width: 0; flex: 1 1 100%; order: 3; }
+.combo-movie .mv-controls { flex-wrap: wrap; }

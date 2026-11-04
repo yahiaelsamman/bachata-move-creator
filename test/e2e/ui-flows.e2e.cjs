@@ -160,6 +160,22 @@ const flows = {
     assert.equal(await page.locator('.pr-art').innerHTML(), paused);
   },
 
+  async 'the whole combo plays move after move, lighting up each domino; combo blocks play their parts'() {
+    const page = await open('#start=open_LR&weight=mirrored&moves=follower-right-turn,classic-opener');
+    assert.match(await text(page, '.combo-movie figcaption'), /^Whole combo: 2 moves/);
+    assert.match(await text(page, '.mv-count'), /^1\/2 · Follower right turn · count 1$/);
+    await page.locator('.combo-movie input[type=range]').fill('900');                  // inside the opener
+    assert.match(await text(page, '.mv-count'), /^2\/2 · /);
+    assert.doesNotMatch(await text(page, '.mv-count'), /Classic opener/, 'the block shows the part being danced');
+    await page.locator('.combo-movie input[type=range]').fill('0');
+    await page.locator('.mv-play').click();
+    await page.waitForTimeout(300);
+    assert.equal(await page.locator('#strip .domino.playing').count(), 1);
+    assert.match(await text(page, '#strip .domino.playing .name'), /Follower right turn/);
+    await page.locator('.mv-play').click();                                            // pause clears the light
+    assert.equal(await page.locator('#strip .domino.playing').count(), 0);
+  },
+
   async 'keyboard focus survives a redraw'() {
     const page = await open('#start=open_LR&weight=mirrored&moves=cross-body-lead');
     await page.locator('#panel .options button').first().focus();

@@ -12,7 +12,7 @@
     const it = state.selected === null ? null : result.items[state.selected];
     const main = it ? detailPanel(it, state.selected) : nextPanel(result.end);
     let side;
-    if (!it) side = [App.sketchFigure(result.end, 'Where you are now')];
+    if (!it) side = [App.comboFigure(result) || App.sketchFigure(result.end, 'Where you are now')];
     else if (it.missing || !it.from) side = [];
     else if (it.move.kind !== 'compound') side = [App.movieFigure(it)];      // animated: start to end
     else if (it.from === it.to) side = [App.sketchFigure(it.from, 'Start and end (same position)')];
