@@ -117,7 +117,9 @@ test('hands kept through a move travel smoothly from the start hold to the end h
   for (const e of moveEdges) {
     let prev = null;
     for (let k = 0; k <= STEPS; k++) {
-      const arms = new Map(frame(e, k / STEPS).arms.map((a) => [a.who + a.hand, a.to]));
+      // A connection is a pair of hands; in a hand change the old pair lets go and a new pair takes hold.
+      const pair = (a) => (a.who === 'leader' ? `leader${a.hand}>${a.holds}` : `follower${a.hand}<${a.heldBy}`);
+      const arms = new Map(frame(e, k / STEPS).arms.map((a) => [pair(a), a.to]));
       if (prev) {
         for (const [hand, to] of arms) {
           const before = prev.get(hand);

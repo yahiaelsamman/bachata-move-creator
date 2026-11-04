@@ -21,14 +21,15 @@
  * Hands move gradually from where they are in the start hold to where they are in the end hold.
  */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./sketch.js'));
-  else root.Motion = factory(root.LeaderSketch);
-})(typeof self !== 'undefined' ? self : this, function (SK) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./sketch.js'), require('./reach.js'));
+  else root.Motion = factory(root.LeaderSketch, root.BodyLimits);
+})(typeof self !== 'undefined' ? self : this, function (SK, Limits) {
   'use strict';
 
   const clamp01 = (t) => Math.min(1, Math.max(0, Number(t) || 0));
   const angleOf = (v) => (Math.atan2(v[1], v[0]) * 180) / Math.PI;
-  const unit = (deg) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)];
+  const snap = (x) => (Math.abs(x) < 1e-12 ? 0 : x);
+  const unit = (deg) => [snap(Math.cos((deg * Math.PI) / 180)), snap(Math.sin((deg * Math.PI) / 180))];
   const lerp = (a, b, t) => a + (b - a) * t;
   const lerpPt = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t)];
   /** Smallest signed angle from a to b, in (-180, 180]. */
@@ -143,7 +144,8 @@
     let center = [L0[0] + dist * unit(aFrom + orbit * t)[0], L0[1] + dist * unit(aFrom + orbit * t)[1]];
 
     const fFrom = angleOf(A.follower.face), fTo = angleOf(B.follower.face);
-    const fAngle = fFrom + turnFor(turns, 'follower', fFrom, fTo) * t;
+    const fTurn = turnFor(turns, 'follower', fFrom, fTo);
+    const fAngle = fFrom + fTurn * t;
     const lFrom = angleOf(A.leader.face);
     const lAngle = lFrom + (leaderSpins ? turns.leader : 0) * t;
 
@@ -154,8 +156,9 @@
       center = lerpPt(center, side, bend);
     }
 
-    let follower = SK.body(center, unit(fAngle));
     let leader = SK.body(L0, unit(lAngle));
+    // Bodies can't pass through each other: push the follower out if they would overlap.
+    let follower = Limits.separate(leader, SK.body(center, unit(fAngle)), SK.body);
     if (turns.couple) {
       // Both turn together: turn the whole couple about the point between them.
       const pivot = lerpPt(leader.c, follower.c, 0.5);
@@ -163,7 +166,84 @@
       leader = spin(leader);
       follower = spin(follower);
     }
-    return { leader, follower, label: (t < 0.5 ? A : B).label, ...blendHolds(from, to, leader, follower, t) };
+    const holds = blendHolds(from, to, leader, follower, t);
+    raiseHandsForTurn(holds.arms, leader, follower, { follower: fTurn, leader: turns.leader }, t);
+    holds.arms = withinReach(holds.arms, leader, follower, new Set([...Limits.allowedBehind(from), ...Limits.allowedBehind(to)]));
+    return { leader, follower, label: (t < 0.5 ? A : B).label, ...holds };
+  }
+
+  /** The follower arm holding the same grip as a leader arm. */
+  const partnerArm = (arms, a) => arms.find((x) => x.who === 'follower' && x.to[0] === a.to[0] && x.to[1] === a.to[1]);
+
+  /**
+   * After blending, keep every hold physically possible: joined hands are moved to where both arms
+   * reach, a hand going round the partner's body is pulled in to arm length, and a hold that can't be
+   * reached any more (the dancers moved apart) lets go.
+   */
+  function withinReach(arms, leader, follower, behindOk) {
+    const replace = new Map();                  // arm -> its fitted version, or null when it lets go
+    const limit = (arm, who) => (behindOk.has(who + arm.hand) ? -1 : arm.limit !== undefined ? arm.limit : Limits.BEHIND);
+    for (const a of arms) {
+      if (a.who !== 'leader') continue;
+      if (a.via) {
+        // A hand going round the partner's body: keep the partner's own arm in its range, then pull
+        // the leader's hand in to arm length.
+        const f = partnerArm(arms, a);
+        let fitted = { ...a, ...Limits.shortenAround(a.from, a.via, a.to) };
+        for (let i = 0; f && i < 12; i++) {       // alternate the two until both arms are fine
+          const to = Limits.intoReach(fitted.to, { shoulder: f.from, face: follower.face, hand: f.hand, limit: limit(f, 'follower') });
+          fitted = { ...a, ...Limits.shortenAround(a.from, a.via, to) };
+        }
+        replace.set(a, fitted);
+        if (f) replace.set(f, { ...f, to: fitted.to });
+      } else if (a.grip) {
+        const f = partnerArm(arms, a);
+        if (!f) continue;
+        const grip = Limits.fitGrip(
+          { shoulder: a.from, face: leader.face, hand: a.hand, limit: limit(a, 'leader') },
+          { shoulder: f.from, face: follower.face, hand: f.hand, limit: limit(f, 'follower') }, a.to);
+        const tooFar = Math.hypot(grip[0] - a.from[0], grip[1] - a.from[1]) > Limits.ARM + 1 ||
+          Math.hypot(grip[0] - f.from[0], grip[1] - f.from[1]) > Limits.ARM + 1;
+        replace.set(a, tooFar ? null : { ...a, to: grip, grip });
+        replace.set(f, tooFar ? null : { ...f, to: grip });
+      }
+    }
+    // Follower arms not held by the leader (e.g. a hand behind the leader's neck): kept while they reach.
+    for (const f of arms) {
+      if (f.who === 'follower' && !replace.has(f) && Math.hypot(f.to[0] - f.from[0], f.to[1] - f.from[1]) > Limits.ARM + 1) replace.set(f, null);
+    }
+    return arms.map((a) => (replace.has(a) ? replace.get(a) : a)).filter(Boolean);
+  }
+
+  /**
+   * Turning under joined hands: the hands go up over the head of the one turning (a halo), so the arm
+   * follows the shoulders round instead of wrapping around the body. Seen from above, the grip moves
+   * to just in front of that dancer's head for the middle of the turn, within both arms' reach.
+   */
+  function raiseHandsForTurn(arms, leader, follower, turns, t) {
+    const who = Math.abs(turns.follower) >= 180 ? 'follower' : Math.abs(turns.leader) >= 180 ? 'leader' : null;
+    if (!who) return;
+    const w = Math.sin(Math.PI * clamp01((t - 0.08) / 0.84));
+    if (w < 1e-6) return;
+    const ease = Math.min(1, w / 0.25);   // near the start and end of the turn, hand over gradually to the normal grip
+    for (const a of arms) {
+      if (a.who !== 'leader' || !a.grip) continue;
+      const f = partnerArm(arms, a);
+      if (!f) continue;
+      const turner = who === 'follower' ? follower : leader;
+      const partnerShoulder = who === 'follower' ? leader.shoulder[a.hand] : follower.shoulder[f.hand];
+      const halo = lerpPt(turner.c, partnerShoulder, 0.25);
+      // Start from the natural grip between the two shoulders (only reach limits it, so it moves
+      // smoothly while she turns), and lift it towards the halo as the turn goes on.
+      const free = (shoulder, face) => ({ shoulder, face, limit: -1 });
+      const natural = Limits.fitGrip(free(a.from, leader.face), free(f.from, follower.face), lerpPt(a.from, f.from, 0.5));
+      const grip = lerpPt(a.to, lerpPt(natural, halo, w), ease);
+      a.to = a.grip = f.to = grip;
+      a.via = null;
+      // Hands up over a head: seen from above the arms may point any way (withinReach still keeps them
+      // in reach). The hands only start rising from a grip that is already fine, so nothing jumps.
+      a.limit = f.limit = -1;
+    }
   }
 
   function rotateAbout(p, c, deg) {
@@ -177,8 +257,10 @@
 
   /**
    * Hands during a move: each hand moves gradually from where it is in the start hold to where it is
-   * in the end hold (an unwrap unwinds instead of jumping). A hand only in the start hold lets go
-   * halfway; a hand only in the end hold takes hold halfway.
+   * in the end hold (an unwrap unwinds instead of jumping). A connection only in the start hold lets
+   * go halfway; one only in the end hold takes hold halfway. A connection is a pair of hands, so in a
+   * hand change (her right hand passes from his left to his right) the old pair lets go and the new
+   * pair takes hold, instead of her hand sliding through the air between his.
    */
   /** Which side of the follower each leader hand is on in a position's own sketch (kept while turning). */
   function sidesOf(pos) {
@@ -191,7 +273,7 @@
     const s = holdChange(t);
     if (s <= 0) return A;
     if (s >= 1) return B;
-    const key = (a) => a.who + a.hand;
+    const key = (a) => (a.who === 'leader' ? `L${a.hand}>${a.holds || ''}` : `F${a.hand}<${a.heldBy || ''}`);
     const inB = new Map(B.arms.map((a) => [key(a), a]));
     const inA = new Set(A.arms.map(key));
     const arms = [];

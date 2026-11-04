@@ -2272,6 +2272,10 @@ window.BACHATA_DATA = {
    "counts": 4,
    "opposite": "shadow-comeback",
    "notes": "From the follower's shadow the leader passes in front with a turn, ending in front with the follower behind; leave room for the full turn.",
+   "turn": {
+    "leader": 180
+   },
+   "check": "Which way the leader turns is not stated (the animation turns him to the right).",
    "aka": [
     "manton (Spanish)",
     "manto (Russian)"
@@ -2288,6 +2292,10 @@ window.BACHATA_DATA = {
    "counts": 4,
    "opposite": "shadow-manton",
    "notes": "The reverse of the manton: the follower passes in front with a turn and the leader blocks so the follower stays in front.",
+   "turn": {
+    "follower": 360
+   },
+   "check": "Which way the follower turns is not stated (the animation turns the follower to the right).",
    "aka": [
     "comeback (Spanish)"
    ],

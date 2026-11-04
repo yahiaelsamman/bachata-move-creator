@@ -9,11 +9,32 @@ import yaml from 'js-yaml';
 
 const require = createRequire(import.meta.url);
 const MoveGraph = require('../src/graph.js');
+const Motion = require('../src/motion.js');
+const Limits = require('../src/reach.js');
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 export function loadData() {
   const read = (f) => yaml.load(readFileSync(join(root, 'data', f), 'utf8')) || [];
   return { positions: read('positions.yaml'), moves: read('moves.yaml') };
+}
+
+/** Moves whose animation breaks a body limit somewhere (overlap, reach, a hand behind its back). */
+export function realismReport(g) {
+  const out = [];
+  for (const e of g.edges) {
+    const m = g.moveById[e.move];
+    if (m.kind === 'compound') continue;
+    const A = g.posById[e.from], B = g.posById[e.to];
+    const allowed = new Set([...Limits.allowedBehind(A), ...Limits.allowedBehind(B)]);
+    for (let k = 0; k <= 20; k++) {
+      const found = Limits.problems(Motion.frameAt(m, A, B, k / 20), allowed);
+      if (found.length) {
+        out.push(`${m.id} (${e.from} -> ${e.to}) at ${Math.round((k / 20) * 100)}%: ${found.map((p) => p.kind + (p.who ? ` ${p.who} ${p.hand}` : '')).join(', ')}`);
+        break;
+      }
+    }
+  }
+  return out;
 }
 
 /** The GitHub "Suggest a move" form, with the current positions as dropdown options. */
@@ -101,6 +122,12 @@ if (isMain) {
   if (thin.length) {
     console.log('  thin positions (aim for 3 ways in and 3 ways out):');
     for (const h of thin) console.log(`    ${h.id.padEnd(14)} in ${h.in}  out ${h.out}`);
+  }
+  // Realism: animate every move and check bodies, reach and shoulder ranges along the way.
+  const unrealistic = realismReport(g);
+  if (unrealistic.length) {
+    console.log(`  realism: ${unrealistic.length} move(s) break body limits in the animation:`);
+    for (const r of unrealistic.slice(0, 15)) console.log(`    ${r}`);
   }
   if (g.errors.length) {
     for (const e of g.errors) console.error(`  ERROR: ${e}`);

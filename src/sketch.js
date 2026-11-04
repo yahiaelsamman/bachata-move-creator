@@ -10,9 +10,9 @@
  *   drawSVG(layout, { bounds }) -> SVG               used by the animation (src/motion.js)
  */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory();
-  else root.LeaderSketch = factory();
-})(typeof self !== 'undefined' ? self : this, function () {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./reach.js'));
+  else root.LeaderSketch = factory(root.BodyLimits);
+})(typeof self !== 'undefined' ? self : this, function (Limits) {
   'use strict';
 
   const W = 180;
@@ -117,6 +117,14 @@
     const top = p.crossed === 'leader_R_over_L' ? 'R' : p.crossed === 'leader_L_over_R' ? 'L' : null;
     const spread = (lh) => (!twisted ? [0, 0] : [0, (lh === (top || 'R') ? -6 : 6)]);
 
+    // Body limits: a hand may only go behind its own back where the position says so (hammerlocks).
+    const behindOk = Limits.allowedBehind(p);
+    const mayGoBehind = (who, hand) => behindOk.has(who + hand);
+    const armOf = (who, hand) => {
+      const b = who === 'leader' ? leader : follower;
+      return { shoulder: b.shoulder[hand], face: b.face, hand, mayGoBehind: mayGoBehind(who, hand) };
+    };
+
     const arms = [];
     const used = new Set();
     for (const { leader: lh, follower: target } of parseHands(p.hands)) {
@@ -126,11 +134,16 @@
       if (target === 'L' || target === 'R') {
         grip = fHand[target] || lHand[lh] || add(mid(from, follower.shoulder[target]), spread(lh));
         if (fHand[target]) via = around(from, grip, lh);
-        arms.push({ who: 'follower', hand: target, from: follower.shoulder[target], to: grip });
+        // Joined hands: a hand going round the partner's body is pulled in to arm length; any other
+        // grip is moved to where both arms reach without a hand going behind its own back.
+        if (via) ({ via, to: grip } = Limits.shortenAround(from, via, grip));
+        else grip = Limits.fitGrip(armOf('leader', lh), armOf('follower', target), grip);
+        arms.push({ who: 'follower', hand: target, from: follower.shoulder[target], to: grip, heldBy: lh });
         used.add(target);
       } else if (target === 'back') {
         grip = backOf(from, lh);
         via = around(from, grip, lh);
+        if (via) ({ via, to: grip } = Limits.shortenAround(from, via, grip));
       } else if (target === 'waist') {
         grip = side(from, lh, 15);
       } else if (target === 'shoulder') {
@@ -138,7 +151,7 @@
       } else {
         grip = follower.c;
       }
-      arms.push({ who: 'leader', hand: lh, from, via, to: grip, grip: target === 'L' || target === 'R' ? grip : null, side: sideSign(from, lh) });
+      arms.push({ who: 'leader', hand: lh, from, via, to: grip, grip: target === 'L' || target === 'R' ? grip : null, side: sideSign(from, lh), holds: target });
     }
     // Follower hands placed by `arms` but not held by the leader (e.g. behind his neck).
     for (const hnd of ['L', 'R']) {
