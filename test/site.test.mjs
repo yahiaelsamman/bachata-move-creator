@@ -23,3 +23,17 @@ test('every script and stylesheet in index.html exists and is cached by sw.js', 
 test('every file sw.js caches exists', () => {
   for (const a of assets) assert.ok(existsSync(new URL(a, web)), `${a} in web/sw.js does not exist`);
 });
+
+test('the review page loads only files that exist and are cached by sw.js', () => {
+  const review = readFileSync(new URL('review.html', web), 'utf8');
+  const files = [
+    ...[...review.matchAll(/<script src="([^"]+)"/g)].map((m) => m[1]),
+    ...[...review.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1]),
+    'review.html',
+  ];
+  assert.ok(files.length > 5);
+  for (const f of files) {
+    assert.ok(existsSync(new URL(f, web)), `${f} does not exist`);
+    assert.ok(assets.includes(f), `${f} is missing from ASSETS in web/sw.js`);
+  }
+});

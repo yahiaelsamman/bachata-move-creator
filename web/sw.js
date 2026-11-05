@@ -1,9 +1,9 @@
 // Offline support: network first (so updates arrive), cache as fallback.
-const CACHE = 'bmc-v7';
+const CACHE = 'bmc-v8';
 const ASSETS = [
-  './', 'index.html', 'style.css', 'data.js', 'practice.js', 'app.js', 'manifest.webmanifest',
+  './', 'index.html', 'review.html', 'review.css', 'review-page.js', 'style.css', 'data.js', 'practice.js', 'app.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon.svg',
-  '../src/graph.js', '../src/generator.js', '../src/reach.js', '../src/sketch.js', '../src/motion.js', '../src/map.js', '../src/share.js',
+  '../src/graph.js', '../src/generator.js', '../src/reach.js', '../src/sketch.js', '../src/motion.js', '../src/map.js', '../src/share.js', '../src/review.js',
   'ui/dom.js', 'ui/state.js', 'ui/strip.js', 'ui/panel.js', 'ui/map-panel.js', 'ui/reference.js', 'ui/my-moves.js', 'ui/layout.js', 'ui/movie.js',
 ];
 
