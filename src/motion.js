@@ -84,6 +84,8 @@
     const out = { follower: 0, leader: 0, couple: 0, free: null };
     if (move && move.turn && typeof move.turn === 'object') {
       for (const k of ['follower', 'leader', 'couple']) if (Number.isFinite(move.turn[k])) out[k] = move.turn[k];
+      // `free: follower`: the size is given, the direction is not (from crossed hands it is towards the hand on top).
+      if (move.turn.free === 'follower' || move.turn.free === 'leader') out.free = move.turn.free;
       return out;
     }
     out.couple = coupleTurn(move);
@@ -99,7 +101,9 @@
   }
 
   /** How far a dancer turns between two facings, given the wanted turn (see turnsOf). */
-  function turnFor(turns, who, fromDeg, toDeg) {
+  function turnFor(turns, who, fromDeg, toDeg, freeSign = 0) {
+    // From crossed hands the free direction is towards the hand on top (right over left: a left turn).
+    if (turns.free === who && freeSign) return totalRotation(fromDeg, toDeg, freeSign * Math.abs(turns[who]));
     if (turns.free === who) {
       const base = shortest(fromDeg, toDeg);
       return Math.abs(base) < 1 ? turns[who] : base;
@@ -145,7 +149,8 @@
     let center = [L0[0] + dist * unit(aFrom + orbit * t)[0], L0[1] + dist * unit(aFrom + orbit * t)[1]];
 
     const fFrom = angleOf(A.follower.face), fTo = angleOf(B.follower.face);
-    const fTurn = turnFor(turns, 'follower', fFrom, fTo);
+    const freeSign = from.crossed === 'leader_R_over_L' ? -1 : from.crossed === 'leader_L_over_R' ? 1 : 0;
+    const fTurn = turnFor(turns, 'follower', fFrom, fTo, freeSign);
     // A turn gets going once the hands are up (see raiseHandsForTurn) and settles at the end.
     const spin = turnProgress(t);
     const fAngle = fFrom + fTurn * spin;
@@ -172,6 +177,11 @@
     const holds = blendHolds(from, to, leader, follower, t);
     const behindOk = new Set([...Limits.allowedBehind(from), ...Limits.allowedBehind(to)]);
     raiseHandsForTurn(holds.arms, leader, follower, { follower: fTurn, leader: turns.leader }, t, behindOk);
+    // While one hand is up over her head (a halo), his other hand can't stay on her body: it would have to
+    // pass under his own raised arm. It lets go for the turn and takes hold again afterwards.
+    if (holds.arms.some((a) => a.who === 'leader' && a.grip && (a.h || 0) > 1.2)) {
+      holds.arms = holds.arms.filter((a) => !(a.who === 'leader' && ['back', 'waist', 'shoulder'].includes(a.holds)));
+    }
     keepGripsOut(holds.arms, leader, follower);
     keepGripsOutOfLeader(holds.arms, leader);
     holds.arms = holds.arms.map((a) => roundBody(a, a.who === 'leader' ? follower : leader, a.who === 'leader' ? leader : follower,
@@ -209,7 +219,8 @@
     const base0 = Math.atan2(dir[1], dir[0]);
     // Turn the direction a little at a time if straight out isn't clear: first towards the side the
     // arm comes from (so mirrored moves take mirrored routes), then the other way.
-    const toFrom = [a.from[0] - partner.c[0], a.from[1] - partner.c[1]];
+    // The elbow goes out, away from the dancer's own body (the shoulder side), not in between the two.
+    const toFrom = [a.from[0] - own.c[0], a.from[1] - own.c[1]];
     const pref = Math.sign(dir[0] * toFrom[1] - dir[1] * toFrom[0]) || 1;
     for (let k = 0; k <= 24; k++) {
       const turn = (k % 2 ? pref : -pref) * Math.ceil(k / 2) * (Math.PI / 24);
@@ -388,8 +399,8 @@
   }
 
   function blendHolds(from, to, leader, follower, t) {
-    const A = SK.armsFor(from, leader, follower, { sides: sidesOf(from) });
-    const B = SK.armsFor(to, leader, follower, { sides: sidesOf(to) });
+    const A = SK.armsFor(from, leader, follower, { sides: sidesOf(from), style: SK.styleOf(from) });
+    const B = SK.armsFor(to, leader, follower, { sides: sidesOf(to), style: SK.styleOf(to) });
     const s = holdChange(t);
     if (s <= 0) return A;
     if (s >= 1) return B;

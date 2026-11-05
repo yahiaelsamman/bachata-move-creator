@@ -116,7 +116,7 @@ as text, save as compound, clear, start weight) are in the **More** menu.
 | File | What it holds |
 |---|---|
 | `data/positions.yaml` | The nodes. Each position is defined by its attributes, and two positions with identical attributes are rejected. |
-| `data/moves.yaml` | The edges. Each move has a `from` pattern, a `to`, `counts`, and optional `weight`, `opposite`, `notes` and `check`. |
+| `data/moves.yaml` | The edges. Each move has a `from` pattern, a `to`, `counts`, and optional `on`, `weight`, `opposite`, `notes` and `check`. |
 
 A move's `from` can be `any`, a position id, a list of ids, or an attribute pattern
 such as `{frame: closed}`. Its `to` can be `same` (styling, the "double domino"), a
@@ -127,6 +127,13 @@ works from.
 **Hard and soft keys.** Position attributes must match for moves to connect. Timing
 (counts within the 8) and weight (mirrored or parallel) are soft: the strip carries
 them along and only warns when something doesn't fit.
+
+**Counts.** A move is a module of 4 or 8 counts, written in its own counts (a 4-count
+move is "1-2-3, tap 4" wherever it is danced). A 4-count turn also has `on: 1` or
+`on: 5`, the half of the phrase it is led on, because a turn is led where the dancer
+steps onto the foot of the turn: the follower's right turn and the leader's left turn
+on 1, the follower's left turn and the leader's right turn on 5. The strip flags a turn
+placed on the wrong half, and random combos keep turns on their half.
 
 **Compound moves** list their parts by id. They are live references: if a part
 changes so the sequence no longer connects, the build reports the compound as

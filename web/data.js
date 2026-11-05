@@ -334,7 +334,7 @@ window.BACHATA_DATA = {
    "level": 1,
    "from": "any",
    "counts": 4,
-   "notes": "Step-together-step to the side on 1-2-3, tap on 4 (and back on 5-6-7, tap 8). The leader starts to the left, the follower to the right; soft knees, let the hips follow the weight."
+   "notes": "Step-together-step to the side on 1-2-3, tap on 4; the next 4 does the same to the other side. The leader starts to the left, the follower to the right; soft knees, let the hips follow the weight."
   },
   {
    "id": "basic-forward-back",
@@ -360,7 +360,7 @@ window.BACHATA_DATA = {
     "double"
    ],
    "counts": 8,
-   "notes": "Trace a square: side-together-forward, tap, then side-together-back, tap. The leader goes forward with the left foot; the follower mirrors backwards with the right.",
+   "notes": "Trace a square: side-together-forward, tap on 1-4, then side-together-back, tap on 5-8. The leader goes forward with the left foot; the follower mirrors backwards with the right.",
    "aka": [
     "cuadro (Spanish)"
    ]
@@ -466,7 +466,7 @@ window.BACHATA_DATA = {
     "full_contact"
    ],
    "counts": 4,
-   "notes": "On 8 the leader steps back with the right foot, bends the knees and supports high on the follower's back; up again on the next 1. Safety: only as far as the follower offers, never let go, never press the neck, not on a crowded floor.",
+   "notes": "The leader steps back with the right foot on the last count before this move (4 or 8), bends the knees and supports high on the follower's back; up again on 1. Safety: only as far as the follower offers, never let go, never press the neck, not on a crowded floor.",
    "aka": [
     "caida (Spanish)",
     "kaida, progib (Russian)"
@@ -546,6 +546,7 @@ window.BACHATA_DATA = {
    ],
    "to": "same",
    "counts": 4,
+   "on": 1,
    "opposite": "follower-left-turn",
    "notes": "Prep on the previous 4; on 1 the leader raises the joined hand above the follower's forehead and draws a small clockwise halo. The follower turns right on 1-2-3 and taps 4; keep the hand light.",
    "aka": [
@@ -567,6 +568,7 @@ window.BACHATA_DATA = {
    ],
    "to": "same",
    "counts": 4,
+   "on": 5,
    "opposite": "follower-right-turn",
    "notes": "The turn takes 4 counts; prep it during the previous 4 with a small C-shape to the leader's right. On 1 the leader raises the hand and circles counter-clockwise; the follower turns left and taps 4.",
    "aka": [
@@ -587,6 +589,7 @@ window.BACHATA_DATA = {
    ],
    "to": "same",
    "counts": 4,
+   "on": 1,
    "notes": "Same prep as the right turn but a bigger, quicker halo for two rotations on 1-2-3; tap 4. The follower keeps one axis and spots.",
    "aka": [
     "double spin",
@@ -628,6 +631,7 @@ window.BACHATA_DATA = {
    ],
    "to": "same",
    "counts": 4,
+   "on": 5,
    "opposite": "leader-left-turn",
    "notes": "The leader preps their own body (no pressure on the follower) and turns right on 1-2-3 under the joined hands; tap 4. From double hands both hands pass over the leader's head.",
    "aka": [
@@ -649,6 +653,7 @@ window.BACHATA_DATA = {
    ],
    "to": "same",
    "counts": 4,
+   "on": 1,
    "opposite": "leader-right-turn",
    "notes": "The leader turns left on 1-2-3 under the joined hands, arm soft; tap 4. The follower keeps the basic in place.",
    "aka": [
@@ -673,7 +678,8 @@ window.BACHATA_DATA = {
     "dile que no (Spanish)",
     "smena, perekhod (Russian)"
    ],
-   "source": "redance.app; bachatamap.ru/steps/change-positions/"
+   "source": "redance.app; bachatamap.ru/steps/change-positions/",
+   "check": "From salsa (a cross body lead, here with a turn); left for later."
   },
   {
    "id": "cbl-inside-turn",
@@ -688,7 +694,8 @@ window.BACHATA_DATA = {
     "enchufla",
     "smena s povorotom (Russian)"
    ],
-   "source": "bachata-salsa-lessons.ru (list part 2)"
+   "source": "bachata-salsa-lessons.ru (list part 2)",
+   "check": "From salsa (a cross body lead, here with a turn); left for later."
   },
   {
    "id": "cbl-outside-turn",
@@ -698,7 +705,8 @@ window.BACHATA_DATA = {
    "from": "open_LR",
    "to": "same",
    "counts": 8,
-   "notes": "Open the way on 1-3; as the follower passes on 5 the leader lifts the left hand and the follower turns right on 6-7, tap 8."
+   "notes": "Open the way on 1-3; as the follower passes on 5 the leader lifts the left hand and the follower turns right on 6-7, tap 8.",
+   "check": "From salsa (a cross body lead, here with a turn); left for later."
   },
   {
    "id": "two-hand-turn",
@@ -708,11 +716,13 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "same",
    "counts": 4,
+   "on": 1,
    "notes": "The leader raises the left, keeps the right low and circles both hands over the follower's head (a halo) while the follower turns right on 1-2-3; tap 4.",
    "aka": [
     "double-hand turn",
     "fonarik, povorot za dve ruki (Russian)"
-   ]
+   ],
+   "check": "Does the hold stay untangled, or does one hand have to let go for a moment? To be tried in person."
   },
   {
    "id": "mill-turn",
@@ -722,14 +732,14 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "same",
    "counts": 4,
-   "notes": "On 5 the arms swap (the leader's left goes up in front of the follower, the right goes down behind) as the follower turns; on 6-7-8 the arm positions keep swapping like windmill sails. Long elbows, low shoulders.",
+   "notes": "On 1 the arms swap (the leader's left goes up in front of the follower, the right goes down behind) as the follower turns; on 2-3-4 the arm positions keep swapping like windmill sails. Long elbows, low shoulders.",
    "aka": [
     "windmill turn",
     "propeller",
     "melnitsa (Russian)"
    ],
    "source": "bachatamap.ru/moderna/rotations/turns/mill/",
-   "check": "End hold assumed double hands; direction of the follower's turn not stated."
+   "check": "End hold assumed double hands; direction of the follower's turn not stated. Not yet understood by the reviewer: to be shown in person."
   },
   {
    "id": "dishrag",
@@ -739,7 +749,8 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "same",
    "counts": 8,
-   "notes": "Both turn back to back under the joined hands and come out facing again. Use a loose hook grip so the hands can rotate."
+   "notes": "Both turn back to back under the joined hands and come out facing again. Use a loose hook grip so the hands can rotate.",
+   "check": "Counts not stated in the source: taken as 8."
   },
   {
    "id": "sombrero",
@@ -839,6 +850,7 @@ window.BACHATA_DATA = {
    "from": "open_LR",
    "to": "open_RR",
    "counts": 4,
+   "on": 5,
    "notes": "The leader leads a left turn with the left hand and catches the follower's right hand with the right on the way out, then lets go with the left. Ends in a handshake.",
    "source": "bachatahub.com/en/academy/term/hand-change"
   },
@@ -1005,6 +1017,7 @@ window.BACHATA_DATA = {
    "from": "open_LR",
    "to": "closed",
    "counts": 4,
+   "on": 5,
    "notes": "The leader leads a left turn on 1-3 and keeps the arm low as the follower finishes, so the leader's right hand lands on the follower's back; the follower finishes close, left hand on the leader's shoulder."
   },
   {
@@ -1027,16 +1040,35 @@ window.BACHATA_DATA = {
    "source": "redance.app; bachatamap.ru/steps/rompo-adelanto/"
   },
   {
+   "id": "impulso-open",
+   "name": "Impulso (send-out, stays open)",
+   "kind": "move",
+   "level": 2,
+   "from": [
+    "closed",
+    "full_contact"
+   ],
+   "to": "open_LR",
+   "counts": 8,
+   "notes": "On 4-and the leader shifts the body left so the follower travels away, both step apart on 5 and 6 and stay open; on 7-8 the leader's left takes the follower's right hand. Lead with the body, not the arms.",
+   "check": "End hold (open, left-to-right) and counts inferred from the close version."
+  },
+  {
    "id": "madrid-step",
    "name": "Madrid step",
    "kind": "styling",
    "level": 2,
    "from": [
     "closed",
-    "shadow_waist"
+    "shadow_waist",
+    "open_LR",
+    "open_RL",
+    "open_RR",
+    "open_LL",
+    "double"
    ],
    "counts": 4,
-   "notes": "A crossing step with a twist of the upper body, danced as a variation of the basic; a common prep for a turn, a hip circle or a head roll on the next 4.",
+   "notes": "A crossing step with a twist of the upper body, danced as a variation of the basic, in closed hold or in open; a common prep for a turn, a hip circle or a head roll on the next 4.",
    "aka": [
     "twist step",
     "Spanish cross",
@@ -1160,7 +1192,7 @@ window.BACHATA_DATA = {
     "closed"
    ],
    "counts": 4,
-   "notes": "The leader gives a small upward impulse on 8, then on 1 relaxes so the follower sinks into a sit while the hands slide along the follower's arms; pause on 2, up on 3, tap 4. Safety: the follower controls the depth.",
+   "notes": "The leader gives a small upward impulse on the last count before this move (4 or 8), then on 1 relaxes so the follower sinks into a sit while the hands slide along the follower's arms; pause on 2, up on 3, tap 4. Safety: the follower controls the depth.",
    "aka": [
     "prised, padenie (Russian)"
    ],
@@ -1168,20 +1200,20 @@ window.BACHATA_DATA = {
   },
   {
    "id": "impulso",
-   "name": "Impulso (send-out)",
+   "name": "Impulso (back to close)",
    "kind": "styling",
    "level": 2,
    "from": [
     "closed",
     "full_contact"
    ],
-   "counts": 4,
+   "counts": 8,
    "notes": "On 4-and the leader shifts the body left so the follower travels away, both step apart on 5, pause on 6, and come back toward each other on 7-8. Lead with the body, not the arms.",
    "aka": [
     "impulso, shtorki, zanaveski (Russian, 'curtains')"
    ],
    "source": "bachatamap.ru/moderna/impulso/",
-   "check": "Whether the couple re-closes on 7-8 or ends open is not stated."
+   "check": "On 7-8 the couple comes back together; the version that stays open is the next move. Counts taken as 8."
   },
   {
    "id": "hand-to-neck",
@@ -1234,6 +1266,7 @@ window.BACHATA_DATA = {
    "from": "closed",
    "to": "shadow_waist",
    "counts": 4,
+   "on": 5,
    "weight": {
     "to": "parallel"
    },
@@ -1243,7 +1276,8 @@ window.BACHATA_DATA = {
     "media de follower (Spanish)",
     "half-turn woman, mediya (Russian)"
    ],
-   "source": "wikidanse.fr; unibaila.com; bachata-salsa-lessons.ru"
+   "source": "wikidanse.fr; unibaila.com; bachata-salsa-lessons.ru",
+   "check": "Looks doable; to be tried in person."
   },
   {
    "id": "shadow-entry-from-open",
@@ -1253,10 +1287,11 @@ window.BACHATA_DATA = {
    "from": "open_LR",
    "to": "shadow_waist",
    "counts": 4,
+   "on": 5,
    "weight": {
     "to": "parallel"
    },
-   "notes": "On 5 the leader raises the left hand and the follower makes a half turn to the left under it; on 7 the leader's right hand lands on the follower's waist as the left lowers. The leader changes feet (step-tap).",
+   "notes": "On 1 the leader raises the left hand and the follower makes a half turn to the left under it; on 3 the leader's right hand lands on the follower's waist as the left lowers. The leader changes feet (step-tap).",
    "aka": [
     "povorot na 180, pol-oborota, vkhod v tenevuyu (Russian)"
    ],
@@ -1301,6 +1336,7 @@ window.BACHATA_DATA = {
    "from": "shadow_waist",
    "to": "open_LR",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "mirrored"
    },
@@ -1315,6 +1351,7 @@ window.BACHATA_DATA = {
    "from": "shadow_waist",
    "to": "closed",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "mirrored"
    },
@@ -1364,7 +1401,7 @@ window.BACHATA_DATA = {
     "melnitsa (Russian)"
    ],
    "source": "bachatamap.ru/moderna/rotations/turns/mill-exit-from-shadow/; Introvert Dance",
-   "check": "Mechanics and end hold only partly described by the sources."
+   "check": "Mechanics and end hold only partly described by the sources. Not yet understood by the reviewer (windmill arms); the animation is a simple placeholder."
   },
   {
    "id": "shadow-head-roll",
@@ -1445,6 +1482,7 @@ window.BACHATA_DATA = {
    "from": "shadow_neck",
    "to": "neck_wrap",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "mirrored"
    },
@@ -1458,6 +1496,7 @@ window.BACHATA_DATA = {
    "from": "shadow",
    "to": "open_LL",
    "counts": 4,
+   "on": 5,
    "weight": {
     "to": "mirrored"
    },
@@ -1472,6 +1511,7 @@ window.BACHATA_DATA = {
    "from": "shadow",
    "to": "open_RR",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "mirrored"
    },
@@ -1486,6 +1526,7 @@ window.BACHATA_DATA = {
    "from": "shadow",
    "to": "cross_Ltop",
    "counts": 4,
+   "on": 5,
    "weight": {
     "to": "mirrored"
    },
@@ -1500,6 +1541,7 @@ window.BACHATA_DATA = {
    "from": "shadow",
    "to": "cross_Rtop",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "mirrored"
    },
@@ -1514,6 +1556,7 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "shadow_wrap",
    "counts": 4,
+   "on": 5,
    "weight": {
     "to": "parallel"
    },
@@ -1528,6 +1571,7 @@ window.BACHATA_DATA = {
    "from": "shadow_wrap",
    "to": "double",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "mirrored"
    },
@@ -1562,6 +1606,7 @@ window.BACHATA_DATA = {
    "from": "open_RR",
    "to": "hammerlock_R",
    "counts": 4,
+   "on": 5,
    "notes": "From the handshake the leader leads the follower's right hand low across the waist into a left turn; the arm folds behind the back and the leader's left picks up the follower's left. Safety: keep the hand at hip height, never push it up the back.",
    "aka": [
     "candado (Spanish)",
@@ -1579,6 +1624,7 @@ window.BACHATA_DATA = {
    "from": "hammerlock_R",
    "to": "open_RR",
    "counts": 4,
+   "on": 1,
    "notes": "Let go of the left hands; the leader leads the follower to unwind with a right turn, keeping the handshake, and the arm comes back out in front."
   },
   {
@@ -1589,6 +1635,7 @@ window.BACHATA_DATA = {
    "from": "cross_Ltop",
    "to": "hammerlock_R",
    "counts": 4,
+   "on": 5,
    "opposite": "hammerlock-unwind-to-cross",
    "notes": "From left over right, the leader raises the left hands (they are on top) and leads the follower's left turn under them, keeping the right hands low at the hip, so the follower's right arm folds behind the back. (From right over left the left hands are underneath and can't go up through the right arms.) Safety: keep the hand at hip height, never push it up.",
    "aka": [
@@ -1604,6 +1651,7 @@ window.BACHATA_DATA = {
    "from": "hammerlock_R",
    "to": "cross_Ltop",
    "counts": 4,
+   "on": 1,
    "opposite": "crossed-hammerlock-entry",
    "notes": "The left hands lift and the leader leads a right turn so the follower's arm comes out from behind the back; the left hands stay on top, so the hands end left over right."
   },
@@ -1634,6 +1682,7 @@ window.BACHATA_DATA = {
    "from": "cross_Rtop",
    "to": "hammerlock_L_cross",
    "counts": 4,
+   "on": 1,
    "opposite": "hammerlock-left-unwind-to-cross",
    "notes": "From right over left, the leader raises the right hands (they are on top) and leads the follower's right turn under them, keeping the left hands low at the hip, so the follower's left arm folds behind the back. Safety: keep the hand at hip height, never push it up."
   },
@@ -1645,6 +1694,7 @@ window.BACHATA_DATA = {
    "from": "hammerlock_L_cross",
    "to": "cross_Rtop",
    "counts": 4,
+   "on": 5,
    "opposite": "crossed-hammerlock-left-entry",
    "notes": "The right hands lift and the leader leads a left turn so the follower's left arm comes out from behind the back; the right hands stay on top, so the hands end right over left."
   },
@@ -1656,6 +1706,7 @@ window.BACHATA_DATA = {
    "from": "open_LL",
    "to": "hammerlock_L_cross",
    "counts": 4,
+   "on": 1,
    "turn": {
     "follower": 360
    },
@@ -1670,6 +1721,7 @@ window.BACHATA_DATA = {
    "from": "hammerlock_L_cross",
    "to": "open_LL",
    "counts": 4,
+   "on": 5,
    "turn": {
     "follower": -360
    },
@@ -1694,6 +1746,7 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "hammerlock_R_double",
    "counts": 4,
+   "on": 5,
    "opposite": "hammerlock-right-unwind-double",
    "notes": "The leader raises the right arm and keeps the left at waist height; the follower turns left under the right hands and the follower's right arm ends behind the back. Safety: keep the hand at the hip, never push it up."
   },
@@ -1705,6 +1758,7 @@ window.BACHATA_DATA = {
    "from": "open_LR",
    "to": "hammerlock_R_double",
    "counts": 4,
+   "on": 5,
    "turn": {
     "follower": -360
    },
@@ -1718,8 +1772,10 @@ window.BACHATA_DATA = {
    "from": "hammerlock_R_double",
    "to": "double",
    "counts": 4,
+   "on": 1,
    "opposite": "hammerlock-right-entry-double",
-   "notes": "The leader lifts the right hand; the follower unwinds with a full right turn and both hands come back in front."
+   "notes": "The leader lifts the right hand; the follower unwinds with a full right turn and both hands come back in front.",
+   "check": "To be seen in person."
   },
   {
    "id": "hammerlock-right-release-double",
@@ -1739,6 +1795,7 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "hammerlock_L",
    "counts": 4,
+   "on": 1,
    "opposite": "hammerlock-left-unwind",
    "notes": "The leader raises the left arm and keeps the right at waist height; the follower turns right and the follower's left arm ends behind the back. Safety: keep the hand at the hip, never push it up.",
    "aka": [
@@ -1757,6 +1814,7 @@ window.BACHATA_DATA = {
    "from": "open_RL",
    "to": "hammerlock_L",
    "counts": 4,
+   "on": 1,
    "turn": {
     "follower": 360
    },
@@ -1770,12 +1828,14 @@ window.BACHATA_DATA = {
    "from": "hammerlock_L",
    "to": "double",
    "counts": 4,
+   "on": 5,
    "opposite": "hammerlock-left-entry",
    "notes": "The leader lifts the left hand; the follower unwinds with a full left turn and both hands come back in front.",
    "aka": [
     "deroule fille a gauche (French)",
     "Ausdrehen aus der Brezel (German)"
-   ]
+   ],
+   "check": "To be seen in person."
   },
   {
    "id": "hammerlock-left-release",
@@ -1795,6 +1855,7 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "hammerlock_leader_L",
    "counts": 4,
+   "on": 5,
    "turn": {
     "leader": 360
    },
@@ -1816,6 +1877,7 @@ window.BACHATA_DATA = {
    "from": "hammerlock_leader_L",
    "to": "double",
    "counts": 4,
+   "on": 1,
    "turn": {
     "leader": -360
    },
@@ -1835,6 +1897,7 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "cuddle",
    "counts": 4,
+   "on": 5,
    "weight": {
     "to": "parallel"
    },
@@ -1857,6 +1920,7 @@ window.BACHATA_DATA = {
    "from": "cuddle",
    "to": "double",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "mirrored"
    },
@@ -1871,6 +1935,7 @@ window.BACHATA_DATA = {
    "from": "cuddle",
    "to": "open_LR",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "mirrored"
    },
@@ -1911,6 +1976,7 @@ window.BACHATA_DATA = {
    "from": "cuddle",
    "to": "closed",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "mirrored"
    },
@@ -1960,6 +2026,7 @@ window.BACHATA_DATA = {
    "from": "open_LR",
    "to": "wrap_R",
    "counts": 4,
+   "on": 5,
    "weight": {
     "to": "parallel"
    },
@@ -1974,6 +2041,7 @@ window.BACHATA_DATA = {
    "from": "wrap_R",
    "to": "open_LR",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "mirrored"
    },
@@ -2020,7 +2088,7 @@ window.BACHATA_DATA = {
     "shapochka, vneshnyaya petelka, caricia (Russian)"
    ],
    "source": "bachatamap.ru/moderna/decorations/outside-faceloop/",
-   "check": "Start holds and counts inferred."
+   "check": "What the hands do afterwards is open (the arm ends on the neck or shoulder; double hands, right-to-left and others can follow). Styling comes later."
   },
   {
    "id": "inside-face-loop",
@@ -2038,7 +2106,7 @@ window.BACHATA_DATA = {
     "sharfik, khomutik, petelka (Russian)"
    ],
    "source": "bachatamap.ru/moderna/decorations/inside-faceloop/",
-   "check": "Start holds and counts inferred."
+   "check": "What the hands do afterwards is open (the arm ends on the neck or shoulder; double hands, right-to-left and others can follow). Styling comes later."
   },
   {
    "id": "elbows",
@@ -2112,6 +2180,7 @@ window.BACHATA_DATA = {
    "from": "cross_Ltop",
    "to": "cross_Rtop",
    "counts": 4,
+   "on": 1,
    "opposite": "cross-left-turn",
    "notes": "Left over right is the free direction for a right turn: both hands lift, the follower turns right and the hands come out right over left. Loose hook grip."
   },
@@ -2123,19 +2192,12 @@ window.BACHATA_DATA = {
    "from": "cross_Rtop",
    "to": "cross_Ltop",
    "counts": 4,
+   "on": 5,
    "opposite": "cross-right-turn",
-   "notes": "Right over left is the free direction for a left turn: both hands lift, the follower turns left and the hands come out left over right. Loose hook grip."
-  },
-  {
-   "id": "crossed-outside-turn",
-   "name": "Crossed hands outside turn (release left)",
-   "kind": "move",
-   "level": 2,
-   "from": "cross_Rtop",
-   "to": "open_RR",
-   "counts": 4,
-   "notes": "Let go of the bottom (left) hands on 1 and lead a right turn with the handshake; finish in a handshake. Turning right with both hands kept would lock the follower's arms.",
-   "source": "libraryofdance.org (Bachata guide)"
+   "notes": "Right over left is the free direction for a left turn: both hands lift, the follower turns left and the hands come out left over right. Loose hook grip.",
+   "aka": [
+    "copa (salsa name; in salsa danced over 8 counts with a step forward on 5)"
+   ]
   },
   {
    "id": "cross-half-turn-shadow",
@@ -2145,6 +2207,7 @@ window.BACHATA_DATA = {
    "from": "cross_Ltop",
    "to": "shadow",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "parallel"
    },
@@ -2162,6 +2225,7 @@ window.BACHATA_DATA = {
    "from": "cross_Rtop",
    "to": "shadow",
    "counts": 4,
+   "on": 5,
    "weight": {
     "to": "parallel"
    },
@@ -2180,10 +2244,18 @@ window.BACHATA_DATA = {
     "cross_Rtop",
     "cross_Ltop"
    ],
-   "to": "same",
+   "to": "shadow",
    "counts": 8,
-   "notes": "The right hands lead the follower's turn while the left hands stay low, the arms framing the follower like a cape. Use a loose hook grip (fingers, no thumbs).",
-   "source": "libraryofdance.org (Crossed-Hand Matador)"
+   "weight": {
+    "to": "parallel"
+   },
+   "turn": {
+    "follower": 180,
+    "free": "follower"
+   },
+   "notes": "The right hands lead the follower's turn while the left hands stay low, the arms framing the follower like a cape; the leader ends behind the follower in shadow. Use a loose hook grip (fingers, no thumbs).",
+   "source": "libraryofdance.org (Crossed-Hand Matador)",
+   "check": "Ends in shadow (the reviewer's recollection); start holds and counts inferred."
   },
   {
    "id": "crossed-double-face-loop",
@@ -2196,7 +2268,8 @@ window.BACHATA_DATA = {
    ],
    "to": "same",
    "counts": 8,
-   "notes": "The top hands pass over the follower's head, then the bottom hands, like two face loops, back to the same cross. Use a loose hook grip (fingers, no thumbs)."
+   "notes": "The top hands pass over the follower's head, then the bottom hands, like two face loops, back to the same cross. Use a loose hook grip (fingers, no thumbs).",
+   "check": "After it the couple is in open with both arms looped; no need to go to crossed or double hands, either can follow. Styling comes later."
   },
   {
    "id": "hand-toss-top-r",
@@ -2235,18 +2308,6 @@ window.BACHATA_DATA = {
    "notes": "Swing both crossed hands down and let go, so both dance apart; reconnect on a clear 1."
   },
   {
-   "id": "copa",
-   "name": "Copa",
-   "kind": "move",
-   "level": 3,
-   "from": "cross_Rtop",
-   "to": "cross_Ltop",
-   "counts": 8,
-   "notes": "From right over left the follower steps forward on 5 and turns left on 6-7 (the free direction), and the hands come out left over right.",
-   "source": "dance-forums.com (salsa)",
-   "check": "Described for salsa; bachata timing not confirmed and few bachata dancers use the name."
-  },
-  {
    "id": "sombrero-crossed",
    "name": "Sombrero (from crossed hands)",
    "kind": "move",
@@ -2254,7 +2315,7 @@ window.BACHATA_DATA = {
    "from": "cross_Rtop",
    "to": "double",
    "counts": 8,
-   "notes": "On 1-4 the leader leads a left turn and lays both arms on the follower's shoulders; dance the basic, then slide the hands down the follower's arms and regrip into double hands.",
+   "notes": "On 1-4 the leader leads a left turn and lays both arms on the follower's shoulders; on 5-8 dance the basic, then slide the hands down the follower's arms and regrip into double hands.",
    "source": "redance.app"
   },
   {
@@ -2292,6 +2353,7 @@ window.BACHATA_DATA = {
    "from": "cross_Rtop",
    "to": "leader_shadow",
    "counts": 4,
+   "on": 1,
    "weight": {
     "to": "parallel"
    },
@@ -2329,6 +2391,7 @@ window.BACHATA_DATA = {
    "from": "shadow",
    "to": "leader_shadow",
    "counts": 4,
+   "on": 5,
    "opposite": "shadow-comeback",
    "notes": "From the follower's shadow the leader passes in front with a turn, ending in front with the follower behind; leave room for the full turn.",
    "turn": {
@@ -2349,6 +2412,7 @@ window.BACHATA_DATA = {
    "from": "leader_shadow",
    "to": "shadow",
    "counts": 4,
+   "on": 1,
    "opposite": "shadow-manton",
    "notes": "The reverse of the manton: the follower passes in front with a turn and the leader blocks so the follower stays in front.",
    "turn": {

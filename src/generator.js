@@ -34,6 +34,7 @@
       if (isApart(g, e.to) || isApart(g, walk.pos)) return false;      // no teleport
       if (walk.total + m.counts > budget) return false;
       if (isEightCount(m) && beat !== 0) return false;                  // 8-counts start on 1
+      if (m.on && m.on !== (beat === 0 ? 1 : 5)) return false;          // a turn is led on its own half
       if (isLoop(e) && (walk.used.has(e.move) || (lastMove && walk.lastWasLoop))) return false;
       if (!isLoop(e) && e.to === walk.prevPos) return false;            // no undo
       if (lastMove && lastMove.opposite === e.move) return false;
@@ -76,16 +77,35 @@
       g.moveById[e.move].level <= maxLevel && !walk.used.has(e.move));
   }
 
-  /** Way home that doesn't go through "apart" and doesn't just undo the last move. */
+  /** Does every move of a route land on its own half of the phrase when the route starts after `total` counts? */
+  function fitsPhrase(g, path, total) {
+    let t = total;
+    for (const id of path) {
+      const m = g.moveById[id];
+      if (m.on && m.on !== (t % 8 === 0 ? 1 : 5)) return false;
+      if (isEightCount(m) && t % 8 !== 0) return false;
+      t += m.counts || 0;
+    }
+    return true;
+  }
+
+  /** Way home that doesn't go through "apart", doesn't just undo the last move and keeps turns on their half. */
   function goHome(g, walk, start, maxLevel) {
     if (walk.pos === start) return true;
-    const routes = MG.findBridges(g, walk.pos, start, { maxLevel, limit: 6 })
+    const routes = MG.findBridges(g, walk.pos, start, { maxLevel, limit: 12 })
       .filter((path) => !path.some((id) => (g.edgesByMove[id] || []).every((e) => isApart(g, e.to))));
     if (!routes.length) return false;
     const firstStepUndoes = (path) => g.edgesByMove[path[0]].find((e) => e.from === walk.pos).to === walk.prevPos;
-    let route = routes.find((path) => !firstStepUndoes(path));
+    let route = routes.find((path) => !firstStepUndoes(path) && fitsPhrase(g, path, walk.total));
     if (!route) {
-      // e.g. hammerlock entry → hip roll → hammerlock exit, instead of entry → exit
+      // A 4-count in place move first moves the route to the other half of the phrase
+      // (and avoids e.g. hammerlock entry → hammerlock exit with nothing in between).
+      const loop = freeLoop(g, walk, maxLevel);
+      const later = loop && routes.find((path) => fitsPhrase(g, path, walk.total + 4));
+      if (later) { step(g, walk, loop); route = later; }
+    }
+    if (!route) route = routes.find((path) => !firstStepUndoes(path));
+    if (!route) {
       const loop = freeLoop(g, walk, maxLevel);
       if (loop) step(g, walk, loop);
       route = routes[0];

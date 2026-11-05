@@ -28,7 +28,7 @@
 
   const posName = (id) => { const p = g.posById[id]; return p ? p.short || p.name : id; };
   const dots = (level) => '●'.repeat(level) + '○'.repeat(3 - level);
-  const meta = (m) => `${m.kind} · ${dots(m.level || 1)} · ${m.counts ? m.counts + ' counts' : 'on the fly'}`;
+  const meta = (m) => `${m.kind} · ${dots(m.level || 1)} · ${m.counts ? m.counts + ' counts' : 'on the fly'}${m.on ? ' · led on ' + m.on : ''}`;
 
   /** Name, kind, notes and the check flag: the first column of every table. */
   function nameCell(m) {

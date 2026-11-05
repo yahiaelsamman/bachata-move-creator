@@ -83,6 +83,16 @@
     };
   }
 
+  /** Whether she stands beside the leader (arms go round her back over the far shoulder) and which shoulder is far. */
+  function styleOf(p, leader, follower) {
+    if (!leader) ({ leader, follower } = placeBodies(p));
+    const rel = sub(follower.c, leader.c);
+    return {
+      beside: Math.abs(dot(rel, right(leader.face))) > Math.abs(dot(rel, leader.face)),
+      farSide: dist(leader.c, follower.shoulder.R) > dist(leader.c, follower.shoulder.L) ? 'R' : 'L',
+    };
+  }
+
   /** Layout of both dancers and every arm, in picture coordinates. */
   function layout(p) {
     const { leader, follower, label } = placeBodies(p);
@@ -115,9 +125,8 @@
     if (p.arms === 'wrap_follower_R') fHand.R = add(add(follower.c, mul(follower.face, 13)), mul(fr, -9));
     // Side by side in a cuddle, the leader's hand on her far side gets there with his arm round her
     // back, the elbow out past her far shoulder.
-    const rel = sub(follower.c, leader.c);
-    const beside = Math.abs(dot(rel, right(leader.face))) > Math.abs(dot(rel, leader.face));
-    const farSide = dist(leader.c, follower.shoulder.R) > dist(leader.c, follower.shoulder.L) ? 'R' : 'L';
+    // `opts.style` (from styleOf) fixes this from the finished position, so an animation keeps the same route.
+    const { beside, farSide } = opts.style || styleOf(p, leader, follower);
     const overShoulder = p.arms === 'wrap' && beside
       ? add(add(follower.shoulder[farSide], mul(fr, farSide === 'R' ? 2 : -2)), mul(follower.face, -7)) : null;
     // The leader's own hand behind his back.
@@ -308,5 +317,5 @@
     return parts.join(', ') + '.';
   }
 
-  return { sketchSVG, describe, layout, placeBodies, armsFor, body, boundsOf, drawSVG, heightKey, CONTACT_HEIGHT };
+  return { sketchSVG, describe, layout, placeBodies, styleOf, armsFor, body, boundsOf, drawSVG, heightKey, CONTACT_HEIGHT };
 });

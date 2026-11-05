@@ -110,6 +110,11 @@
     const { posById, posByKey } = indexPositions(positions, errors);
     const moves = (data.moves || []).map(normalizeMove);
     const moveById = indexMoves(moves, errors);
+    for (const m of moves) {
+      if (m.on === undefined) continue;
+      if (m.on !== 1 && m.on !== 5) errors.push(`Move "${m.id}": "on" must be 1 or 5, not ${JSON.stringify(m.on)}.`);
+      else if (m.counts % 8 === 0) errors.push(`Move "${m.id}": a move of ${m.counts} counts always starts on 1, so it has no "on".`);
+    }
 
     const edgesByMove = {};
     const weightByMove = {};
@@ -286,6 +291,8 @@
         timingWarn: m.counts > 0 && beat !== 1 && beat !== 5,
         // An 8-count figure that starts on 5 runs across two phrases.
         phraseWarn: m.counts >= 8 && m.counts % 8 === 0 && beat === 5,
+        // A turn is led on the half of the phrase where the dancer steps onto the foot of the turn.
+        onWarn: Boolean(m.on && m.counts > 0 && beat !== m.on && (beat === 1 || beat === 5)),
       };
       count += m.counts || 0;
       if (w.to) weight = w.to;

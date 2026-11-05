@@ -32,7 +32,7 @@
   }
 
   App.renderSummary = function (result) {
-    const warnings = result.items.filter((it) => it.timingWarn || it.weightWarn || it.phraseWarn).length;
+    const warnings = result.items.filter((it) => it.timingWarn || it.weightWarn || it.phraseWarn || it.onWarn).length;
     const breaks = result.items.filter((it) => it.broken).length;
     $('summary').textContent = state.strip.length
       ? `${state.strip.length} dominoes · ${result.totalCounts} counts (${(result.totalCounts / 8).toFixed(1)} × 8) · ` +
@@ -62,6 +62,7 @@
     const flags = [];
     if (it.timingWarn) flags.push(h('span', { class: 'flag', title: 'Starts mid-phrase' }, ` · starts on ${it.beat}`));
     if (it.phraseWarn) flags.push(h('span', { class: 'flag', title: 'An 8-count move that starts on 5 runs across two phrases. Add a 4-count move before it.' }, ' · starts on 5'));
+    if (it.onWarn) flags.push(h('span', { class: 'flag', title: `This move is led on ${m.on}: the dancer steps onto the foot of the turn then. Here it starts on ${it.beat}.` }, ` · led on ${m.on}`));
     if (it.weightWarn) flags.push(h('span', { class: 'flag', title: 'Weight mismatch' }, ` · needs ${App.g.weightOf(m.id).from}`));
     if (m.check) flags.push(h('span', { class: 'flag', title: m.check }, ' · ⚑'));
     return button([

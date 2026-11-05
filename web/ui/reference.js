@@ -47,7 +47,7 @@
             m.notes ? [h('br'), h('span', { class: 'muted small' }, m.notes)] : null),
           h('td', { class: 'small' }, ep.all ? 'any position' : list(ep.froms)),
           h('td', { class: 'small' }, ep.tos ? list(ep.tos) : '↺ same'),
-          h('td', {}, String(m.counts)),
+          h('td', {}, String(m.counts), m.on ? h('span', { class: 'muted', title: 'The half of the phrase this turn is led on' }, ` · on ${m.on}`) : null),
           h('td', {}, fitsEnd(m.id) ? button('Add', () => edit.add([m.id])) : null)))))));
   };
 
