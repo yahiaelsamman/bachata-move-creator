@@ -1,6 +1,10 @@
 # Design handoff: build the approved look into the real app
 
-Status: direction approved by Yahia (round 4/5 mockups). Nothing is implemented in `web/` yet.
+Status: implemented in `web/` (all six screens). Decisions made while building:
+- Map "Whole map": option B. The hub stays the main view; an "All positions" overview (force layout, dots and faint links) sits under it, and tapping a dot moves the middle of the hub there. On phones the outer-ring names are hidden (they are in the overview and on tap).
+- Levels are the user's own ratings (Library, tap ○○○), stored in this browser; unrated moves always pass the level filter (More menu). Share links accept moves without a level.
+- Font is self-hosted (`web/fonts/`, SIL OFL) so the page works offline and from file://.
+- Less-used actions (extend, clear, share, print, save as combo, level filter, start weight) live in the More menu; on phones Random and Undo move there too.
 Read `docs/DESIGN_TASTE.md` first. Mockups: `docs/design/mockups/*.dc.html` (static HTML with `{{c.token}}` placeholders; the PNG renders show them filled in with the `mvv` palette).
 
 ## The look (approved)

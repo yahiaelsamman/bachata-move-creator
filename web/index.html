@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bachata Move Creator</title>
-  <meta name="theme-color" content="#b4441f">
+  <meta name="theme-color" content="#acc13f">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -12,139 +12,160 @@
 </head>
 <body>
   <header class="top">
-    <h1>Bachata Move Creator</h1>
-    <p class="sub">Positions are the nodes, moves are the dominoes: each move starts where the last one ended.</p>
-    <details class="help">
-      <summary>How to use</summary>
-      <ol>
-        <li>Pick a <strong>start position</strong> (most combos start in open, left-to-right) and your <strong>level</strong>.</li>
-        <li>Add moves under <strong>What can follow</strong>. Only moves that fit where you are are listed, like dominoes.</li>
-        <li>Tap a domino to <strong>replace</strong> it, <strong>insert</strong> after it or remove it. A red <strong>bridge</strong> means two dominoes don't connect; tap it for ways to reconnect.</li>
-        <li>The <strong>leader view</strong> shows each position from above: you at the bottom, the follower above.</li>
-        <li><strong>Practice</strong> plays the combo on the beat. <strong>Random</strong> invents one; <strong>Share link</strong> sends it.</li>
-        <li>Explore on the <strong>Map</strong>, browse the <strong>Library</strong>, add your own under <strong>My moves</strong>.</li>
-      </ol>
-    </details>
+    <div class="brand">
+      <svg class="logo" width="38" height="24" viewBox="0 0 38 24" aria-hidden="true"><circle cx="12" cy="12" r="9" class="logo-a"/><circle cx="26" cy="12" r="9" class="logo-b"/></svg>
+      <h1>Bachata Move Creator</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button type="button" role="tab" id="tab-build" aria-controls="view-build">Build</button>
+      <button type="button" role="tab" id="tab-map" aria-controls="view-map">Map</button>
+      <button type="button" role="tab" id="tab-library" aria-controls="view-library">Library</button>
+      <button type="button" role="tab" id="tab-mine" aria-controls="view-mine">My moves</button>
+    </nav>
+    <div class="top-actions">
+      <button id="btn-practice" type="button" class="primary" title="Step through the combo on the beat">Practice</button>
+      <button id="btn-random" type="button" class="wide-only" title="A new combo in whole 8-counts that comes back to the start position">Random</button>
+      <button id="btn-undo" type="button" class="wide-only" title="Undo (Ctrl+Z)" disabled>Undo</button>
+      <details class="menu">
+        <summary aria-label="More actions"><span class="wide-only">More</span><span class="narrow-only" aria-hidden="true">⋯</span></summary>
+        <div class="menu-body">
+          <div class="narrow-only menu-row">
+            <button id="btn-random-2" type="button" data-same="btn-random">Random</button>
+            <button id="btn-undo-2" type="button" data-same="btn-undo">Undo</button>
+          </div>
+          <label>Random combos <select id="random-length" title="Length of random combos">
+            <option value="16">16 counts</option>
+            <option value="32" selected>32 counts</option>
+            <option value="48">48 counts</option>
+          </select></label>
+          <button id="btn-extend" type="button" title="Keep this combo and continue it, coming back to the start position">Extend this combo</button>
+          <button id="btn-clear" type="button" title="Remove every move (Undo brings it back)">Clear the combo</button>
+          <hr>
+          <button id="btn-share" type="button">Copy share link</button>
+          <button id="btn-text" type="button" title="The combo as text, with its link">Copy as text</button>
+          <button id="btn-print" type="button" title="A one-page sheet with the combo">Print combo sheet</button>
+          <button id="btn-save" type="button">Save as combo</button>
+          <hr>
+          <label>Show moves <select id="max-level" title="Hide moves you rated above this level (unrated moves always show)">
+            <option value="3">of every level</option>
+            <option value="2">rated up to intermediate</option>
+            <option value="1">rated beginner</option>
+          </select></label>
+          <label>Start weight <select id="start-weight">
+            <option value="mirrored">mirrored</option>
+            <option value="parallel">parallel</option>
+          </select></label>
+          <p class="small muted">Weight: <em>mirrored</em> means leader and partner step on opposite feet (normal when facing). <em>Parallel</em> means the same foot (shadow, cuddle).</p>
+        </div>
+      </details>
+    </div>
   </header>
 
   <div id="notice" class="notice" role="status" hidden></div>
   <div id="errors" class="errors" hidden></div>
 
-  <section class="toolbar" aria-label="Combo controls">
-    <label>Start <select id="start-pos"></select></label>
-    <label>Level <select id="max-level" title="Hide moves above this level">
-      <option value="3">all</option>
-      <option value="2">up to intermediate</option>
-      <option value="1">beginner only</option>
-    </select></label>
-    <span class="spacer"></span>
-    <span class="btn-group">
-      <button id="btn-practice" type="button" class="primary" title="Step through the combo on the beat">Practice</button>
-      <select id="random-length" aria-label="Length of random combos" title="Length of random combos">
-        <option value="16">16 ct</option>
-        <option value="32" selected>32 ct</option>
-        <option value="48">48 ct</option>
-      </select>
-      <button id="btn-random" type="button" title="A new combo in whole 8-counts that comes back to the start position">Random</button>
-      <button id="btn-extend" type="button" title="Keep this combo and continue it, coming back to the start position">Extend</button>
-      <button id="btn-undo" type="button" class="ghost" title="Undo (Ctrl+Z)" disabled>Undo</button>
-      <button id="btn-clear" type="button" class="ghost" title="Remove every move (Undo brings it back)">Clear</button>
-      <details class="menu">
-        <summary>More</summary>
-        <div class="menu-body">
-          <button id="btn-share" type="button">Copy share link</button>
-          <button id="btn-text" type="button" title="The combo as text, with its link">Copy as text</button>
-          <button id="btn-print" type="button" title="A one-page sheet with the combo">Print combo sheet</button>
-          <button id="btn-save" type="button">Save as compound</button>
-          <label>Start weight <select id="start-weight">
-            <option value="mirrored">mirrored</option>
-            <option value="parallel">parallel</option>
-          </select></label>
-          <p class="small muted">Weight: <em>mirrored</em> means leader and follower step on opposite feet (normal when facing). <em>Parallel</em> means the same foot (shadow, cuddle).</p>
-        </div>
-      </details>
-    </span>
-  </section>
-
   <section class="combo-sticky" aria-label="Your combo">
-    <div id="strip" class="strip"></div>
-    <p id="summary" class="summary"></p>
+    <div class="combo-bar card">
+      <label class="start-at"><span>Start</span> <select id="start-pos"></select></label>
+      <div id="strip" class="strip"></div>
+      <p id="summary" class="summary"></p>
+    </div>
   </section>
   <p id="status" class="visually-hidden" role="status"></p>
 
-  <nav class="tabs" role="tablist" aria-label="Views">
-    <button type="button" role="tab" id="tab-build" aria-controls="view-build">Build</button>
-    <button type="button" role="tab" id="tab-map" aria-controls="view-map">Map</button>
-    <button type="button" role="tab" id="tab-library" aria-controls="view-library">Library</button>
-    <button type="button" role="tab" id="tab-mine" aria-controls="view-mine">My moves</button>
-  </nav>
+  <main>
+    <section id="view-build" class="view" role="tabpanel" aria-labelledby="tab-build">
+      <div id="panel" class="panel"></div>
+      <details class="help">
+        <summary>How to use</summary>
+        <ol>
+          <li>Pick a <strong>start position</strong> on the left of the combo line (most combos start in open, left-to-right).</li>
+          <li>Add moves from <strong>What can follow</strong>. Only moves that start where you are are listed.</li>
+          <li>Tap a station on the line to <strong>replace</strong> it, <strong>insert</strong> after it or remove it. A red <strong>break</strong> means two moves don't connect; tap it for ways to reconnect.</li>
+          <li>The <strong>leader view</strong> shows the couple from above: you at the bottom, your partner above.</li>
+          <li><strong>Practice</strong> plays the combo on the beat. <strong>Random</strong> invents one; <strong>More</strong> has the share link.</li>
+          <li>Explore on the <strong>Map</strong>, browse and rate moves in the <strong>Library</strong>, add your own under <strong>My moves</strong>.</li>
+        </ol>
+        <p class="keys muted">Keys: ← → select · Del remove · Esc back to “what can follow” · Ctrl+Z undo</p>
+      </details>
+    </section>
 
-  <section id="view-build" class="view" role="tabpanel" aria-labelledby="tab-build">
-    <div id="panel" class="panel"></div>
-    <p class="keys muted">Keys: ← → select · Del remove · Esc back to “what can follow” · Ctrl+Z undo</p>
-  </section>
-
-  <section id="view-map" class="view map-section" role="tabpanel" aria-labelledby="tab-map" hidden>
-    <div class="map-head">
-      <h2>Map of positions</h2>
-      <p class="muted">Arrows are moves that change position (thicker = more moves). ↺ counts in-place moves. Your combo is drawn as a path. Tap a position or an arrow.</p>
-      <div id="map-view" class="chips" aria-label="Map view"></div>
-    </div>
-    <div class="map-grid">
-      <div id="map" class="map"></div>
-      <aside id="map-info" class="map-info"></aside>
-    </div>
-  </section>
-
-  <section id="view-library" class="view" role="tabpanel" aria-labelledby="tab-library" hidden>
-    <h2>Move library</h2>
-    <div class="lib-controls">
-      <input id="lib-search" type="search" aria-label="Search moves" placeholder="Search moves, notes or positions…">
-      <select id="lib-kind" aria-label="Kind">
-        <option value="all">all kinds</option>
-        <option value="move">move</option>
-        <option value="styling">in place</option>
-        <option value="adjuster">connector</option>
-        <option value="compound">combo block</option>
-      </select>
-      <label class="small muted"><input type="checkbox" id="lib-check"> only ⚑ needs review</label>
-    </div>
-    <div id="library"></div>
-    <h2 class="section-gap">Positions</h2>
-    <div id="positions"></div>
-  </section>
-
-  <section id="view-mine" class="view" role="tabpanel" aria-labelledby="tab-mine" hidden>
-    <form id="move-form" class="move-form" autocomplete="off">
-      <h3>Add a move</h3>
-      <p class="muted small">Moves you add work right away in this browser. To keep them for good (and for everyone), copy their YAML into <code>data/moves.yaml</code>.</p>
-      <div class="form-grid">
-        <label>Name <input name="name" required maxlength="60" placeholder="e.g. Hair comb"></label>
-        <label>Kind <select name="kind">
-          <option value="move">move</option>
-          <option value="styling">in place (same start and end)</option>
-          <option value="adjuster">connector (hand change, catch, release)</option>
-        </select></label>
-        <label>Level <select name="level">
-          <option value="1">1 · beginner</option>
-          <option value="2" selected>2 · intermediate</option>
-          <option value="3">3 · advanced</option>
-        </select></label>
-        <label>Counts <input name="counts" type="number" min="0" max="32" step="1" value="4"></label>
-        <label>Ends in <select name="to"></select></label>
-        <label class="wide">Notes <input name="notes" maxlength="200" placeholder="How to lead it (optional)"></label>
+    <section id="view-map" class="view" role="tabpanel" aria-labelledby="tab-map" hidden>
+      <div class="map-grid">
+        <div class="map-left">
+        <div class="card map-card">
+          <div class="map-top">
+            <h2 class="visually-hidden">Map of positions</h2>
+            <p id="map-title" class="map-title"></p>
+            <div class="map-legend" aria-hidden="true">
+              <svg width="44" height="10" viewBox="0 0 44 10"><line x1="5" y1="5" x2="39" y2="5" class="hub-move"/></svg> move
+              <svg width="44" height="10" viewBox="0 0 44 10"><line x1="5" y1="5" x2="39" y2="5" class="hub-adj"/></svg> adjuster
+            </div>
+          </div>
+          <div id="map" class="map"></div>
+          <p class="map-note muted">Inner ring: one move away. Outer ring: further away. Tap a station to move the centre there; tap a line for its moves.</p>
+        </div>
+        <div id="map-overview" class="card overview"></div>
+        </div>
+        <aside id="map-info" class="map-info"></aside>
       </div>
-      <fieldset class="mf-from-wrap">
-        <legend>Can start from</legend>
-        <div id="mf-from" class="mf-from"></div>
-      </fieldset>
-      <p id="mf-status" class="small" role="status"></p>
-      <button type="submit" class="primary">Save move</button>
-    </form>
-    <div id="my-moves"></div>
-    <h3>Compound moves</h3>
-    <div id="compounds"></div>
-  </section>
+    </section>
+
+    <section id="view-library" class="view" role="tabpanel" aria-labelledby="tab-library" hidden>
+      <h2 class="visually-hidden">Library</h2>
+      <div class="lib-controls">
+        <input id="lib-search" type="search" aria-label="Search moves" placeholder="Search moves, notes or positions…">
+        <div id="lib-kinds" class="chips" aria-label="Kind"></div>
+        <label class="small muted check-only"><input type="checkbox" id="lib-check"> only ⚑ to check</label>
+        <div class="seg" role="group" aria-label="Show">
+          <button type="button" id="lib-show-moves" aria-pressed="true">Moves</button>
+          <button type="button" id="lib-show-positions" aria-pressed="false">Positions</button>
+        </div>
+      </div>
+      <div id="library"></div>
+      <div id="positions" hidden></div>
+    </section>
+
+    <section id="view-mine" class="view" role="tabpanel" aria-labelledby="tab-mine" hidden>
+      <div class="mine-grid">
+        <div class="mine-main">
+          <div id="mine-switch" class="chips" aria-label="Show"></div>
+          <div id="my-moves"></div>
+          <div id="compounds"></div>
+        </div>
+        <form id="move-form" class="card move-form" autocomplete="off">
+          <h3 class="eyebrow">New move</h3>
+          <label>Name <input name="name" required maxlength="60" placeholder="e.g. Hair comb"></label>
+          <div class="form-pair">
+            <label>Kind <select name="kind">
+              <option value="move">move</option>
+              <option value="styling">styling (stays in place)</option>
+              <option value="adjuster">adjuster (hands, catch, release)</option>
+            </select></label>
+            <label>Length <select name="counts">
+              <option value="4">4 counts</option>
+              <option value="8">8 counts</option>
+              <option value="0">on the fly</option>
+            </select></label>
+          </div>
+          <label>Ends in <select name="to"></select></label>
+          <fieldset class="mf-from-wrap">
+            <legend>Starts in (tick every position it works from)</legend>
+            <div id="mf-from" class="mf-from"></div>
+          </fieldset>
+          <label>Notes <input name="notes" maxlength="200" placeholder="How to lead it (optional)"></label>
+          <p class="small muted">Longer sequences are combos: build them on the Build tab and use More › Save as combo. The animation uses the closest known motion.</p>
+          <p id="mf-status" class="small" role="status"></p>
+          <button type="submit" class="primary">Save move</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <b>Bachata Move Creator</b>
+    <span id="foot-stats"></span>
+  </footer>
 
   <script src="data.js"></script>
   <script src="../src/graph.js"></script>

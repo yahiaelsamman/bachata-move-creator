@@ -23,7 +23,7 @@
   /** A move from a link is trusted only if it looks exactly like one made with the add-a-move form. */
   function isValidOwnMove(m) {
     return Boolean(m) && isString(m.id, 80) && m.id.startsWith('my-') && isString(m.name, 60) &&
-      ['move', 'styling', 'adjuster'].includes(m.kind) && [1, 2, 3].includes(m.level) &&
+      ['move', 'styling', 'adjuster'].includes(m.kind) && (m.level === undefined || [1, 2, 3].includes(m.level)) &&
       Array.isArray(m.from) && m.from.every((f) => isString(f, 40)) && isString(m.to, 40) &&
       Number.isInteger(m.counts) && m.counts >= 0 && m.counts <= 64 &&
       (m.notes === undefined || isString(m.notes, 200));
@@ -38,7 +38,8 @@
       const list = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
       if (!Array.isArray(list)) return [];
       return list.filter(isValidOwnMove).map((m) => ({
-        id: m.id, name: m.name, kind: m.kind, level: m.level, from: m.from, to: m.to, counts: m.counts,
+        id: m.id, name: m.name, kind: m.kind, from: m.from, to: m.to, counts: m.counts,
+        ...(m.level ? { level: m.level } : {}),
         ...(m.notes ? { notes: m.notes } : {}),
       }));
     } catch {
@@ -80,7 +81,7 @@
 
   /** YAML for data/moves.yaml. */
   function moveYaml(m) {
-    return `- id: ${m.id}\n  name: ${JSON.stringify(m.name)}\n  kind: ${m.kind}\n  level: ${m.level}\n` +
+    return `- id: ${m.id}\n  name: ${JSON.stringify(m.name)}\n  kind: ${m.kind}\n` + (m.level ? `  level: ${m.level}\n` : '') +
       `  from: [${m.from.join(', ')}]\n  to: ${m.to}\n  counts: ${m.counts}\n` +
       (m.notes ? `  notes: ${JSON.stringify(m.notes)}\n` : '');
   }

@@ -278,8 +278,11 @@
 
   /** Draw a layout. `opts.bounds` fixes the picture area (an animation keeps one frame for the whole move). */
   function drawSVG(L, opts = {}) {
-    const eye = L.leader.c;
-    const fov = `M${pt(eye)} L${pt(add(eye, [-80, -128]))} A150 150 0 0 1 ${pt(add(eye, [80, -128]))} Z`;
+    // A view cone for each dancer, pointing where they face.
+    const cone = (b) => {
+      const tip = add(b.c, mul(b.face, 128));
+      return `M${pt(b.c)} L${pt(add(tip, mul(right(b.face), -80)))} A150 150 0 0 1 ${pt(add(tip, mul(right(b.face), 80)))} Z`;
+    };
     const arms = L.arms.map((a) => {
       const isTop = L.top && a.who === 'leader' && a.hand === L.top;
       const points = [a.from, a.via, a.to].filter(Boolean).map(pt).join(' ');
@@ -293,8 +296,9 @@
     const x0 = left ?? 15;
     const vw = (rightEdge ?? W - 15) - x0;
     return `<svg viewBox="${x0} ${r1(top)} ${vw} ${r1(bottom - top)}" class="sketch" role="img" xmlns="http://www.w3.org/2000/svg">${title}
-  <path d="${fov}" class="sk-fov"/>
-  ${dancer(L.follower, 'follower', 'follower', behind)}
+  <path d="${cone(L.follower)}" class="sk-fov sk-fov-partner"/>
+  <path d="${cone(L.leader)}" class="sk-fov"/>
+  ${dancer(L.follower, 'follower', 'partner', behind)}
   ${dancer(L.leader, 'leader', 'you', !behind)}
   ${arms}
 </svg>`;

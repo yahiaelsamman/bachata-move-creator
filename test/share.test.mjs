@@ -21,6 +21,13 @@ test('links made by the old encoder still decode, byte for byte', () => {
   assert.deepEqual(S.decodeMoves(OLD_LINK_CUSTOM), [vuelta, catchIt]);
 });
 
+test('moves without a level (levels are rated by each user now) survive a round trip and export without one', () => {
+  const { level, ...unrated } = catchIt;
+  assert.deepEqual(S.decodeMoves(S.encodeMoves([unrated])), [unrated]);
+  assert.doesNotMatch(S.moveYaml(unrated), /level/);
+  assert.match(S.moveYaml(catchIt), /level: 1/);
+});
+
 test('decodeMoves drops anything that is not a valid own move', () => {
   const bad = [
     { ...catchIt, id: 'cross-body-lead' },

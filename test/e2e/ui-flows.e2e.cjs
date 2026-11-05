@@ -52,7 +52,7 @@ const flows = {
     const page = await open(DEMO);
     assert.equal(await dominoCount(page), 3);
     const summary = await text(page, '#summary');
-    assert.match(summary, /3 dominoes/);
+    assert.match(summary, /3 moves/);
     assert.match(summary, /1 break/);
     assert.match(summary, /ends in Shadow, hand on waist/);
   },
@@ -126,8 +126,8 @@ const flows = {
     await page.locator('.mv-play').click();
     await page.waitForTimeout(700);
     assert.notEqual(await art(), first, 'the sketch moves while playing');
-    assert.equal(await text(page, '.mv-play'), '❚❚ Pause');
-    await page.waitForFunction(() => document.querySelector('.mv-play').textContent.includes('Play'), null, { timeout: 4000 });
+    assert.equal(await page.locator('.mv-play').getAttribute('aria-label'), 'Pause');
+    await page.waitForFunction(() => document.querySelector('.mv-play').getAttribute('aria-label') === 'Play', null, { timeout: 4000 });
     assert.equal(await page.locator('.movie input[type=range]').inputValue(), '1000');
     await page.locator('.movie input[type=range]').fill('500');
     assert.equal(await text(page, '.mv-count'), 'count 3');
@@ -183,7 +183,7 @@ const flows = {
     await page.keyboard.press('Enter');
     assert.equal(await dominoCount(page), 3);
     assert.equal(await page.evaluate(() => document.activeElement.closest('#panel') !== null), true);
-    assert.match(await page.locator('#status').textContent(), /^3 dominoes/);
+    assert.match(await page.locator('#status').textContent(), /^3 moves/);
   },
 
   async 'a break can be bridged'() {
@@ -224,17 +224,24 @@ const flows = {
     assert.deepEqual(await stripIds(page), ['cross-body-lead']);
   },
 
-  async 'level filter hides harder moves'() {
+  async 'levels are the user\'s own: rate a move, the level filter hides it'() {
     const page = await open();
     await openTab(page, 'library');
     const count = async () => Number((await text(page, '#library p')).match(/^(\d+) of/)[1]);
     const all = await count();
-    await page.selectOption('#max-level', '1');
+    const rate = page.locator('table.lib tbody tr').first().locator('button.rate');
+    assert.equal(await rate.innerText(), '○○○');
+    await rate.click();
+    await rate.click();
+    await rate.click();
+    assert.equal(await page.locator('table.lib tbody tr').first().locator('button.rate').innerText(), '●●●');
+    await page.locator('details.menu').evaluate((d) => { d.open = true; });
+    await page.selectOption('#max-level', '2');
     await tick(page);
-    const levels = await page.locator('#panel .options .lvl').allInnerTexts();
-    assert.ok(levels.length > 0);
-    assert.ok(levels.every((l) => l === '●○○'), levels.join(' '));
-    assert.ok(await count() < all);
+    assert.equal(await count(), all - 1, 'only the move rated advanced is hidden; unrated moves stay');
+    await page.reload();
+    await openTab(page, 'library');
+    assert.equal(await count(), all - 1, 'ratings are kept in this browser');
   },
 
   async 'library search and add'() {
@@ -257,7 +264,7 @@ const flows = {
     await page.locator('[data-link^="closed>"] .mp-hit').first().dispatchEvent('click');
     assert.match(await page.locator('#map-info h4').first().innerText(), /^Closed → .+ \(\d+\)$/);
     assert.ok(await page.locator('#map-info .options button').count() > 0);
-    await page.locator('#map-info button', { hasText: 'Start a new combo here' }).click();
+    await page.locator('#map-info button', { hasText: 'Start a combo here' }).click();
     assert.equal(await page.locator('#start-pos').inputValue(), 'closed');
   },
 

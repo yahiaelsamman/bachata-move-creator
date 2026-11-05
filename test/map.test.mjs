@@ -17,13 +17,35 @@ test('map layout is deterministic and inside the drawing', () => {
   }
 });
 
-test('map svg renders with a path and a selection', () => {
+test('the hub puts every position on a ring once, neighbours inside', () => {
   const g = MG.compile(loadData());
-  const L = PM.layoutMap(g);
-  const svg = PM.mapSVG(g, L, { selected: 'closed', path: [{ from: 'open_LR', to: 'closed' }] });
+  const full = PM.layoutMap(g);
+  for (const p of g.positions) {
+    const hub = PM.layoutHub(g, full, p.id);
+    const ids = [...hub.ring1, ...hub.ring2].map((n) => n.id);
+    assert.equal(ids.length, g.positions.length - 1, p.id);
+    assert.equal(new Set(ids).size, ids.length, p.id);
+    assert.ok(!ids.includes(p.id));
+    for (const n of hub.ring1) {
+      const linked = g.edges.some((e) => MG.isTransition(g, e) && ((e.from === p.id && e.to === n.id) || (e.to === p.id && e.from === n.id)));
+      assert.ok(linked && (n.move || n.adjuster), `${p.id} - ${n.id}`);
+    }
+  }
+});
+
+test('hub and overview svg: stations, spokes and dots', () => {
+  const g = MG.compile(loadData());
+  const full = PM.layoutMap(g);
+  const hub = PM.layoutHub(g, full, 'open_LR');
+  const svg = PM.hubSVG(g, hub, { end: 'closed', link: 'closed' });
   assert.ok(!/NaN|undefined/.test(svg));
-  assert.ok(svg.includes('mp-path') || svg.includes('mp-in'));
-  assert.ok(svg.includes('data-pos="closed"'));
+  assert.equal((svg.match(/data-pos=/g) || []).length, g.positions.length);
+  assert.ok(svg.includes('data-link="open_LR&gt;closed"'));
+  assert.ok(svg.includes('hub-adj'), 'adjusters are drawn dotted');
+  const ov = PM.overviewSVG(g, full, 'open_LR');
+  assert.ok(!/NaN|undefined/.test(ov));
+  assert.equal((ov.match(/data-center=/g) || []).length, g.positions.length);
+  assert.ok(!ov.includes('data-pos='), 'overview dots must not clash with the hub stations');
 });
 
 test('links group parallel moves and skip in-place ones', () => {

@@ -39,7 +39,9 @@
 
   /** Compile the base data plus own moves and compounds. Call after any of them change. */
   App.recompile = function () {
-    App.g = MG.compile({ positions: BASE.positions, moves: [...BASE.moves, ...own.moves, ...own.compounds] });
+    // Levels are the user's own ratings. Unrated moves count as level 1, so a level filter never hides them.
+    const rated = (m) => ({ ...m, level: own.levels[m.id] });
+    App.g = MG.compile({ positions: BASE.positions, moves: [...BASE.moves.map(rated), ...own.moves.map(rated), ...own.compounds] });
     own.errors = {};
     App.dataErrors = App.g.errors.filter((e) => {
       const mine = [...own.moves, ...own.compounds].find((c) => e.includes(`"${c.id}"`));
@@ -76,6 +78,18 @@
   };
 
   App.evaluate = () => MG.evaluateStrip(App.g, state.startPos, state.startWeight, state.strip);
+  /** The level the user gave a move (1-3), or null when unrated. */
+  App.userLevel = (id) => own.levels[id] || null;
+
+  /** Rate a move: unrated -> 1 -> 2 -> 3 -> unrated. */
+  App.rateMove = function (id) {
+    const next = ((own.levels[id] || 0) + 1) % 4;
+    if (next) own.levels[id] = next; else delete own.levels[id];
+    store.set('bmc.levels', own.levels);
+    App.recompile();
+    App.render();
+  };
+
   App.withinLevel = (id) => (App.g.moveById[id] ? App.g.moveById[id].level <= state.maxLevel : false);
 
   App.shareHash = () => Share.buildHash({
@@ -103,7 +117,7 @@
     lastSnap = snap;
     persist();
     App.render();
-    App.announce(document.getElementById('summary').textContent || 'Combo is empty.');
+    App.announce(App.summaryText(App.evaluate()));
   };
 
   App.undo = function () {
@@ -160,6 +174,7 @@
   const own = App.own = {
     moves: store.get('bmc.moves', []),
     compounds: store.get('bmc.compounds', []),
+    levels: store.get('bmc.levels', {}),   // move id -> the level the user gave it (1-3)
     errors: {},            // own move or compound id -> its problems, set by recompile()
     importNote: '',        // what the last shared link added
 

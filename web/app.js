@@ -21,6 +21,8 @@
   /** Redraw what only changes with the data (own moves and compounds added or deleted). */
   App.renderData = function () {
     renderMessages();
+    const g = App.g;
+    $('foot-stats').textContent = `${g.moves.length} moves · ${g.positions.length} positions`;
     App.renderPositions();
     App.renderMyMoves();
     App.renderCompounds();
@@ -32,6 +34,7 @@
     $('max-level').value = String(state.maxLevel);
     const empty = state.strip.length === 0;
     $('btn-undo').disabled = !App.canUndo();
+    $('btn-undo-2').disabled = !App.canUndo();
     $('btn-practice').disabled = empty;
     $('btn-text').disabled = empty;
     $('btn-clear').disabled = empty;
@@ -47,10 +50,10 @@
     box.textContent = App.dataErrors.length ? 'Data problems:\n' + App.dataErrors.join('\n') : '';
   }
 
-  /** Practice and "save as compound" need a combo without breaks. */
+  /** Practice and "save as combo" need a combo without breaks. */
   function requireUnbroken(result) {
     if (!result.items.some((it) => it.broken)) return true;
-    alert('Fix the breaks first (click a red "bridge").');
+    alert('Fix the breaks first (tap a red "break" on the line).');
     return false;
   }
 
@@ -67,6 +70,8 @@
       App.render();
     });
     $('btn-undo').addEventListener('click', App.undo);
+    // The phone menu repeats Random and Undo, which have no room in the phone header.
+    for (const twin of document.querySelectorAll('[data-same]')) twin.addEventListener('click', () => $(twin.dataset.same).click());
     $('btn-clear').addEventListener('click', edit.clear);
     $('btn-random').addEventListener('click', edit.random);
     $('btn-extend').addEventListener('click', edit.extend);
@@ -89,10 +94,11 @@
       App.copyText(Share.comboText(result, posName(state.startPos), posName(result.end), pageUrl(), window.MoveGraph.beatRange), ev.currentTarget);
     });
     $('btn-save').addEventListener('click', () => {
-      if (state.strip.length < 2) return alert('Add at least two dominoes first.');
+      if (state.strip.length < 2) return alert('Add at least two moves first.');
       if (!requireUnbroken(App.evaluate())) return;
-      const name = prompt('Name for this compound move:');
+      const name = prompt('Name for this combo:');
       if (!name) return;
+      state.mineShow = 'combos';
       own.saveCompound(name);
       App.showTab('mine');
     });

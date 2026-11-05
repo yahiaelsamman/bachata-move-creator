@@ -2,10 +2,10 @@
  * Position map: every position as a node, moves between positions as arrows.
  * Styling moves (start = end) are not drawn as arrows; they show as a ↺ count.
  *
- *   layoutMap(g)              -> { nodes: {id: {x, y, w}}, links: [...] }  (deterministic)
- *   mapSVG(g, layout, opts)   -> SVG markup string
- *     opts.selected  position id to focus (its ways in and out light up)
- *     opts.path      [{from, to}] steps of the current combo, drawn as a path
+ *   layoutMap(g)                    -> { nodes: {id: {x, y, w}}, links: [...] }  (force layout, deterministic)
+ *   layoutHub(g, full, centerId)    -> one position in the middle, its neighbours on an inner ring, the rest outside
+ *   hubSVG(g, hub, opts)            -> SVG markup of the hub
+ *   overviewSVG(g, full, centerId)  -> small SVG of every position (dots and faint links)
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory(require('./graph.js'));
@@ -106,84 +106,136 @@
   const r1 = (v) => Math.round(v * 10) / 10;
   const esc = (s) => String(s).replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 
-  /** Point where the segment from the node centre towards (tx, ty) leaves the node's box. */
-  function boxExit(node, tx, ty) {
-    const dx = tx - node.x, dy = ty - node.y;
-    const hw = node.w / 2 + 4, hh = 15;
-    const s = Math.min(hw / Math.max(Math.abs(dx), 1e-6), hh / Math.max(Math.abs(dy), 1e-6));
-    return [node.x + dx * s, node.y + dy * s];
+  /**
+   * The hub: one position in the middle, the positions one move away on an inner ring, every other
+   * position on an outer ring. Only the middle has lines (spokes), so the picture stays readable.
+   * A spoke's style says which kinds of moves link the two positions (in either direction): a solid
+   * line for moves, a dotted line for adjusters, both side by side when there are both.
+   * Rings keep the order of the force layout around the middle, so neighbours stay roughly where
+   * they are on the overview.
+   */
+  function layoutHub(g, full, centerId) {
+    const W = 700, H = 560, CX = 350, CY = 284;
+    const kinds = {};
+    for (const e of g.edges) {
+      if (!MG.isTransition(g, e) || (e.from !== centerId && e.to !== centerId)) continue;
+      const kind = g.moveById[e.move].kind;
+      if (kind === 'compound' || kind === 'styling') continue;
+      const other = e.from === centerId ? e.to : e.from;
+      if (!kinds[other]) kinds[other] = { move: false, adjuster: false, out: false };
+      kinds[other][kind === 'adjuster' ? 'adjuster' : 'move'] = true;
+      if (e.from === centerId) kinds[other].out = true;
+    }
+    const c = full.nodes[centerId];
+    const angle = (id) => Math.atan2(full.nodes[id].y - c.y, full.nodes[id].x - c.x);
+    const byAngle = (a, b) => angle(a) - angle(b) || a.localeCompare(b);
+    const near = Object.keys(kinds).sort(byAngle);
+    const far = g.positions.map((p) => p.id).filter((id) => id !== centerId && !kinds[id]).sort(byAngle);
+    // Crowded inner rings get wider; the outer ring stays outside it.
+    const grow = Math.max(1, near.length / 13);
+    const r1x = Math.min(135 * grow, 230), r1y = Math.min(120 * grow, 205);
+    const r2x = Math.max(255, r1x + 75), r2y = Math.max(222, r1y + 60);
+    const place = (ids, rx, ry, off) => ids.map((id, i) => {
+      const a = -Math.PI / 2 + off + (i * 2 * Math.PI) / ids.length;
+      return { id, a, x: CX + rx * Math.cos(a), y: CY + ry * Math.sin(a) };
+    });
+    const ring1 = place(near, r1x, r1y, 0.15).map((n) => ({ ...n, ...kinds[n.id] }));
+    // Turn the outer ring so its labels sit between the inner ring's (wider gaps count more at the sides).
+    let best = 0, bestGap = -1;
+    for (let off = 0; far.length && off < (2 * Math.PI) / far.length; off += 0.01) {
+      let gap = 9;
+      for (const a of place(far, r2x, r2y, off)) {
+        for (const b of ring1) {
+          let d = Math.abs(a.a - b.a) % (2 * Math.PI);
+          d = Math.min(d, 2 * Math.PI - d);
+          gap = Math.min(gap, d * (1.2 + Math.abs(Math.cos(a.a))));
+        }
+      }
+      if (gap > bestGap) { bestGap = gap; best = off; }
+    }
+    const ring2 = place(far, r2x, r2y, best);
+    return {
+      center: centerId, cx: CX, cy: CY, width: W, height: H, ring1, ring2,
+      rings: [[r1x, r1y], [r2x, r2y]], loops: MG.loopMoves(g, centerId).length,
+    };
+  }
+
+  const labelOf = (g, id) => g.posById[id].short || g.posById[id].name;
+
+  /** A station's label outside its dot, away from the middle; "Hammerlock L (cross)" goes on two lines. */
+  function stationLabel(g, n, gap) {
+    const cos = Math.cos(n.a), sin = Math.sin(n.a);
+    const anchor = cos > 0.3 ? 'start' : cos < -0.3 ? 'end' : 'middle';
+    const x = n.x + cos * gap;
+    const y = n.y + sin * gap + (sin > 0.6 ? 12 : sin < -0.6 ? -4 : 5);
+    const [first, rest] = labelOf(g, n.id).split(' (');
+    const line = (t, yy) => `<text x="${r1(x)}" y="${r1(yy)}" text-anchor="${anchor}" class="hub-label">${esc(t)}</text>`;
+    return rest ? line(first, sin < -0.6 ? y - 17 : y - 8) + line('(' + rest, sin < -0.6 ? y : y + 9) : line(first, y);
   }
 
   /**
-   * One position and its direct neighbours: the position in the middle, the others in a circle.
-   * Readable on a phone, and tapping a neighbour re-centres on it.
+   * Draw the hub. opts.end: where the combo ends (its station is filled); opts.link: the other end of
+   * a tapped spoke (it is drawn thicker). Stations carry data-pos, spokes data-link="from>to"
+   * (pointing out of the middle when a move goes that way).
    */
-  function layoutFocus(g, full, centerId) {
-    const W = 400, H = 400;
-    const links = full.links.filter((l) => (l.from === centerId || l.to === centerId) && !isHubLink(g, l));
-    const around = [...new Set(links.flatMap((l) => [l.from, l.to]))].filter((id) => id !== centerId).sort();
-    const node = (id, x, y) => {
-      const label = full.nodes[id].label;
-      return { ...full.nodes[id], x, y, w: Math.max(60, label.length * 8.4 + 20) };
+  function hubSVG(g, hub, opts = {}) {
+    const { cx, cy } = hub;
+    const spokes = hub.ring1.map((n) => {
+      const dx = n.x - cx, dy = n.y - cy, d = Math.hypot(dx, dy) || 1;
+      const ox = -dy / d, oy = dx / d;
+      const both = n.move && n.adjuster;
+      const line = (cls, o) => `<line x1="${r1(cx + ox * o)}" y1="${r1(cy + oy * o)}" x2="${r1(n.x + ox * o)}" y2="${r1(n.y + oy * o)}" class="${cls}"/>`;
+      const lines = both ? line('hub-move', -4.5) + line('hub-adj', 4.5) : line(n.move ? 'hub-move' : 'hub-adj', 0);
+      const link = n.out ? `${hub.center}>${n.id}` : `${n.id}>${hub.center}`;
+      const what = [n.move ? 'moves' : '', n.adjuster ? 'adjusters' : ''].filter(Boolean).join(' and ');
+      return `<g class="hub-spoke${both ? ' hub-pair' : ''}${opts.link === n.id ? ' on' : ''}" data-link="${esc(link)}">` +
+        `<title>${esc(g.posById[hub.center].name)} and ${esc(g.posById[n.id].name)}: ${what}</title>${lines}` +
+        `<line x1="${r1(cx)}" y1="${r1(cy)}" x2="${r1(n.x)}" y2="${r1(n.y)}" class="hub-hit mp-hit"/></g>`;
+    }).join('\n');
+    const station = (n, near) => {
+      const p = g.posById[n.id];
+      return `<g class="hub-node ${near ? 'hub-near' : 'hub-far'}${opts.end === n.id ? ' hub-end' : ''}" data-pos="${esc(n.id)}" tabindex="0" role="button" aria-label="${esc(p.name)}${near ? ', one move away' : ''}">` +
+        `<title>${esc(p.name)}</title><circle cx="${r1(n.x)}" cy="${r1(n.y)}" r="${near ? 12 : 7}" class="hub-dot"/>${stationLabel(g, n, near ? 18 : 14)}</g>`;
     };
-    const nodes = { [centerId]: node(centerId, W / 2, H / 2) };
-    around.forEach((id, i) => {
-      const a = (2 * Math.PI * i) / around.length - Math.PI / 2;
-      nodes[id] = node(id, W / 2 + Math.cos(a) * 135, H / 2 + Math.sin(a) * 160);
-    });
-    return { nodes, links, width: W, height: H, focus: true };
-  }
-
-  function mapSVG(g, layout, opts = {}) {
-    const sel = opts.selected || null;
-    const onPath = new Set((opts.path || []).filter((s) => s.from && s.to && s.from !== s.to).map((s) => s.from + '>' + s.to));
-    const pathNodes = new Set((opts.path || []).flatMap((s) => [s.from, s.to]).filter(Boolean));
-
-    const linkSvg = layout.links.filter((l) => !isHubLink(g, l) || (sel && (l.from === sel || l.to === sel))).map((l) => {
-      const a = layout.nodes[l.from], b = layout.nodes[l.to];
-      const dx = b.x - a.x, dy = b.y - a.y;
-      const d = Math.max(Math.hypot(dx, dy), 1);
-      const bend = l.twoWay ? 22 : 0;
-      const cx = (a.x + b.x) / 2 + (-dy / d) * bend;
-      const cy = (a.y + b.y) / 2 + (dx / d) * bend;
-      const [sx, sy] = boxExit(a, cx, cy);
-      const [ex, ey] = boxExit(b, cx, cy);
-      let cls = 'mp-link';
-      let marker = 'mp-a';
-      if (onPath.has(l.from + '>' + l.to)) { cls += ' mp-path'; marker = 'mp-a-path'; }
-      if (sel) {
-        if (l.from === sel) { cls += ' mp-out'; marker = 'mp-a-out'; }
-        else if (l.to === sel) { cls += ' mp-in'; marker = 'mp-a-in'; }
-        else { cls += ' mp-dim'; marker = 'mp-a'; }
-      }
-      const names = l.moves.map((id) => g.moveById[id].name).join(', ');
-      const width = Math.min(1.2 + l.moves.length * 0.6, 4);
-      const pathD = `M${r1(sx)},${r1(sy)} Q${r1(cx)},${r1(cy)} ${r1(ex)},${r1(ey)}`;
-      // A wide invisible twin makes the arrow easy to tap.
-      return `<g class="mp-hit-wrap" data-link="${esc(l.from)}>${esc(l.to)}"><path d="${pathD}" class="mp-hit"/><path d="${pathD}" class="${cls}" style="stroke-width:${r1(width)}" marker-end="url(#${marker})"/><title>${esc(g.posById[l.from].name)} → ${esc(g.posById[l.to].name)}: ${esc(names)}</title></g>`;
-    }).join('\n');
-
-    const nodeSvg = g.positions.filter((p) => layout.nodes[p.id]).map((p) => {
-      const nd = layout.nodes[p.id];
-      let cls = 'mp-node';
-      if (p.id === sel) cls += ' mp-selected';
-      if (pathNodes.has(p.id)) cls += ' mp-visited';
-      if (sel && p.id !== sel && !layout.links.some((l) => (l.from === sel && l.to === p.id) || (l.to === sel && l.from === p.id))) cls += ' mp-dim';
-      return `<g class="${cls}" data-pos="${esc(p.id)}" tabindex="0" role="button" aria-label="${esc(p.name)}">
-  <title>${esc(p.name)}${nd.loops ? ` (${nd.loops} in-place moves)` : ''}</title>
-  <rect x="${r1(nd.x - nd.w / 2)}" y="${r1(nd.y - 14)}" width="${r1(nd.w)}" height="28" rx="14"/>
-  <text x="${r1(nd.x)}" y="${r1(nd.y + 4)}" text-anchor="middle">${esc(nd.label)}</text>
-  ${nd.loops ? `<text x="${r1(nd.x + nd.w / 2 - 2)}" y="${r1(nd.y - 17)}" text-anchor="end" class="mp-loops">↺${nd.loops}</text>` : ''}
-</g>`;
-    }).join('\n');
-
-    return `<svg viewBox="0 0 ${layout.width} ${layout.height}" class="posmap${layout.focus ? ' focus' : ''}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of positions">
-<defs>${['mp-a', 'mp-a-path', 'mp-a-out', 'mp-a-in'].map((id) =>
-    `<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="${id}"/></marker>`).join('')}</defs>
-${linkSvg}
-${nodeSvg}
+    const name = labelOf(g, hub.center);
+    const w = Math.max(92, name.length * 9 + 28);
+    const center = `<g class="hub-center hub-node" data-pos="${esc(hub.center)}" tabindex="0" role="button" aria-label="${esc(g.posById[hub.center].name)}, the middle of the map">` +
+      `<title>${esc(g.posById[hub.center].name)}</title><rect x="${r1(cx - w / 2)}" y="${r1(cy - 16)}" width="${r1(w)}" height="32" rx="16"/>` +
+      `<text x="${cx}" y="${cy + 6}" text-anchor="middle">${esc(name)}</text></g>`;
+    const rings = hub.rings.map(([rx, ry]) => `<ellipse cx="${cx}" cy="${cy}" rx="${r1(rx)}" ry="${r1(ry)}" class="hub-ring"/>`).join('');
+    return `<svg viewBox="-30 0 ${hub.width + 60} ${hub.height}" class="hubmap" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Map around ${esc(g.posById[hub.center].name)}">
+${rings}
+${spokes}
+${hub.ring2.map((n) => station(n, false)).join('\n')}
+${hub.ring1.map((n) => station(n, true)).join('\n')}
+${center}
 </svg>`;
   }
 
-  return { layoutMap, layoutFocus, mapSVG, linksOf, isHubLink };
+  /**
+   * The overview: every position where the force layout puts it, with faint links. The middle of the
+   * hub is filled, its neighbours ringed. Dots carry data-center (tap to move the middle there).
+   */
+  function overviewSVG(g, full, centerId) {
+    const pairs = new Map();
+    for (const l of full.links) {
+      if (isHubLink(g, l)) continue;
+      pairs.set([l.from, l.to].sort().join('|'), [l.from, l.to]);
+    }
+    const near = new Set();
+    for (const [a, b] of pairs.values()) { if (a === centerId) near.add(b); if (b === centerId) near.add(a); }
+    const N = full.nodes;
+    const lines = [...pairs.values()].map(([a, b]) => {
+      const on = a === centerId || b === centerId;
+      return `<line x1="${r1(N[a].x)}" y1="${r1(N[a].y)}" x2="${r1(N[b].x)}" y2="${r1(N[b].y)}" class="ov-link${on ? ' near' : ''}"/>`;
+    }).join('');
+    const dots = g.positions.map((p) => {
+      const n = N[p.id];
+      const cls = p.id === centerId ? ' center' : near.has(p.id) ? ' near' : '';
+      return `<g data-center="${esc(p.id)}"><title>${esc(p.name)}</title><circle cx="${r1(n.x)}" cy="${r1(n.y)}" r="26" class="ov-hit"/><circle cx="${r1(n.x)}" cy="${r1(n.y)}" r="${p.id === centerId ? 13 : 10}" class="ov-dot${cls}"/></g>`;
+    }).join('');
+    return `<svg viewBox="20 20 ${full.width - 40} ${full.height - 40}" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="All positions">${lines}${dots}</svg>`;
+  }
+
+  return { layoutMap, layoutHub, hubSVG, overviewSVG, linksOf, isHubLink };
 });

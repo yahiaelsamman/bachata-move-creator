@@ -1,4 +1,7 @@
 /* The move review page (review.html). Colours come from style.css. */
+body.review { --line: var(--rule); }
+body.review .top { flex-direction: column; align-items: flex-start; padding: 12px 18px !important; }
+body.review .top .sub { margin: 0; color: var(--hdr-muted); font-weight: 600; }
 .rv-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
 .rv-bar #rv-progress { flex: 1 1 200px; color: var(--muted); }
 .rv-text { width: 100%; margin-top: 8px; font: 0.85rem/1.4 ui-monospace, Menlo, monospace; }
@@ -15,7 +18,7 @@ table.rv .rv-meta, table.rv .rv-notes { color: var(--muted); font-size: 0.82rem;
 table.rv .rv-notes { max-width: 52ch; }
 table.rv .rv-check { color: var(--warn); font-size: 0.82rem; }
 table.rv ul { margin: 0; padding-left: 16px; }
-table.rv li.lets::marker { color: var(--accent); }
+table.rv li.lets::marker { color: var(--adjuster); }
 table.rv .rv-label { color: var(--muted); font-size: 0.8rem; }
 .rv-reading { font-weight: 500; }
 
@@ -28,10 +31,10 @@ table.rv .rv-label { color: var(--muted); font-size: 0.8rem; }
 .rv-mark { white-space: nowrap; }
 .rv-mark button { min-width: 38px; }
 .rv-mark button.on-ok { background: var(--styling); color: #fff; border-color: var(--styling); }
-.rv-mark button.on-wrong { background: var(--accent); color: #fff; border-color: var(--accent); }
+.rv-mark button.on-wrong { background: var(--bad); color: #fff; border-color: var(--bad); }
 .rv-mark input { display: block; margin-top: 6px; width: 100%; min-width: 150px; }
 tr.rv-ok td { background: color-mix(in srgb, var(--styling) 8%, transparent); }
-tr.rv-wrong td { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+tr.rv-wrong td { background: color-mix(in srgb, var(--bad) 10%, transparent); }
 .rv-shown { color: var(--muted); font-size: 0.88rem; }
 .rv-warn { color: var(--warn); font-weight: 600; }
 .rv-info { color: var(--muted); }

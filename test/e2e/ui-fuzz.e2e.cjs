@@ -24,7 +24,8 @@ const PAGE = 'file://' + path.resolve(__dirname, '../../web/index.html');
     ['start', async () => { const v = await p.$$eval('#start-pos option', os => os.map(o => o.value)); await p.selectOption('#start-pos', v[rnd(v.length)]); }],
     ['chips', async () => { const o = p.locator('.chips button:visible'); const n = await o.count(); if (n) await o.nth(rnd(n)).click(); }],
     ['save', async () => { await p.locator('details.menu').evaluate((d) => { d.open = true; }); await p.click('#btn-save'); }],
-    ['level', async () => { await p.selectOption('#max-level', ['1', '2', '3'][rnd(3)]); }],
+    ['level', async () => { await p.locator('details.menu').evaluate((d) => { d.open = true; }); await p.selectOption('#max-level', ['1', '2', '3'][rnd(3)]); }],
+    ['rate', async () => { await p.click('#tab-library'); const o = p.locator('table.lib button.rate'); const n = await o.count(); if (n) await o.nth(rnd(Math.min(n, 30))).click(); }],
     ['library', async () => {
       await p.click('#tab-library');
       await p.fill('#lib-search', ['', 'turn', 'shadow', 'hammer', 'zzz'][rnd(5)]);

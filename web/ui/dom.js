@@ -64,8 +64,9 @@ window.App = {};
 
   App.LEVEL_NAME = { 1: 'beginner', 2: 'intermediate', 3: 'advanced' };
   /** What each kind is called on screen (the data keeps the short internal names). */
-  App.KIND_LABEL = { move: 'move', styling: 'in place', adjuster: 'connector', compound: 'combo block' };
-  App.badge = (kind) => h('span', { class: `badge k-${kind}` }, App.KIND_LABEL[kind] || kind);
+  App.KIND_LABEL = { move: 'move', styling: 'styling', adjuster: 'adjuster', compound: 'combo' };
+  /** The kind of a move: a coloured dot plus the word, so colour is never the only signal. */
+  App.badge = (kind) => h('span', { class: `kind k-${kind}` }, App.KIND_LABEL[kind] || kind);
 
   /** Weight in words: "mirrored" = opposite feet (normal facing), "parallel" = same foot. */
   const FEET = { mirrored: 'opposite feet (mirrored)', parallel: 'the same foot (parallel)' };
@@ -77,7 +78,10 @@ window.App = {};
   };
 
   App.beatRange = window.MoveGraph.beatRange;
-  App.levelDots = (lvl) => h('span', { class: 'lvl', title: App.LEVEL_NAME[lvl] || '' }, '●'.repeat(lvl) + '○'.repeat(3 - lvl));
+  /** A level the user gave a move (1-3), or unrated (empty circles). */
+  App.levelDots = (lvl) => (lvl
+    ? h('span', { class: 'lvl', title: App.LEVEL_NAME[lvl] }, '●'.repeat(lvl) + '○'.repeat(3 - lvl))
+    : h('span', { class: 'lvl unrated', title: 'not rated yet' }, '○○○'));
   App.moveLabel = (m) => [m.name, ' ', App.badge(m.kind)];
   App.posName = (id) => (App.g.posById[id] ? App.g.posById[id].name : '?');
   App.shortName = (id) => (App.g.posById[id] ? App.g.posById[id].short || App.g.posById[id].name : '?');

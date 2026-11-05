@@ -15,12 +15,19 @@
     return { froms, tos, all: froms.length === g.positions.length };
   }
 
+  /** "Open L-R, Handshake, +2": the first few positions, then how many more. */
+  function shortList(ids, max) {
+    const names = ids.map(shortName);
+    return names.length > max + 1 ? `${names.slice(0, max).join(', ')}, +${names.length - max}` : names.join(', ');
+  }
+
   App.renderLibrary = function (result) {
     const g = App.g;
     const box = $('library');
     if (!App.isTab('library')) return;
+    renderLibraryControls();
     const q = $('lib-search').value.trim().toLowerCase();
-    const kind = $('lib-kind').value;
+    const kind = state.libKind;
     const onlyCheck = $('lib-check').checked;
     const rows = g.moves
       .filter((m) => kind === 'all' || m.kind === kind)
@@ -35,26 +42,51 @@
       })
       .sort((a, b) => a.m.name.localeCompare(b.m.name));
     const fitsEnd = (id) => (g.edgesByMove[id] || []).some((e) => e.from === result.end);
-    const list = (ids) => ids.map(shortName).join(', ');
+    const rate = (m) => {
+      const lvl = App.userLevel(m.id);
+      return button(levelDots(lvl), () => App.rateMove(m.id), {
+        class: 'rate' + (lvl ? '' : ' unrated'),
+        'aria-label': `Level of ${m.name}: ${lvl ? LEVEL_NAME[lvl] : 'not rated'}. Tap to change.`,
+        title: 'Tap to rate: beginner, intermediate, advanced, unrated',
+      });
+    };
     box.replaceChildren(
-      h('p', { class: 'muted small' }, `${rows.length} of ${g.moves.length} moves` +
-        (state.maxLevel < 3 ? ` (level filter: up to ${LEVEL_NAME[state.maxLevel]})` : '') + '. “Add” appears when a move can follow the end of your combo.'),
-      h('div', { class: 'table-wrap' }, h('table', { class: 'lib' },
-        h('thead', {}, h('tr', {}, ['Move', 'Starts in', 'Ends in', 'Counts', ''].map((t) => h('th', {}, t)))),
+      h('p', { class: 'muted small lib-hint' }, `${rows.length} of ${g.moves.length} moves` +
+        (state.maxLevel < 3 ? ` (showing moves you rated up to ${LEVEL_NAME[state.maxLevel]}, and unrated ones)` : '') +
+        '. Levels are yours: tap ○○○ to rate a move. “Add” appears when a move can follow the end of your combo.'),
+      h('div', { class: 'card lib-wrap table-wrap' }, h('table', { class: 'lib' },
+        h('thead', {}, h('tr', {}, ['Move', 'Starts in', 'Ends in', 'Counts', 'Level', ''].map((t) => h('th', {}, t)))),
         h('tbody', {}, rows.map(({ m, ep }) => h('tr', {},
-          h('td', {}, h('strong', {}, m.name), ' ', badge(m.kind), ' ', levelDots(m.level),
-            m.check ? h('span', { class: 'flag', title: m.check }, ' ⚑') : null,
-            m.notes ? [h('br'), h('span', { class: 'muted small' }, m.notes)] : null),
-          h('td', { class: 'small' }, ep.all ? 'any position' : list(ep.froms)),
-          h('td', { class: 'small' }, ep.tos ? list(ep.tos) : '↺ same'),
-          h('td', {}, String(m.counts), m.on ? h('span', { class: 'muted', title: 'The half of the phrase this turn is usually led on' }, ` · on ${m.on}`) : null),
-          h('td', {}, fitsEnd(m.id) ? button('Add', () => edit.add([m.id])) : null)))))));
+          h('td', { class: 'mv' }, h('strong', {}, m.name), badge(m.kind),
+            m.check ? h('span', { class: 'flag small', title: m.check }, ' · ⚑ to check') : null,
+            m.notes ? h('span', { class: 'note', title: m.notes }, m.notes) : null),
+          h('td', { class: 'where', title: ep.all ? '' : ep.froms.map(posName).join(', ') }, ep.all ? 'Any position' : shortList(ep.froms, q ? 99 : 2)),
+          h('td', { class: 'where' }, ep.tos ? shortList(ep.tos, q ? 99 : 2) : '↺ same'),
+          h('td', {}, m.counts ? String(m.counts) : 'on the fly', m.on ? ` · usually on ${m.on}` : null),
+          h('td', {}, rate(m)),
+          h('td', {}, fitsEnd(m.id) ? button('Add', () => edit.add([m.id]), { class: 'add' }) : null)))))));
   };
 
+  function renderLibraryControls() {
+    const label = (k) => (k === 'all' ? 'All' : (App.KIND_LABEL[k] || k).replace(/^./, (c) => c.toUpperCase()));
+    $('lib-kinds').replaceChildren(...['all', 'move', 'styling', 'adjuster', 'compound'].map((k) =>
+      button(label(k), () => { state.libKind = k; App.render(); }, { class: state.libKind === k ? 'on' : '', 'aria-pressed': String(state.libKind === k) })));
+    const moves = state.libShow === 'moves';
+    $('lib-show-moves').setAttribute('aria-pressed', String(moves));
+    $('lib-show-positions').setAttribute('aria-pressed', String(!moves));
+    $('library').hidden = !moves;
+    $('positions').hidden = moves;
+    for (const el of [$('lib-search'), $('lib-kinds'), document.querySelector('.check-only')]) el.hidden = !moves;
+    $('lib-search').placeholder = `Search ${App.g.moves.length} moves, notes or positions…`;
+  }
+
   App.initLibrary = function () {
+    state.libKind = 'all';
+    state.libShow = 'moves';
     $('lib-search').addEventListener('input', App.render);
-    $('lib-kind').addEventListener('change', App.render);
     $('lib-check').addEventListener('change', App.render);
+    $('lib-show-moves').addEventListener('click', () => { state.libShow = 'moves'; App.render(); });
+    $('lib-show-positions').addEventListener('click', () => { state.libShow = 'positions'; App.render(); });
   };
 
   App.renderPositions = function () {
@@ -64,7 +96,7 @@
       App.showOnMap(id);
       App.showTab('map');
     };
-    $('positions').replaceChildren(h('div', { class: 'table-wrap' }, h('table', {},
+    $('positions').replaceChildren(h('div', { class: 'card lib-wrap table-wrap' }, h('table', {},
       h('thead', {}, h('tr', {}, h('th', {}, ''), h('th', {}, 'Position'), h('th', {}, 'Notation'), h('th', {}, 'Ways in / out'))),
       h('tbody', {}, g.positions.map((p) => {
         const health = healthById[p.id];

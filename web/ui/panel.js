@@ -6,20 +6,30 @@
   const { $, h, button, optionList, levelDots, moveLabel, posName, shortName, LEVEL_NAME, state, edit, select } = App;
 
   const moveName = (id) => (App.g.moveById[id] ? App.g.moveById[id].name : id);
-  const destination = (e) => (e.to === e.from ? '↺ same' : '→ ' + shortName(e.to));
+  const destination = (e) => (e.to === e.from ? '↺ stays' : '→ ' + shortName(e.to));
+  /** A rated move shows its level; unrated moves show nothing in lists. */
+  const ratedDots = (id) => (App.userLevel(id) ? [' · ', levelDots(App.userLevel(id))] : null);
 
   App.renderPanel = function (result) {
     const it = state.selected === null ? null : result.items[state.selected];
     const main = it ? detailPanel(it, state.selected) : nextPanel(result.end);
     let side;
-    if (!it) side = [App.comboFigure(result) || App.sketchFigure(result.end, 'Where you are now')];
-    else if (it.missing || !it.from) side = [];
-    else if (it.move.kind !== 'compound') side = [App.movieFigure(it)];      // animated: start to end
-    else if (it.from === it.to) side = [App.sketchFigure(it.from, 'Start and end (same position)')];
-    else side = [App.sketchFigure(it.from, 'Start'), App.sketchFigure(it.to, 'End')];
-    $('panel').replaceChildren(h('div', { class: 'panel-grid' },
-      h('div', { class: 'panel-main' }, main),
-      side.length ? h('aside', { class: 'leader-view', 'aria-label': 'Leader view' }, h('h3', {}, 'Leader view'), side) : null));
+    let where = '';
+    if (!it) {
+      const combo = App.comboFigure(result);
+      side = [combo || App.sketchFigure(result.end, 'Where you are now')];
+      where = combo ? `${shortName(state.startPos)} → ${shortName(result.end)}` : shortName(result.end);
+    } else if (it.missing || !it.from) side = [];
+    else {
+      where = it.from === it.to ? shortName(it.from) : `${shortName(it.from)} → ${shortName(it.to)}`;
+      if (it.move.kind !== 'compound') side = [App.movieFigure(it)];      // animated: start to end
+      else if (it.from === it.to) side = [App.sketchFigure(it.from, 'Start and end (same position)')];
+      else side = [App.sketchFigure(it.from, 'Start'), App.sketchFigure(it.to, 'End')];
+    }
+    $('panel').replaceChildren(h('div', { class: 'build-grid' },
+      side.length ? h('aside', { class: 'leader-view card', 'aria-label': 'Leader view' },
+        h('div', { class: 'lv-head' }, h('h3', { class: 'eyebrow' }, 'Leader view'), h('span', { class: 'lv-where' }, where)), side) : h('div'),
+      h('div', { class: 'panel-main' }, main)));
   };
 
   /** Top-down sketch of a position as the leader sees it. */
@@ -40,8 +50,9 @@
   };
 
   function kindChips() {
-    return h('div', { class: 'chips' }, ['all', 'move', 'styling', 'adjuster', 'compound'].map((k) =>
-      button(App.KIND_LABEL[k] || k, () => { state.kindFilter = k; App.render(); }, { class: state.kindFilter === k ? 'on' : '' })));
+    const label = (k) => (k === 'all' ? 'All' : (App.KIND_LABEL[k] || k).replace(/^./, (c) => c.toUpperCase()));
+    return h('div', { class: 'chips', role: 'group', 'aria-label': 'Kind of move' }, ['all', 'move', 'styling', 'adjuster', 'compound'].map((k) =>
+      button(label(k), () => { state.kindFilter = k; App.render(); }, { class: state.kindFilter === k ? 'on' : '', 'aria-pressed': String(state.kindFilter === k) })));
   }
 
   function nextPanel(end) {
@@ -57,19 +68,19 @@
       oninput: (ev) => { state.search = ev.target.value; App.keepFocus('.search', App.render); },
     });
     return h('div', {},
-      h('div', { class: 'panel-head' }, h('h2', {}, `What can follow ${posName(end)}`), kindChips()),
+      h('div', { class: 'panel-head' }, h('h2', {}, 'What can follow'), kindChips()),
+      h('p', { class: 'where small' }, `from ${posName(end)} · ${options.length} move${options.length === 1 ? '' : 's'}`),
       search,
-      h('p', { class: 'legend muted small' }, '↺ same = stays in this position · → = where it ends · ●○○ beginner, ●●○ intermediate, ●●● advanced'),
       options.length
         ? optionList(options.map((e) => {
           const m = g.moveById[e.move];
           return {
             label: moveLabel(m),
-            sub: [destination(e), m.counts ? ` · ${m.counts} ct ` : ' · on the fly ', levelDots(m.level)],
+            sub: [m.counts ? `${m.counts} ct` : 'on the fly', m.on ? ` · usually on ${m.on}` : '', ' · ', destination(e), ratedDots(m.id)],
             onclick: () => { state.search = ''; edit.add([m.id]); },
           };
         }))
-        : h('p', { class: 'muted' }, 'No moves fit here at this level. Try a higher level, or add your own under My moves.'));
+        : h('p', { class: 'muted' }, 'No moves fit here with these filters. Try All, or add your own under My moves.'));
   }
 
   /** The selected domino: facts and actions, then a bridge (if broken) or replacements, then insertions. */
@@ -98,7 +109,7 @@
       row('Counts', m.counts ? `${m.counts}, on beats ${App.beatRange(it.beat, m.counts)}` : 'none (happens on the fly)',
         it.phraseWarn ? h('span', { class: 'flag' }, ' · starts on 5: add a 4-count move before it to start on 1') : null,
         m.on ? h('span', { class: 'muted' }, it.onWarn ? ` · usually led on ${m.on}; here it starts on ${it.beat}` : ` · usually led on ${m.on}`) : null),
-      row('Level', levelDots(m.level), ' ', LEVEL_NAME[m.level] || ''),
+      row('Level', levelDots(App.userLevel(m.id)), ' ', App.userLevel(m.id) ? LEVEL_NAME[App.userLevel(m.id)] : 'not rated (rate it in the Library)'),
       row('Weight', App.weightText(w) + (it.weightWarn ? ` (you arrive on ${it.weightIn === 'parallel' ? 'the same foot' : 'opposite feet'})` : '')),
       m.opposite ? row('Opposite', moveName(m.opposite)) : null,
       m.sequence ? row('Made of', m.sequence.map(moveName).join(' › ')) : null,
@@ -125,7 +136,7 @@
           sub: `${path.length} step${path.length > 1 ? 's' : ''}`,
           onclick: () => edit.insert(i, path),
         })))
-        : h('p', { class: 'muted' }, 'No way to reconnect within 3 moves. Remove this domino, or add a connector under My moves.'),
+        : h('p', { class: 'muted' }, 'No way to reconnect within 3 moves. Remove this move, or add an adjuster under My moves.'),
     ];
   }
 
@@ -138,14 +149,14 @@
       alts.length
         ? optionList(alts.map((id) => ({
           label: moveLabel(g.moveById[id]),
-          sub: `${g.moveById[id].counts} ct`,
+          sub: [`${g.moveById[id].counts} ct`, ratedDots(id)],
           onclick: () => edit.replace(i, id),
         })))
         : h('p', { class: 'muted' }, 'No alternatives yet.'),
     ];
   }
 
-  /** Moves that can go after this domino; by default only those that keep the next domino connected. */
+  /** Moves that can go after this one; by default only those that keep the next move connected. */
   function insertSection(it, i) {
     const g = App.g;
     const next = state.strip[i + 1];
@@ -156,10 +167,10 @@
     const toggleShowAll = () => { state.showAllInsert = !state.showAllInsert; App.render(); };
     return [
       h('h2', {}, 'Insert after this'),
-      h('p', { class: 'muted' }, next ? `${good.length} of ${all.length} moves keep the next domino connected.` : 'This is the last domino.'),
+      h('p', { class: 'muted' }, next ? `${good.length} of ${all.length} moves keep the next move connected.` : 'This is the last move.'),
       optionList((state.showAllInsert ? all : good).map((e) => ({
         label: moveLabel(g.moveById[e.move]),
-        sub: (fits(e) ? '' : '⚠ ') + destination(e),
+        sub: [(fits(e) ? '' : '⚠ '), g.moveById[e.move].counts ? `${g.moveById[e.move].counts} ct · ` : 'on the fly · ', destination(e)],
         onclick: () => edit.insert(i + 1, [e.move], i + 1),
       }))),
       next && good.length < all.length

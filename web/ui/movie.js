@@ -60,15 +60,20 @@
   }
 
   /**
-   * The player: a sketch, Play/Pause, a scrubber and a status line.
-   * `label(seg, t)` says where we are; `onSegment(seg | null)` is told which segment shows (null when stopped).
+   * The player: a sketch, the count (1-8), a scrubber drawn over the moves' colours, a round Play/Pause
+   * button and a status line. `label(seg, t)` says where we are; `onSegment(seg | null)` is told which
+   * segment shows (null when stopped).
    */
   function player(segments, { label, onSegment = () => {}, ariaLabel }) {
     const total = segments.reduce((sum, s) => sum + durationOf(s), 0);
     const bounds = sharedBounds(segments);
     const art = h('div', { class: 'sk-art' });
     const scrub = h('input', { type: 'range', min: '0', max: '1000', value: '0', 'aria-label': ariaLabel });
-    const status = h('span', { class: 'mv-count' });
+    const status = h('span', { class: 'mv-count', 'aria-live': 'off' });
+    const nums = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => h('span', {}, String(n)));
+    const beats = h('div', { class: 'mv-beats', 'aria-hidden': 'true' }, h('span', { class: 'eyebrow' }, 'Count'), h('div', { class: 'nums' }, nums));
+    const segs = h('div', { class: 'mv-segs', 'aria-hidden': 'true' },
+      segments.map((s) => h('i', { class: `k-${s.move.kind}`, style: `flex: ${durationOf(s)} 1 0` })));
     let raf = null;
     let startedAt = 0;
 
@@ -77,12 +82,19 @@
       art.innerHTML = Motion.frameSVG(seg.move, seg.from, seg.to, t, bounds);
       scrub.value = String(Math.round(fraction * 1000));
       status.textContent = label(seg, t);
+      const now = seg.counts ? countAt(seg, t) : 0;
+      nums.forEach((el, i) => el.classList.toggle('now', i + 1 === now));
       onSegment(playing ? seg : null);
+    }
+    function setButton(playing) {
+      play.textContent = playing ? '❚❚' : '▶';
+      play.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+      play.title = playing ? 'Pause' : 'Play';
     }
     function stop() {
       if (raf) cancelAnimationFrame(raf);
       raf = null;
-      play.textContent = '▶ Play';
+      setButton(false);
       onSegment(null);
     }
     function step(now) {
@@ -91,26 +103,27 @@
       draw(fraction, fraction < 1);
       if (fraction < 1) raf = requestAnimationFrame(step); else stop();
     }
-    const play = button('▶ Play', () => {
+    const play = button('▶', () => {
       if (raf) return stop();
       const from = Number(scrub.value) >= 1000 ? 0 : Number(scrub.value) / 1000;   // at the end: replay
       startedAt = performance.now() - from * total;
-      play.textContent = '❚❚ Pause';
+      setButton(true);
       raf = requestAnimationFrame(step);
     }, { class: 'mv-play' });
+    setButton(false);
     scrub.addEventListener('input', () => { stop(); draw(Number(scrub.value) / 1000, false); });
 
     draw(0, false);
-    return { art, controls: h('div', { class: 'mv-controls' }, play, scrub, status) };
+    return { art, status, controls: h('div', { class: 'mv-controls' }, beats, h('div', { class: 'mv-track' }, segs, scrub), play) };
   }
 
   App.movieFigure = function (it) {
     const seg = segmentOf(it, null);
-    const { art, controls } = player([seg], {
+    const { art, status, controls } = player([seg], {
       ariaLabel: `Position in ${it.move.name}`,
       label: (s, t) => (s.counts ? `count ${countAt(s, t)}` : t < 0.5 ? 'start' : 'end'),
     });
-    return h('figure', { class: 'sk-fig movie' }, art, controls, App.heightKey(),
+    return h('figure', { class: 'sk-fig movie' }, art, controls, status, App.heightKey(),
       h('figcaption', {}, h('strong', {}, 'Start: '), posName(it.from), h('br'), h('strong', {}, 'End: '), posName(it.to)));
   };
 
@@ -123,13 +136,13 @@
     const segments = comboSegments(result);
     if (!segments.length) return null;
     const dominoes = result.items.length;
-    const { art, controls } = player(segments, {
+    const { art, status, controls } = player(segments, {
       ariaLabel: 'Position in the combo',
       label: (s, t) => `${s.index + 1}/${dominoes} · ${s.move.name}` + (s.counts ? ` · count ${countAt(s, t)}` : ''),
       onSegment: (s) => highlight(s ? s.index : null),
     });
     const breaks = result.items.filter((it) => it.broken).length;
-    return h('figure', { class: 'sk-fig movie combo-movie' }, art, controls, App.heightKey(),
+    return h('figure', { class: 'sk-fig movie combo-movie' }, art, controls, status, App.heightKey(),
       h('figcaption', {}, h('strong', {}, 'Whole combo: '), `${result.items.length} moves, ${result.totalCounts} counts`,
         breaks ? h('span', { class: 'flag' }, ` · ${breaks} break${breaks > 1 ? 's' : ''}: the picture jumps there`) : null));
   };
