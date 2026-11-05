@@ -113,8 +113,10 @@ test('a couple turn turns the whole couple, and ends where it started', () => {
 });
 
 test('hands kept through a move travel smoothly from the start hold to the end hold', () => {
-  const STEPS = 50;
+  // Sampled like the player draws it: 60 frames a second, 500 ms a count (a connector takes 500 ms).
   for (const e of moveEdges) {
+    const ms = g.moveById[e.move].counts ? g.moveById[e.move].counts * 500 : 500;
+    const STEPS = Math.round((ms / 1000) * 60);
     let prev = null;
     for (let k = 0; k <= STEPS; k++) {
       // A connection is a pair of hands; in a hand change the old pair lets go and a new pair takes hold.
@@ -125,7 +127,7 @@ test('hands kept through a move travel smoothly from the start hold to the end h
           const before = prev.get(hand);
           if (!before) continue;                                   // a hand that just took hold
           const jump = Math.hypot(to[0] - before[0], to[1] - before[1]);
-          assert.ok(jump < 20, `${e.move} ${e.from} -> ${e.to}: ${hand} jumps ${jump.toFixed(1)}px at t=${k / STEPS}`);
+          assert.ok(jump < 20, `${e.move} ${e.from} -> ${e.to}: ${hand} moves ${jump.toFixed(1)} units in one frame at t=${(k / STEPS).toFixed(2)}`);
         }
       }
       prev = arms;
@@ -210,4 +212,21 @@ test('totalRotation keeps the wanted direction and lands on the end facing', () 
   assert.equal(M.totalRotation(-90, 90, 360), 180);    // only half a turn needed: a half turn right
   assert.equal(M.totalRotation(-90, 90, -360), -180);
   assert.equal(M.totalRotation(90, 90, 720), 720);
+});
+
+test('an arm never appears or vanishes at full length: hands reach out and withdraw', () => {
+  const len = (a) => [a.from, a.via, a.to].filter(Boolean).slice(1).reduce((sum, p, i, pts) => sum + Math.hypot(p[0] - [a.from, a.via, a.to].filter(Boolean)[i][0], p[1] - [a.from, a.via, a.to].filter(Boolean)[i][1]), 0);
+  for (const e of moveEdges) {
+    const ms = g.moveById[e.move].counts ? g.moveById[e.move].counts * 500 : 500;
+    const STEPS = Math.round((ms / 1000) * 60);
+    let prev = null;
+    for (let k = 0; k <= STEPS; k++) {
+      const arms = new Map(frame(e, k / STEPS).arms.map((a) => [`${a.who}${a.hand}`, a]));
+      if (prev) {
+        for (const [key, a] of arms) if (!prev.has(key)) assert.ok(len(a) <= 15, `${e.move} ${e.from} -> ${e.to}: ${key} appears ${len(a).toFixed(0)} units long at t=${(k / STEPS).toFixed(2)}`);
+        for (const [key, a] of prev) if (!arms.has(key)) assert.ok(len(a) <= 15, `${e.move} ${e.from} -> ${e.to}: ${key} vanishes ${len(a).toFixed(0)} units long at t=${(k / STEPS).toFixed(2)}`);
+      }
+      prev = arms;
+    }
+  }
 });

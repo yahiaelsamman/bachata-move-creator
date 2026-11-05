@@ -78,10 +78,11 @@
     const d = Math.min(len(v), ARM);
     if (d < 1e-6) return add(shoulder, mul(outwards, ARM / 2));
     const u = mul(v, 1 / len(v));
-    let n = right(u);
-    if (dot(n, outwards) < 0) n = mul(n, -1);
+    const n = right(u);
     const up = Math.sqrt(Math.max(0, (ARM / 2) ** 2 - (d / 2) ** 2));
-    return add(add(shoulder, mul(u, d / 2)), mul(n, up));
+    // Which side the elbow bends to follows `outwards`; near the switch the bend fades through a straight
+    // arm instead of jumping to the other side.
+    return add(add(shoulder, mul(u, d / 2)), mul(n, up * Math.tanh(4 * dot(n, outwards))));
   }
 
   /** Is point p inside body b's outline (scaled by k)? */

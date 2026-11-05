@@ -11,7 +11,7 @@
   const Motion = window.Motion;
   const { h, button, posName } = App;
   const BEAT_MS = 500;     // 120 bpm, a comfortable bachata tempo to watch
-  const QUICK_MS = 350;    // catches and releases (0 counts) still get a short animation
+  const QUICK_MS = 500;    // catches and releases (0 counts) still get a short animation
 
   const durationOf = (seg) => (seg.counts ? seg.counts * BEAT_MS : QUICK_MS);
 

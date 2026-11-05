@@ -179,8 +179,10 @@
     raiseHandsForTurn(holds.arms, leader, follower, { follower: fTurn, leader: turns.leader }, t, behindOk);
     // While one hand is up over her head (a halo), his other hand can't stay on her body: it would have to
     // pass under his own raised arm. It lets go for the turn and takes hold again afterwards.
-    if (holds.arms.some((a) => a.who === 'leader' && a.grip && (a.h || 0) > 1.2)) {
-      holds.arms = holds.arms.filter((a) => !(a.who === 'leader' && ['back', 'waist', 'shoulder'].includes(a.holds)));
+    const haloH = Math.max(0, ...holds.arms.filter((a) => a.who === 'leader' && a.grip).map((a) => a.h || 0));
+    if (haloH > 0.2) {
+      const r = 1 - (haloH - 0.2);                                  // fully withdrawn once the other hand is up (1.2)
+      for (const a of holds.arms) if (a.who === 'leader' && ['back', 'waist', 'shoulder'].includes(a.holds)) a.retract = Math.min(a.retract ?? 1, r);
     }
     keepGripsOut(holds.arms, leader, follower);
     keepGripsOutOfLeader(holds.arms, leader);
@@ -191,6 +193,9 @@
       if (f) { f.to = a.to; a.grip = a.to; }
     }
     holds.arms = withinReach(holds.arms, leader, follower, behindOk);
+    // Last: holds that are ending or starting are drawn part of the way out along their own route, each arm
+    // from its own shoulder, so hands withdraw and reach instead of appearing and vanishing.
+    holds.arms = holds.arms.map((a) => (a.retract === undefined ? a : reach(a, a.retract))).filter(Boolean);
     // Crossed hands at the start or the end: which hand is on top (the body-limit check needs both).
     const crossing = [SK.layout(from).top, SK.layout(to).top].filter(Boolean);
     return { leader, follower, label: (t < 0.5 ? A : B).label, ...holds, crossing };
@@ -220,8 +225,9 @@
     // Turn the direction a little at a time if straight out isn't clear: first towards the side the
     // arm comes from (so mirrored moves take mirrored routes), then the other way.
     // The elbow goes out, away from the dancer's own body (the shoulder side), not in between the two.
-    const toFrom = [a.from[0] - own.c[0], a.from[1] - own.c[1]];
-    const pref = Math.sign(dir[0] * toFrom[1] - dir[1] * toFrom[0]) || 1;
+    const probe = (sign) => [partner.c[0] + Math.cos(base0 + sign * (Math.PI / 6)) * 22, partner.c[1] + Math.sin(base0 + sign * (Math.PI / 6)) * 22];
+    const away = (p) => Math.hypot(p[0] - own.c[0], p[1] - own.c[1]);
+    const pref = away(probe(1)) >= away(probe(-1)) ? 1 : -1;
     for (let k = 0; k <= 24; k++) {
       const turn = (k % 2 ? pref : -pref) * Math.ceil(k / 2) * (Math.PI / 24);
       const u = [Math.cos(base0 + turn), Math.sin(base0 + turn)];
@@ -328,15 +334,18 @@
         const grip = Limits.fitGrip(
           { shoulder: a.from, face: leader.face, hand: a.hand, limit: limit(a, 'leader') },
           { shoulder: f.from, face: follower.face, hand: f.hand, limit: limit(f, 'follower') }, a.to);
-        const tooFar = Math.hypot(grip[0] - a.from[0], grip[1] - a.from[1]) > Limits.ARM + 1 ||
-          Math.hypot(grip[0] - f.from[0], grip[1] - f.from[1]) > Limits.ARM + 1;
-        replace.set(a, tooFar ? null : { ...a, to: grip, grip });
-        replace.set(f, tooFar ? null : { ...f, to: grip });
+        // Out of reach (the dancers moved apart): both hands let go, withdrawing as the gap grows.
+        const over = Math.max(Math.hypot(grip[0] - a.from[0], grip[1] - a.from[1]), Math.hypot(grip[0] - f.from[0], grip[1] - f.from[1])) - Limits.ARM - 1;
+        const r = over > 0 ? clamp01(1 - over / 24) : 1;
+        const hold = (x) => (r >= 1 ? { ...x, to: grip, ...(x === a ? { grip } : {}) } : { ...x, to: grip, ...(x === a ? { grip } : {}), retract: Math.min(x.retract ?? 1, r) });
+        replace.set(a, hold(a));
+        replace.set(f, hold(f));
       }
     }
     // Follower arms not held by the leader (e.g. a hand behind the leader's neck): kept while they reach.
     for (const f of arms) {
-      if (f.who === 'follower' && !replace.has(f) && Math.hypot(f.to[0] - f.from[0], f.to[1] - f.from[1]) > Limits.ARM + 1) replace.set(f, null);
+      const over = Math.hypot(f.to[0] - f.from[0], f.to[1] - f.from[1]) - Limits.ARM - 1;
+      if (f.who === 'follower' && !replace.has(f) && over > 0) replace.set(f, { ...f, retract: Math.min(f.retract ?? 1, clamp01(1 - over / 24)) });
     }
     return arms.map((a) => (replace.has(a) ? replace.get(a) : a)).filter(Boolean);
   }
@@ -368,7 +377,7 @@
       const grip = lerpPt(a.to, lerpPt(natural, halo, w), ease);
       a.to = a.grip = f.to = grip;
       // The hands are up before the turn gets going (otherwise the arm would wind round the body).
-      a.h = f.h = lerp(a.h || 0, 2, Math.min(1, w / 0.1));
+      a.h = f.h = lerp(a.h || 0, 2, Math.min(1, w / 0.28));
       // An arm round her body lifts along its way until it is above her shoulders.
       if (a.h > Limits.OVER_SHOULDERS) a.via = null;
       // Hands up over a head: seen from above the arms may point any way (withinReach still keeps them
@@ -398,6 +407,30 @@
     return Object.fromEntries(SK.layout(pos).arms.filter((a) => a.who === 'leader').map((a) => [a.hand, a.side]));
   }
 
+  /**
+   * An arm drawn only part of the way out (r from 0 to 1): a hand that lets go withdraws along its own
+   * route towards its shoulder (round her body if the arm goes round it) and a hand that takes hold reaches
+   * out along it, instead of appearing or vanishing. Returns null when nothing is left to draw.
+   */
+  function reach(arm, r) {
+    r = clamp01(r);
+    if (r >= 1) return arm;
+    if (r < 0.02) return null;
+    const pts = [arm.from, arm.via, arm.to].filter(Boolean);
+    const lens = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]));
+    let left = r * lens.reduce((x, y) => x + y, 0);
+    let end = pts[0], via = null;
+    for (let i = 0; i < lens.length; i++) {
+      if (left <= lens[i] || i === lens.length - 1) {
+        end = lerpPt(pts[i], pts[i + 1], lens[i] ? Math.min(1, left / lens[i]) : 1);
+        via = i > 0 ? pts[i] : null;                          // the elbow is kept once the hand is past it
+        break;
+      }
+      left -= lens[i];
+    }
+    return { ...arm, to: end, via, grip: arm.grip ? end : arm.grip };
+  }
+
   function blendHolds(from, to, leader, follower, t) {
     const A = SK.armsFor(from, leader, follower, { sides: sidesOf(from), style: SK.styleOf(from) });
     const B = SK.armsFor(to, leader, follower, { sides: sidesOf(to), style: SK.styleOf(to) });
@@ -410,7 +443,7 @@
     const arms = [];
     for (const a of A.arms) {
       const b = inB.get(key(a));
-      if (!b) { if (s < 0.5) arms.push(a); continue; }
+      if (!b) { if (s < 0.5) arms.push({ ...a, retract: 1 - 2 * s }); continue; }       // a hold that ends: the hand withdraws
       const viaA = a.via || lerpPt(a.from, a.to, 0.5);
       const viaB = b.via || lerpPt(b.from, b.to, 0.5);
       // A hand on her body (back, waist, a hand round her) slides round her, not through her.
@@ -433,7 +466,7 @@
         outW: Math.min(1, Math.min(s, 1 - s) / 0.2),
       });
     }
-    for (const b of B.arms) if (!inA.has(key(b)) && s >= 0.5) arms.push(b);
+    for (const b of B.arms) if (!inA.has(key(b)) && s >= 0.5) arms.push({ ...b, retract: 2 * s - 1 });       // a hold that starts: the hand reaches
     // Joined hands stay joined: her hand is where his is.
     for (const a of arms) {
       if (a.who !== 'leader' || !a.grip) continue;
