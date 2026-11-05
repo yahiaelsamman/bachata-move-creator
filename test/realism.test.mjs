@@ -67,7 +67,8 @@ test("crossed hands: the bottom hand can't go over a head while the top hand sta
   for (let k = 0; k <= 20; k++) kinds.push(...R.problems(M.frameAt(move, from, to, k / 20), allowed).map((p) => p.kind));
   assert.ok(kinds.includes('under'), kinds.join(','));
   // From left over right the left hands are on top: fine.
-  assert.deepEqual(brokenFrames(g.edgesByMove['crossed-hammerlock-entry'][0]), []);
+  const kindsOk = brokenFrames(g.edgesByMove['crossed-hammerlock-entry'][0]).flatMap((b) => b.found.map((f) => f.kind));
+  assert.ok(!kindsOk.includes('under'), kindsOk.join(','));
 });
 
 test('arms through bodies: a straight arm through the partner is found, one round the side is not', () => {

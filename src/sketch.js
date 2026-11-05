@@ -101,9 +101,10 @@
 
     // Where each of the follower's hands ends up, before connections.
     const fHand = {};
-    // A folded arm (hammerlock): the hand at the small of her back, a little towards the other side.
-    if (p.arms === 'hammerlock_follower_R') fHand.R = add(add(follower.c, mul(follower.face, -11)), mul(fr, -6));
-    if (p.arms === 'hammerlock_follower_L') fHand.L = add(add(follower.c, mul(follower.face, -11)), mul(fr, 6));
+    // A folded arm (hammerlock) goes behind the back to the opposite side: her right arm ends at her
+    // left hip (small of the back), her left arm at her right hip.
+    if (p.arms === 'hammerlock_follower_R') fHand.R = add(add(follower.c, mul(follower.face, -9)), mul(fr, -16));
+    if (p.arms === 'hammerlock_follower_L') fHand.L = add(add(follower.c, mul(follower.face, -9)), mul(fr, 16));
     if (p.arms === 'wrap') {
       fHand.R = add(add(follower.c, mul(follower.face, 13)), mul(fr, -9));
       fHand.L = add(add(follower.c, mul(follower.face, 13)), mul(fr, 9));
@@ -121,17 +122,30 @@
       ? add(add(follower.shoulder[farSide], mul(fr, farSide === 'R' ? 2 : -2)), mul(follower.face, -7)) : null;
     // The leader's own hand behind his back.
     const lHand = {};
-    if (p.arms === 'hammerlock_leader_L') lHand.L = add(leader.c, mul(leader.face, -13));
+    // His left arm ends at his right hip, behind his back.
+    const lr = right(leader.face);
+    if (p.arms === 'hammerlock_leader_L') lHand.L = add(add(leader.c, mul(leader.face, -9)), mul(lr, 16));
 
     // A hand reaching the far side of the follower's body goes around her side, not through her.
     const sideSign = (from, lh) => sides[lh] || (dist(from, add(follower.c, fr)) < dist(from, sub(follower.c, fr)) ? 1 : -1);
     const side = (from, lh, r = 18) => add(follower.c, mul(fr, r * sideSign(from, lh)));
     const backOf = (from, lh) => add(add(follower.c, mul(follower.face, -11)), mul(sub(side(from, lh), follower.c), 0.35));
     const around = (from, to, lh) => (dist(from, to) > dist(from, follower.c) + 4 ? side(from, lh) : null);
-    // To a hand behind her back: round her side and a little behind it, so the arm hugs her back.
-    const aroundBack = (from, lh) => add(side(from, lh, 20), mul(follower.face, -5));
-    // The leader's own hand behind his back, held by her: her arm goes round his side.
-    const aroundLeader = (lh) => add(add(leader.c, mul(right(leader.face), lh === 'L' ? -22 : 22)), mul(leader.face, -5));
+    // To a folded hand behind her back. On his own side of her it goes round her side, a little behind
+    // it. On the far side (her left arm folded to her right hip, held by his right hand) the arm crosses
+    // diagonally in front of her body and then round her side to the hand.
+    const aroundBack = (from, lh, hand) => {
+      const handSide = Math.sign(dot(sub(hand, follower.c), fr)) || 1;
+      if (handSide === sideSign(from, lh)) return add(side(from, lh, 20), mul(follower.face, -5));
+      return add(add(follower.c, mul(follower.face, 11)), mul(fr, handSide * 18));
+    };
+    // The leader's own hand behind his back, held by her: her arm crosses in front of him if the hand
+    // is on the far side from her shoulder, otherwise it goes round his side.
+    const aroundLeader = (shoulder, hand) => {
+      const handSide = Math.sign(dot(sub(hand, leader.c), lr)) || 1;
+      if (handSide === (Math.sign(dot(sub(shoulder, leader.c), lr)) || 1)) return add(add(leader.c, mul(lr, handSide * 22)), mul(leader.face, -5));
+      return add(add(leader.c, mul(leader.face, 11)), mul(lr, handSide * 18));
+    };
     // Crossed hands: keep the two grips a little apart so both show.
     const twisted = p.crossed && p.crossed !== 'none';
     const top = p.crossed === 'leader_R_over_L' ? 'R' : p.crossed === 'leader_L_over_R' ? 'L' : null;
@@ -159,10 +173,10 @@
       if (target === 'L' || target === 'R') {
         grip = fHand[target] || lHand[lh] || add(mid(from, follower.shoulder[target]), spread(lh));
         const folded = behindOk.has('follower' + target);
-        if (fHand[target]) via = overShoulder && target === (farSide === 'R' ? 'L' : 'R') ? overShoulder : folded ? aroundBack(from, lh) : around(from, grip, lh);
+        if (fHand[target]) via = overShoulder && target === (farSide === 'R' ? 'L' : 'R') ? overShoulder : folded ? aroundBack(from, lh, grip) : around(from, grip, lh);
         let fVia = null;
         if (lHand[lh]) {
-          fVia = aroundLeader(lh);
+          fVia = aroundLeader(follower.shoulder[target], grip);
           ({ via: fVia, to: grip } = Limits.shortenAround(follower.shoulder[target], fVia, grip));
         }
         // Joined hands: a hand going round the partner's body is pulled in to arm length; any other

@@ -217,12 +217,22 @@
     return a;
   }
 
-  /** A point moved from a to b round a centre c (angle and distance from c change smoothly). */
-  function roundLerp(a, b, c, s) {
+  /**
+   * A point moved from a to b round a centre c (angle and distance from c change smoothly). It goes
+   * the way round that passes the `hint` point (the elbow of the arm) so the direction never flips
+   * as she turns.
+   */
+  function roundLerp(a, b, c, s, hint) {
+    const TAU = 2 * Math.PI;
     const ang = (p) => Math.atan2(p[1] - c[1], p[0] - c[0]);
     const r = (p) => Math.hypot(p[0] - c[0], p[1] - c[1]);
-    let d = ang(b) - ang(a);
-    d = ((d + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
+    const wrap = (x) => ((x % TAU) + TAU) % TAU;
+    let d = ((ang(b) - ang(a) + 3 * Math.PI) % TAU) - Math.PI;       // the short way round
+    if (hint && Math.abs(d) > 0.3) {             // (a hand that stays where it is has no way round)
+      const along = (delta) => wrap((ang(hint) - ang(a)) * Math.sign(delta || 1)) <= Math.abs(delta);   // is the hint on this arc?
+      const other = d > 0 ? d - TAU : d + TAU;
+      if (!along(d) && along(other)) d = other;
+    }
     const th = ang(a) + d * s;
     const rr = lerp(r(a), r(b), s);
     return [c[0] + rr * Math.cos(th), c[1] + rr * Math.sin(th)];
@@ -350,12 +360,13 @@
       const viaA = a.via || lerpPt(a.from, a.to, 0.5);
       const viaB = b.via || lerpPt(b.from, b.to, 0.5);
       // A hand on her body (back, waist, a hand round her) slides round her, not through her.
-      const onBody = a.who === 'leader' && (a.via || b.via || ['back', 'waist', 'shoulder'].includes(a.holds));
-      const to = onBody ? roundLerp(a.to, b.to, follower.c, s) : lerpPt(a.to, b.to, s);
+      const onBody = a.who === 'leader' && ['back', 'waist', 'shoulder'].includes(a.holds);
+      const hint = b.via || a.via;
+      const to = onBody ? roundLerp(a.to, b.to, follower.c, s, hint) : lerpPt(a.to, b.to, s);
       arms.push({
         ...(s < 0.5 ? a : b),
         from: lerpPt(a.from, b.from, s),
-        via: a.via || b.via ? (onBody ? roundLerp(viaA, viaB, follower.c, s) : lerpPt(viaA, viaB, s)) : null,
+        via: a.via || b.via ? (onBody ? roundLerp(viaA, viaB, follower.c, s, hint) : lerpPt(viaA, viaB, s)) : null,
         to,
         grip: (s < 0.5 ? a.grip : b.grip) ? to : null,
         h: lerp(a.h || 0, b.h || 0, s),

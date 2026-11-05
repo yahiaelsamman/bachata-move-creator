@@ -142,7 +142,7 @@
   hands: "L>L,R>R"
   crossed: none
   arms: hammerlock_follower_R
-  notes: "Left-to-left and right-to-right. The follower's right arm is folded behind the back: the leader's right hand reaches round the follower's left side and holds it at the small of the back, never pushed up. The left hands are joined in front."
+  notes: "Left-to-left and right-to-right. The follower's right arm is folded behind the back to her left hip: the leader's right hand reaches round her left side and holds it at the small of the back, never pushed up. The left hands are joined in front."
   aka: [candado (Spanish), Brezel (German), "khamerlok / setenta (Russian)"]
 
 - id: hammerlock_R_double
@@ -153,7 +153,7 @@
   hands: "L>R,R>L"
   crossed: none
   arms: hammerlock_follower_R
-  notes: "Double hands, the follower's right arm folded behind the back: the leader's left hand reaches round the follower's right side and holds it at the small of the back. The leader's right holds the follower's left in front. The mirror of the left-arm hammerlock."
+  notes: "Double hands, the follower's right arm folded behind the back: the folded arm ends at her left hip, so the leader's left hand reaches diagonally across in front of her body to hold it. The leader's right holds the follower's left in front. The mirror of the left-arm hammerlock."
 
 - id: hammerlock_L_cross
   name: Hammerlock, left arm (crossed hands)
@@ -163,7 +163,7 @@
   hands: "L>L,R>R"
   crossed: none
   arms: hammerlock_follower_L
-  notes: "Left-to-left and right-to-right. The follower's left arm is folded behind the back: the leader's left hand reaches round the follower's right side and holds it at the small of the back. The right hands are joined in front. The mirror of the crossed-hands right-arm hammerlock."
+  notes: "Left-to-left and right-to-right. The follower's left arm is folded behind the back to her right hip: the leader's left hand reaches round her right side and holds it at the small of the back. The right hands are joined in front. The mirror of the crossed-hands right-arm hammerlock."
 
 - id: hammerlock_L
   name: Hammerlock, left arm (double hands)
@@ -173,7 +173,7 @@
   hands: "L>R,R>L"
   crossed: none
   arms: hammerlock_follower_L
-  notes: "Double hands, the follower's left arm folded behind the back: the leader's right hand reaches round the follower's left side and holds it at the small of the back, never pushed up. The leader's left holds the follower's right in front."
+  notes: "Double hands, the follower's left arm folded behind the back: the folded arm ends at her right hip, so the leader's right hand reaches diagonally across in front of her body (and in front of his own) to hold it at the small of the back, never pushed up. The leader's left holds the follower's right in front."
   aka: [tour espagnol (French), "khamerlok devushki (Russian)"]
 
 - id: hammerlock_leader_L
