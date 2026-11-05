@@ -65,6 +65,13 @@ Update this as we learn more. Read it before making any visual choice.
 
 Requirements that came out of it: the couple must be clearly visible; a bit more than A, calm; keep C's several colours; no hand-drawn look; no shape categories for positions; avoid anything that reads as generic AI (checkerboard bands, glow).
 
-## Round 3 (the real Build screen, four styles J to M) - waiting for reactions
+## Round 3 reactions (J to M)
 
-J Metro x Braun (colour carries the move kind), K Bauhaus Metro, L Blue Note Pop (big type, couple on a cobalt block), M Tile Cafe (patterns carry the move kind).
+J (Metro x Braun) is the favourite; M (Tile Cafe) also liked. Wanted changes:
+- The count should be much smaller, a tiny widget in the bottom-left corner.
+- The couple is a bit chunky: make it slimmer.
+- The kind of move (move, styling, adjuster) should be a small tag, not a block of colour.
+- Not sure about J's colours.
+- Wants to see the whole spread, all the pages.
+
+## Round 4 (the whole app in J's style, four palettes: metro, tile, cobalt, braun) - waiting for reactions
