@@ -74,4 +74,10 @@ J (Metro x Braun) is the favourite; M (Tile Cafe) also liked. Wanted changes:
 - Not sure about J's colours.
 - Wants to see the whole spread, all the pages.
 
-## Round 4 (the whole app in J's style, four palettes: metro, tile, cobalt, braun) - waiting for reactions
+## Round 4 and after (the whole app in J's style) - direction approved
+
+- Wanted Munich colours; the MVV 2026 network map (PDF) was given as the reference for font (Asap), style and colours. Likes it, "let's stick with this".
+- Build: couple a bit bigger, follower view cone like the leader's, combo must stay compact, kind strip and play bar liked, "What can follow" liked.
+- Map: wants the whole map, but no extra colours or functions for route types (it would explode in scale). Connectors must be legible, "maybe it's not colours, maybe it's dots": solved with solid lines (move) and dotted lines (adjuster) on a hub layout.
+- Library: liked a lot. Levels: my estimates were bad, so levels are user-set. My moves: fine; longer things are combos. Practice: low priority. Phone: show more via implicit info.
+- Next: build it into the real app, see docs/design/HANDOFF.md.
