@@ -378,8 +378,14 @@
       a.to = a.grip = f.to = grip;
       // The hands are up before the turn gets going (otherwise the arm would wind round the body).
       a.h = f.h = lerp(a.h || 0, 2, Math.min(1, w / 0.28));
-      // An arm round her body lifts along its way until it is above her shoulders.
-      if (a.h > Limits.OVER_SHOULDERS) a.via = null;
+      // An arm round her body lifts along its way until it is above her shoulders: the elbow
+      // straightens out over a band of heights (raised, so it passes over her, not round her),
+      // and the arm doesn't snap between bent and straight.
+      if (a.via) {
+        const k = clamp01((a.h - 0.4) / (Limits.OVER_SHOULDERS - 0.4));
+        if (k >= 1) a.via = null;
+        else if (k > 0) { a.via = lerpPt(a.via, lerpPt(a.from, a.to, 0.5), k); a.viaH = 1; }
+      }
       // Hands up over a head: seen from above the arms may point any way (withinReach still keeps them
       // in reach). The hands only start rising from a grip that is already fine, so nothing jumps.
       a.limit = f.limit = -1;
