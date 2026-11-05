@@ -245,3 +245,38 @@ test('a move whose name says someone turns, spins or walks around shows it', asy
   }
   assert.deepEqual(still, []);
 });
+
+// Arms that still snap between two frames (bent round a body <-> straight). Take a move off once fixed.
+const KNOWN_ARM_HOPS = new Set([
+  'cuddle-entry', 'cuddle-release-spin', 'cuddle-unwrap', 'cuddle-unwrap-to-closed', 'shadow-neck-turn-to-neck-wrap',
+]);
+
+test('no arm snaps between frames (apart from the known hops)', () => {
+  const g = MG.compile(loadData());
+  const d = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+  const samples = (x) => {
+    const P = [x.from, x.via, x.to].filter(Boolean), out = [];
+    for (let i = 1; i < P.length; i++) for (let s = 0; s <= 12; s++) out.push([P[i - 1][0] + (P[i][0] - P[i - 1][0]) * s / 12, P[i - 1][1] + (P[i][1] - P[i - 1][1]) * s / 12]);
+    return out;
+  };
+  // How far the drawn arm moved, beyond what its hand and shoulder moved.
+  const jump = (a, b) => {
+    const sa = samples(a), sb = samples(b);
+    const near = (p, S) => Math.min(...S.map((q) => d(p, q)));
+    return Math.max(...sa.map((p) => near(p, sb)), ...sb.map((p) => near(p, sa))) - Math.max(d(a.to, b.to), d(a.from, b.from));
+  };
+  const hops = new Set();
+  for (const m of g.moves) {
+    if (m.kind === 'compound') continue;
+    for (const e of g.edgesByMove[m.id] || []) {
+      let prev = null;
+      for (let k = 0; k <= 80; k++) {
+        const now = new Map(M.frameAt(m, g.posById[e.from], g.posById[e.to], k / 80).arms.map((a) => [a.who + a.hand, a]));
+        if (prev) for (const [key, a] of now) if (prev.has(key) && jump(a, prev.get(key)) > 8) hops.add(m.id);
+        prev = now;
+      }
+    }
+  }
+  assert.deepEqual([...hops].filter((id) => !KNOWN_ARM_HOPS.has(id)).sort(), [], 'new arm hops');
+  assert.deepEqual([...KNOWN_ARM_HOPS].filter((id) => !hops.has(id)), [], 'fixed: take these off KNOWN_ARM_HOPS');
+});
