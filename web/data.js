@@ -2084,6 +2084,7 @@ window.BACHATA_DATA = {
     "open_RL"
    ],
    "counts": 4,
+   "halo": "R",
    "notes": "The leader lifts the follower's left hand up on an outside circle, passes it behind the follower's head and brings it down to the right shoulder; soft arms, no tug on the hair.",
    "aka": [
     "hair brush",
@@ -2103,6 +2104,7 @@ window.BACHATA_DATA = {
     "open_RL"
    ],
    "counts": 4,
+   "halo": "R",
    "notes": "The leader leads the follower's left hand up from below, lifts the elbow and drops the loop over the follower's head like a scarf; follow it with a turn or a head roll.",
    "aka": [
     "inside face loop",

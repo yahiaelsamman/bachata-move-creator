@@ -177,6 +177,8 @@
     const holds = blendHolds(from, to, leader, follower, t);
     const behindOk = new Set([...Limits.allowedBehind(from), ...Limits.allowedBehind(to)]);
     raiseHandsForTurn(holds.arms, leader, follower, { follower: fTurn, leader: turns.leader }, t, behindOk);
+    // A face loop: the joined hand goes up over her head and comes down again (move.halo names his hand).
+    if (move && (move.halo === 'L' || move.halo === 'R')) raiseHandsForTurn(holds.arms, leader, follower, {}, t, behindOk, move.halo);
     // While one hand is up over her head (a halo), his other hand can't stay on her body: it would have to
     // pass under his own raised arm. It lets go for the turn and takes hold again afterwards.
     const haloH = Math.max(0, ...holds.arms.filter((a) => a.who === 'leader' && a.grip).map((a) => a.h || 0));
@@ -355,14 +357,15 @@
    * follows the shoulders round instead of wrapping around the body. Seen from above, the grip moves
    * to just in front of that dancer's head for the middle of the turn, within both arms' reach.
    */
-  function raiseHandsForTurn(arms, leader, follower, turns, t, behindOk = new Set()) {
-    const who = Math.abs(turns.follower) >= 180 ? 'follower' : Math.abs(turns.leader) >= 180 ? 'leader' : null;
+  function raiseHandsForTurn(arms, leader, follower, turns, t, behindOk = new Set(), only = null) {
+    // `only`: just the leader's hand that takes the joined hands over her head (a face loop, no turn).
+    const who = only ? 'follower' : Math.abs(turns.follower) >= 180 ? 'follower' : Math.abs(turns.leader) >= 180 ? 'leader' : null;
     if (!who) return;
     const w = Math.sin(Math.PI * clamp01((t - 0.08) / 0.84));
     if (w < 1e-6) return;
     const ease = clamp01((w - 0.08) / 0.22);   // near the start and end of the turn, hand over gradually to the normal grip
     for (const a of arms) {
-      if (a.who !== 'leader' || !a.grip) continue;
+      if (a.who !== 'leader' || !a.grip || (only && a.hand !== only)) continue;
       const f = partnerArm(arms, a);
       if (!f) continue;
       // A hand that folds behind a back (a hammerlock) stays low: that is what folds the arm.

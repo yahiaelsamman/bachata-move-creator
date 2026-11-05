@@ -90,6 +90,7 @@
         const mb = g.moveById[b.move];
         if (mb.kind !== ma.kind || (mb.counts || 0) !== (ma.counts || 0)) continue;
         if (!sameTurn(Motion.turnsOf(mb), wanted)) continue;
+        if ((mb.halo || null) !== ({ L: 'R', R: 'L' }[ma.halo] || null)) continue;   // a hand over her head mirrors too
         pairs.push({ a, b });
       }
     }
@@ -124,7 +125,8 @@
       if (!want) continue;
       const wantTurn = mirrorTurn(Motion.turnsOf(a));
       const partners = moves.filter((b) => b.id !== a.id && b.kind === a.kind && (b.counts || 0) === (a.counts || 0) &&
-        sameTurn(Motion.turnsOf(b), wantTurn) && same(edgeSet(b), want)).map((b) => b.id);
+        sameTurn(Motion.turnsOf(b), wantTurn) && (b.halo || null) === ({ L: 'R', R: 'L' }[a.halo] || null) &&
+        same(edgeSet(b), want)).map((b) => b.id);
       if (partners.length) result[a.id] = partners;
     }
     return result;
