@@ -69,23 +69,6 @@ window.BACHATA_DATA = {
    ]
   },
   {
-   "id": "double_braided",
-   "name": "Double hands, twisted (braid)",
-   "short": "Braid",
-   "orientation": "facing",
-   "frame": "semi",
-   "hands": "L>R,R>L",
-   "crossed": "braid",
-   "arms": "neutral",
-   "notes": "Both hands still held left-to-right and right-to-left, but the two arm pairs are twisted round each other. Where a two-hand turn without a halo and the pretzel turn-out land; one more turn the same way untwists it.",
-   "aka": [
-    "crossed grip",
-    "braided hands",
-    "kosichka (Russian, 'plait')"
-   ],
-   "source": "Redance (pretzel 'crossed grip'); bachatamap.ru (fonarik, krest v rukakh)"
-  },
-  {
    "id": "cross_Rtop",
    "name": "Crossed hands, right over left",
    "short": "Cross R/L",
@@ -725,26 +708,11 @@ window.BACHATA_DATA = {
    "from": "double",
    "to": "same",
    "counts": 4,
-   "notes": "The leader raises the left, keeps the right low and circles both hands over the follower's head (a halo) while the follower turns right on 1-2-3; tap 4. Without the halo the arms wind up (see the braid version).",
+   "notes": "The leader raises the left, keeps the right low and circles both hands over the follower's head (a halo) while the follower turns right on 1-2-3; tap 4.",
    "aka": [
     "double-hand turn",
     "fonarik, povorot za dve ruki (Russian)"
    ]
-  },
-  {
-   "id": "two-hand-turn-braid",
-   "name": "Two-hand turn (into the braid)",
-   "kind": "move",
-   "level": 2,
-   "from": "double",
-   "to": "double_braided",
-   "counts": 4,
-   "notes": "Both hands rise and come together, then the leader leads the turn on 1-2 without circling over the follower's head, so the arms end twisted into a braid; basic on 3-4.",
-   "aka": [
-    "fonarik (Russian, 'little lantern')"
-   ],
-   "source": "bachatamap.ru/moderna/rotations/turns/two-hands-turn/",
-   "check": "Turn direction not stated by the source."
   },
   {
    "id": "mill-turn",
@@ -1982,24 +1950,6 @@ window.BACHATA_DATA = {
    "source": "wikidanse.fr"
   },
   {
-   "id": "pretzel-leader-turn-out",
-   "name": "Pretzel exit (leader turns under the arms)",
-   "kind": "move",
-   "level": 2,
-   "from": "cuddle",
-   "to": "double_braided",
-   "counts": 4,
-   "weight": {
-    "to": "mirrored"
-   },
-   "notes": "Second half of the pretzel: from the wrap the leader turns under the joined arms and ends face to face, both hands still held but twisted.",
-   "aka": [
-    "pretzel",
-    "krendel, pod krylo (Russian)"
-   ],
-   "source": "redance.app; bachatamap.ru/theory/positions/pretzel/"
-  },
-  {
    "id": "left-turn-into-cuddle",
    "name": "Wrap entry (left turn, one hand)",
    "kind": "move",
@@ -2049,35 +1999,6 @@ window.BACHATA_DATA = {
    "to": "cuddle",
    "counts": 0,
    "notes": "The follower offers the left hand at the right hip; the leader's right hand leaves the back and takes it."
-  },
-  {
-   "id": "pretzel-unwind",
-   "name": "Braid unwind (back to double hands)",
-   "kind": "move",
-   "level": 2,
-   "from": "double_braided",
-   "to": "double",
-   "counts": 4,
-   "notes": "Both hands lift and one partner turns once more in the same direction as the turn that twisted the arms, so they come apart.",
-   "aka": [
-    "pretzel exit"
-   ]
-  },
-  {
-   "id": "braid-whip",
-   "name": "Whip (from the braid)",
-   "kind": "move",
-   "level": 2,
-   "from": "double_braided",
-   "to": "open_RL",
-   "counts": 4,
-   "notes": "The leader lets go of the follower's right hand: it swings down in a circle on 5 and back up into the follower's own styling during the basic, keeping right-to-left.",
-   "aka": [
-    "flips",
-    "khlyst, vybros ruki (Russian)"
-   ],
-   "source": "bachatamap.ru/moderna/decorations/whip/",
-   "check": "End hold inferred. If the source's kosichka means crossed hands, this is the hand toss (right on top)."
   },
   {
    "id": "hair-brush",
@@ -2476,21 +2397,6 @@ window.BACHATA_DATA = {
     "basic"
    ],
    "notes": "An intermediate sensual loop of exactly four 8-counts: into closed, half turn into shadow, slide into the cuddle, walk it on 1-8, then send the follower out back to open, left to right."
-  },
-  {
-   "id": "pretzel",
-   "name": "Pretzel",
-   "kind": "compound",
-   "sequence": [
-    "cuddle-entry",
-    "pretzel-leader-turn-out",
-    "pretzel-unwind"
-   ],
-   "notes": "Wrap the follower, the leader turns under the arms to face with the hands twisted, then untwist back to double hands.",
-   "aka": [
-    "Brezel (German)",
-    "krendel (Russian)"
-   ]
   }
  ]
 };

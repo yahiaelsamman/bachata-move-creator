@@ -132,14 +132,10 @@
     const aroundBack = (from, lh) => add(side(from, lh, 20), mul(follower.face, -5));
     // The leader's own hand behind his back, held by her: her arm goes round his side.
     const aroundLeader = (lh) => add(add(leader.c, mul(right(leader.face), lh === 'L' ? -22 : 22)), mul(leader.face, -5));
-    // Crossed or braided hands: keep the two grips a little apart so both show.
+    // Crossed hands: keep the two grips a little apart so both show.
     const twisted = p.crossed && p.crossed !== 'none';
     const top = p.crossed === 'leader_R_over_L' ? 'R' : p.crossed === 'leader_L_over_R' ? 'L' : null;
     const spread = (lh) => (!twisted ? [0, 0] : [0, (lh === (top || 'R') ? -6 : 6)]);
-    // The braid: both pairs still hold left-to-right and right-to-left, but twisted round each other,
-    // so seen from above each grip has swapped to the other side and both pairs of arms cross.
-    const braid = p.crossed === 'braid';
-    const otherSide = { L: 'R', R: 'L' };
 
     // Body limits: a hand may only go behind its own back where the position says so (hammerlocks).
     const behindOk = Limits.allowedBehind(p);
@@ -161,9 +157,7 @@
       let grip;
       let via = null;
       if (target === 'L' || target === 'R') {
-        const aim = braid ? follower.shoulder[otherSide[target]] : follower.shoulder[target];
-        const start = braid ? leader.shoulder[otherSide[lh]] : from;
-        grip = fHand[target] || lHand[lh] || add(mid(start, aim), spread(lh));
+        grip = fHand[target] || lHand[lh] || add(mid(from, follower.shoulder[target]), spread(lh));
         const folded = behindOk.has('follower' + target);
         if (fHand[target]) via = overShoulder && target === (farSide === 'R' ? 'L' : 'R') ? overShoulder : folded ? aroundBack(from, lh) : around(from, grip, lh);
         let fVia = null;
@@ -297,7 +291,6 @@
     if (p.arms === 'follower_R_behind_leader_neck') parts.push("the follower's right hand behind your neck");
     if (p.arms === 'wrap_follower_R') parts.push("the follower's right arm wrapped across the waist");
     if (p.arms === 'hammerlock_leader_L') parts.push('your left arm behind your back');
-    if (p.crossed === 'braid') parts.push('both pairs of arms twisted round each other (a braid)');
     return parts.join(', ') + '.';
   }
 

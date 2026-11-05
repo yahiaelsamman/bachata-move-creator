@@ -4,12 +4,14 @@
 
 - **Moves still flagged `check`** (the library can filter them): mostly new
   moves from Russian sources whose start hold or counts are inferred (leader's
-  hammerlock, two-hand turn into the braid and the whip, mill turn, delayed turn,
+  hammerlock, mill turn, delayed turn,
   face loops, cuddle ocho, impulso, pinza into shadow), plus copa (salsa source),
   the shadow mill exit and the Madrid step.
-- **Braid vs crossed hands:** Russian *kosichka* is filed both under the
-  two-hand turn and under crossed hands. The data treats it as its own node
-  (`double_braided`); confirm.
+- **Braid:** removed. It could not be found in any online source and looks the same as
+  crossed hands (left over right or right over left). It and its four moves (two-hand
+  turn into the braid, pretzel exit, braid unwind, whip) and the "Pretzel" combo block
+  built on them are in the git history. The pretzel can come back once we agree what
+  position the wrap ends in.
 - **Leader's shadow** is only reachable at level 3, through crossed hands or
   the follower's shadow. Is there a common intermediate entry?
 - **Missing positions:** back to back (named in Spanish and French sources, hold

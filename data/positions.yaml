@@ -14,7 +14,6 @@
 #                  (contact points: L / R hand, back, waist, shoulder)
 #                "" means no connection. Order does not matter.
 #   crossed:     none | leader_R_over_L | leader_L_over_R
-#                | braid (double hands with the two arm pairs twisted round each other)
 #   arms:        neutral | hammerlock_follower_R | hammerlock_follower_L | wrap
 #                | wrap_follower_R (the follower's right arm across the waist, one-hand wrap)
 #                | hammerlock_leader_L (the leader's own left arm behind the back)
@@ -78,18 +77,6 @@
   arms: neutral
   notes: "Both hands held, not crossed. Use a loose hook grip (fingers, no thumbs) so the hands can rotate."
   aka: [two hands, "otkrytaya pozitsiya (Russian)"]
-
-- id: double_braided
-  name: Double hands, twisted (braid)
-  short: Braid
-  orientation: facing
-  frame: semi
-  hands: "L>R,R>L"
-  crossed: braid
-  arms: neutral
-  notes: "Both hands still held left-to-right and right-to-left, but the two arm pairs are twisted round each other. Where a two-hand turn without a halo and the pretzel turn-out land; one more turn the same way untwists it."
-  aka: [crossed grip, braided hands, "kosichka (Russian, 'plait')"]
-  source: "Redance (pretzel 'crossed grip'); bachatamap.ru (fonarik, krest v rukakh)"
 
 - id: cross_Rtop
   name: Crossed hands, right over left

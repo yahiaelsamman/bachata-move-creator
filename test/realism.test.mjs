@@ -97,15 +97,6 @@ test('hand heights: waist by default, shoulder for a hand on the back, over the 
   assert.match(SK.drawSVG(mid), /sk-high/);
 });
 
-test('the braid is drawn twisted: each grip on the other side, both pairs of arms crossing', () => {
-  const L = SK.layout(g.posById.double_braided);
-  const grip = (hand) => L.arms.find((a) => a.who === 'leader' && a.hand === hand).to;
-  assert.ok(grip('L')[0] > L.leader.c[0] && grip('R')[0] < L.leader.c[0], `${grip('L')} ${grip('R')}`);
-  const arm = (who, hand) => L.arms.find((a) => a.who === who && a.hand === hand);
-  assert.ok(R.segmentsCross(arm('leader', 'L').from, arm('leader', 'L').to, arm('leader', 'R').from, arm('leader', 'R').to));
-  assert.ok(R.segmentsCross(arm('follower', 'L').from, arm('follower', 'L').to, arm('follower', 'R').from, arm('follower', 'R').to));
-});
-
 test("a hand behind the leader's neck: the follower's arm is bent, the elbow out to her side", () => {
   for (const id of ['shadow_neck', 'neck_wrap']) {
     const L = SK.layout(g.posById[id]);
