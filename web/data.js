@@ -267,7 +267,7 @@ window.BACHATA_DATA = {
    "frame": "closed",
    "hands": "L>R,R>waist",
    "crossed": "none",
-   "arms": "neutral",
+   "arms": "wrap_follower_R",
    "notes": "The leader is behind, the right hand on the follower's waist or stomach. The follower's right arm lies across the waist in front, and the leader's left arm reaches around the follower's left side to hold that hand at the left hip.",
    "aka": [
     "sombra (Spanish)",

@@ -69,8 +69,8 @@ as text, save as compound, clear, start weight) are in the **More** menu.
   (it goes round). With crossed hands the bottom hand can't go up over a head while the
   top one stays low, and an arm only folds behind a back in a turn away from it (a left
   turn for the right arm). Height is three levels (waist, shoulder, over the head), not a
-  full 3D model. The few moves that still break a limit are listed in
-  `test/known-issues.mjs`.
+  full 3D model. Every move of every position passes these checks; a move that breaks one
+  can be listed in `test/known-issues.mjs` (it is empty now).
 - **Map of positions:** every position with arrows for the moves between them. Your
   combo is drawn as a path. Click a position for its ways in and out, to start a
   new combo there, or to get the shortest routes there from the end of your

@@ -172,7 +172,10 @@
     const holds = blendHolds(from, to, leader, follower, t);
     const behindOk = new Set([...Limits.allowedBehind(from), ...Limits.allowedBehind(to)]);
     raiseHandsForTurn(holds.arms, leader, follower, { follower: fTurn, leader: turns.leader }, t, behindOk);
-    holds.arms = holds.arms.map((a) => roundBody(a, a.who === 'leader' ? follower : leader));
+    keepGripsOut(holds.arms, leader, follower);
+    keepGripsOutOfLeader(holds.arms, leader);
+    holds.arms = holds.arms.map((a) => roundBody(a, a.who === 'leader' ? follower : leader, a.who === 'leader' ? leader : follower,
+      a.who !== 'leader' || behindOk.has(a.who + a.hand)));
     for (const a of holds.arms) {           // her hand stays in his
       const f = a.who === 'leader' && a.grip && holds.arms.find((x) => x.who === 'follower' && x.hand === a.holds && x.heldBy === a.hand);
       if (f) { f.to = a.to; a.grip = a.to; }
@@ -187,9 +190,12 @@
    * An arm at waist or shoulder height that would go straight through the partner's body goes round
    * the nearer side of it instead (a hand sliding round her waist while she turns).
    */
-  function roundBody(a, partner) {
+  function roundBody(a, partner, own, ownOk = false) {
     if ((a.h || 0) >= Limits.RAISED || (a.via && a.viaH >= 1)) return a;
-    const hit = (p) => Limits.inside(p, partner, 0.6);
+    // Her body, and the dancer's own (an arm that goes round the partner must not cut through the
+    // dancer's own body either, apart from folded or wrapped arms that lie on it on purpose).
+    const hit = (p) => Limits.inside(p, partner, 0.6) ||
+      (!ownOk && Limits.inside(p, own, 0.5) && Math.hypot(p[0] - a.from[0], p[1] - a.from[1]) >= 8);
     const through = (path) => {
       for (let k = 1; k < path.length; k++) for (let i = 1; i < 24; i++) if (hit(lerpPt(path[k - 1], path[k], i / 24))) return true;
       return false;
@@ -215,6 +221,43 @@
       }
     }
     return a;
+  }
+
+  function keepGripsOutOfLeader(arms, leader) {
+    for (const a of arms) {
+      if (a.who !== 'leader' || !a.grip || !a.outOf) continue;
+      const away = [a.outOf[0] - leader.c[0], a.outOf[1] - leader.c[1]];
+      const L = Math.hypot(...away);
+      if (L < 1e-6 || !Limits.inside(a.to, leader, 0.8)) continue;
+      const u = [away[0] / L, away[1] / L];
+      let d = 0;
+      while (d < 60 && Limits.inside([a.to[0] + u[0] * d, a.to[1] + u[1] * d], leader, 0.8)) d += 0.75;
+      const p = [a.to[0] + u[0] * d * a.outW, a.to[1] + u[1] * d * a.outW];
+      const f = partnerArm(arms, a);
+      if (f) f.to = p;
+      a.to = a.grip = p;
+    }
+  }
+
+  /**
+   * A grip is never inside her body: while the hold changes, a hand that would pass through her is
+   * pushed out towards the leader's side of her (so it travels over the surface of her body instead of
+   * through it), and her own hand goes with it.
+   */
+  function keepGripsOut(arms, leader, follower) {
+    for (const a of arms) {
+      if (a.who !== 'leader' || !a.grip || !a.keepOut) continue;
+      if (!Limits.inside(a.to, follower, 0.8)) continue;
+      const f = partnerArm(arms, a);
+      const away = [a.from[0] - follower.c[0], a.from[1] - follower.c[1]];
+      const L = Math.hypot(...away);
+      if (L < 1e-6) continue;
+      const u = [away[0] / L, away[1] / L];
+      let p = a.to;
+      for (let i = 0; i < 80 && Limits.inside(p, follower, 0.8); i++) p = [p[0] + u[0] * 0.75, p[1] + u[1] * 0.75];
+      if (f) f.to = p;
+      a.to = a.grip = p;
+    }
   }
 
   /**
@@ -370,6 +413,13 @@
         to,
         grip: (s < 0.5 ? a.grip : b.grip) ? to : null,
         h: lerp(a.h || 0, b.h || 0, s),
+        // Both holds have this grip outside her body (a wrap lies on her body on purpose), so the grip
+        // must stay outside it on the way too.
+        keepOut: !Limits.inside(a.to, follower, 0.8) && !Limits.inside(b.to, follower, 0.8),
+        // A hold that has the hand behind the leader's own back (inside his outline seen from above):
+        // on its way out the hand goes round his body, not through it. `outOf` says where it starts.
+        outOf: Limits.inside(a.to, leader, 0.8) ? a.to : Limits.inside(b.to, leader, 0.8) ? b.to : null,
+        outW: Math.min(1, Math.min(s, 1 - s) / 0.2),
       });
     }
     for (const b of B.arms) if (!inA.has(key(b)) && s >= 0.5) arms.push(b);
