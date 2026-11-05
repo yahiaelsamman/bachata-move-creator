@@ -61,7 +61,7 @@
   const practiceSketch = (posId) => (App.g.posById[posId] ? window.LeaderSketch.sketchSVG(App.g.posById[posId]) : '');
 
   function initToolbar() {
-    for (const p of App.g.positions) $('start-pos').append(h('option', { value: p.id }, p.name));
+    for (const p of App.g.positions) $('start-pos').append(h('option', { value: p.id, title: p.name }, p.short || p.name));
     $('start-pos').addEventListener('change', (ev) => edit.setStart(ev.target.value));
     $('start-weight').addEventListener('change', (ev) => edit.setWeight(ev.target.value));
     $('max-level').addEventListener('change', (ev) => {

@@ -242,7 +242,8 @@ button.primary:disabled { background: var(--bg); color: var(--muted); border-col
   background: var(--bg); border: 4px solid var(--ink);
   flex: none;
 }
-.domino .name { font-size: 13.5px; line-height: 1.2; color: var(--ink); overflow-wrap: anywhere; }
+.domino .name { font-size: 13.5px; line-height: 1.2; color: var(--ink); overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .domino .meta { font-size: 11.5px; font-weight: 600; color: var(--muted); line-height: 1.25; }
 .domino .meta:empty { display: none; }
 .domino:hover .stop { background: var(--panel); }
