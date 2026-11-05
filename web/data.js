@@ -1816,8 +1816,11 @@ window.BACHATA_DATA = {
    "from": "hammerlock_leader_L",
    "to": "double",
    "counts": 4,
+   "turn": {
+    "leader": -360
+   },
    "opposite": "leader-hammerlock-entry",
-   "notes": "The leader ducks under the joined right hands and turns back left, so the left arm comes out from behind the leader's back.",
+   "notes": "The leader ducks under the joined right hands and turns back left, the opposite way to the entry, so the left arm comes out from behind the leader's back. (Carrying on in the entry's direction would need a full duck and a shoulder rotation; not confirmed comfortable, so not included.)",
    "aka": [
     "nyrok pod ruku (Russian)"
    ],
