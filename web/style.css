@@ -594,11 +594,20 @@ dialog.practice::backdrop { background: rgba(27, 38, 68, 0.5); }
   .hub-center text { font-size: 22px; }
   .map-note { font-size: 12px; }
   .lib-controls .seg { margin-left: 0; }
+  body:not([data-tab="build"]) .combo-sticky { position: static; }
   .lib-wrap thead { display: none; }
-  .lib-wrap tr { display: grid; grid-template-columns: 1fr auto; padding: 8px 12px; border-bottom: 1px solid var(--rule); }
-  .lib-wrap td { border: 0; padding: 2px 0; }
-  .lib-wrap td.mv { grid-column: 1 / -1; }
-  .lib-wrap td.where { grid-column: 1; font-size: 13px; }
+  .lib-wrap tr { display: flex; flex-wrap: wrap; align-items: center; gap: 0 10px; padding: 8px 12px; border-bottom: 1px solid var(--rule); }
+  .lib-wrap td { border: 0; padding: 2px 0; font-size: 13px; }
+  .lib-wrap td.mv { flex-basis: 100%; font-size: 15px; }
+  .lib-wrap td.mv strong { font-size: 16px; }
+  .lib-wrap td.where + td.where::before { content: "→ "; }
+  .lib-wrap td:nth-child(4)::before { content: "· "; }
+  .lib-wrap td:nth-child(5) { margin-left: auto; }
+  .lib-wrap .rate { min-height: 44px; }
+  .lib-wrap tr { position: relative; }
+  .lib-wrap td:nth-child(6) { position: absolute; right: 12px; top: 8px; }
+  .lib-wrap td:nth-child(6):not(:empty) ~ td, .lib-wrap tr:has(td:nth-child(6) button) td.mv { padding-right: 72px; }
+  .lib-wrap td button.add { min-height: 40px; }
   .form-pair { grid-template-columns: 1fr; }
   button, select, input:not([type="checkbox"]):not([type="range"]), .menu summary { min-height: 44px; }
   .chips button { min-height: 44px; }

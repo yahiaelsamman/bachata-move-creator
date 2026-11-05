@@ -16,6 +16,7 @@
       $('tab-' + t).tabIndex = on ? 0 : -1;
       $('view-' + t).hidden = !on;
     }
+    document.body.dataset.tab = state.tab;     // the phone layout pins the combo only on Build
   }
 
   App.showTab = function (name, { focus = false } = {}) {
