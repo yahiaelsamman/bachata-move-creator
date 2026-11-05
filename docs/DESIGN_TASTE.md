@@ -42,9 +42,13 @@ Update this as we learn more. Read it before making any visual choice.
 - Feeling words: overdone, rough, artsy, intuitive.
 - Reasons about use: can't read it, don't understand it.
 
-## Open questions
+## Answers after round 1
 
-- What "Mr. Sandman" means here (song, show, or just the feeling).
-- Light or dark base (most likes were light).
-- Clean machine look vs a few handmade touches, which is the base.
-- Should moves and positions feel like cards you collect and combine?
+- "Mr. Sandman" is the song (heard in LittleBigPlanet, a milkshake-themed level): read as diner and milkshake pastels, nostalgic and sweet.
+- Light base. Dark is not ruled out, it is just what they went for this time.
+- Start clean and precise, then add a few hand-drawn touches. Careful with the word "handmade": an LLM cannot hand-make anything, so call it a hand-drawn style.
+- Cards and a deck-builder feel: a nice idea, but a shift and not the main thing. Sidelined until colours and style are settled.
+
+## Round 2 (nine light, clean styles: A to I) - waiting for reactions
+
+A Braun Counter, B Milkshake Diner, C Metro Pastel, D Blue Note Swiss, E Tile Wall, F Grid Notebook, G Field Unit, H Metro After Midnight (dark, flat), I Bauhaus Shapes.
