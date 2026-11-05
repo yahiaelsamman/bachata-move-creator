@@ -56,7 +56,7 @@ test('notes of 4-count moves count 1-4 in the move itself, never 5-8', () => {
   }
 });
 
-test('the strip says when a turn is on the wrong half, and not when it is right', () => {
+test('the strip notes when a turn is off its usual half, and not when it is on it', () => {
   const left = 'follower-left-turn';                       // led on 5
   const onFirst = MG.evaluateStrip(g, 'open_LR', 'mirrored', [left]).items[0];
   const onFifth = MG.evaluateStrip(g, 'open_LR', 'mirrored', ['basic', left]).items[1];
@@ -68,7 +68,7 @@ test('the strip says when a turn is on the wrong half, and not when it is right'
   assert.equal(MG.evaluateStrip(g, 'open_LR', 'mirrored', ['basic']).items[0].onWarn, false);
 });
 
-test('random combos almost always lead every turn on its own half', () => {
+test('random combos mostly lead turns on their usual half (a hint, not a rule)', () => {
   let seed = 11;
   const rng = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
   let combos = 0, flagged = 0;
@@ -77,5 +77,6 @@ test('random combos almost always lead every turn on its own half', () => {
     combos++;
     if (MG.evaluateStrip(g, p.id, 'mirrored', ids).items.some((it) => it.onWarn)) flagged++;
   }
-  assert.ok(flagged / combos < 0.08, `${flagged} of ${combos} combos have a turn on the wrong half`);
+  assert.ok(flagged / combos < 0.5, `${flagged} of ${combos} combos have a turn off its usual half`);
+  assert.ok(combos > 100);
 });

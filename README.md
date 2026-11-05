@@ -132,8 +132,9 @@ them along and only warns when something doesn't fit.
 move is "1-2-3, tap 4" wherever it is danced). A 4-count turn also has `on: 1` or
 `on: 5`, the half of the phrase it is led on, because a turn is led where the dancer
 steps onto the foot of the turn: the follower's right turn and the leader's left turn
-on 1, the follower's left turn and the leader's right turn on 5. The strip flags a turn
-placed on the wrong half, and random combos keep turns on their half.
+on 1, the follower's left turn and the leader's right turn on 5. It is only a hint:
+dancers break off the beat. The strip says "usually on 5" when a turn is elsewhere, and
+random combos make the usual half likelier.
 
 **Compound moves** list their parts by id. They are live references: if a part
 changes so the sequence no longer connects, the build reports the compound as

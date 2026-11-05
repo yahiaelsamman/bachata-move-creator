@@ -97,7 +97,7 @@
       row('To', h('span', { title: MG.notation(g.posById[it.to]) }, posName(it.to))),
       row('Counts', m.counts ? `${m.counts}, on beats ${App.beatRange(it.beat, m.counts)}` : 'none (happens on the fly)',
         it.phraseWarn ? h('span', { class: 'flag' }, ' · starts on 5: add a 4-count move before it to start on 1') : null,
-        m.on ? h('span', { class: it.onWarn ? 'flag' : 'muted' }, it.onWarn ? ` · this move is led on ${m.on}: add a 4-count move ${m.on === 5 ? 'before it' : 'or a 4 before it'} to move it` : ` · led on ${m.on}`) : null),
+        m.on ? h('span', { class: 'muted' }, it.onWarn ? ` · usually led on ${m.on}; here it starts on ${it.beat}` : ` · usually led on ${m.on}`) : null),
       row('Level', levelDots(m.level), ' ', LEVEL_NAME[m.level] || ''),
       row('Weight', App.weightText(w) + (it.weightWarn ? ` (you arrive on ${it.weightIn === 'parallel' ? 'the same foot' : 'opposite feet'})` : '')),
       m.opposite ? row('Opposite', moveName(m.opposite)) : null,
