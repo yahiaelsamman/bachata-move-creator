@@ -49,6 +49,22 @@ Update this as we learn more. Read it before making any visual choice.
 - Start clean and precise, then add a few hand-drawn touches. Careful with the word "handmade": an LLM cannot hand-make anything, so call it a hand-drawn style.
 - Cards and a deck-builder feel: a nice idea, but a shift and not the main thing. Sidelined until colours and style are settled.
 
-## Round 2 (nine light, clean styles: A to I) - waiting for reactions
+## Round 2 reactions (A to I)
 
-A Braun Counter, B Milkshake Diner, C Metro Pastel, D Blue Note Swiss, E Tile Wall, F Grid Notebook, G Field Unit, H Metro After Midnight (dark, flat), I Bauhaus Shapes.
+| | Style | Reaction |
+|---|---|---|
+| A | Braun Counter | Like the colours and the minimal calm; feels like "a bit too little". Toggles can change later. |
+| B | Milkshake Diner | Taken too far, looks AI, especially the checker band. No. |
+| C | Metro Pastel | Really nice. Liked the extra colours of round 1. Wants the characters (the couple) still shown. |
+| D | Blue Note Swiss | Gives "Persona" vibes, likes it, loves how big and minimal it is, it pops. But the couple was invisible (blended into the background). |
+| E | Tile Wall | Nice, really like it: "green, artsy, Pinterest cafe". |
+| F | Grid Notebook | Looks like stuff already seen from Claude. Likes the aesthetic but does not want a hand-drawn look when they are not drawing by hand. No hand-drawn touches. |
+| G | Field Unit | No. Buttons clunky and big, the count far too big. |
+| H | Metro After Midnight | Prefers the light Metro (C). |
+| I | Bauhaus Shapes | Good, likes the style. Does not want the open/closed/hold shape categories. |
+
+Requirements that came out of it: the couple must be clearly visible; a bit more than A, calm; keep C's several colours; no hand-drawn look; no shape categories for positions; avoid anything that reads as generic AI (checkerboard bands, glow).
+
+## Round 3 (the real Build screen, four styles J to M) - waiting for reactions
+
+J Metro x Braun (colour carries the move kind), K Bauhaus Metro, L Blue Note Pop (big type, couple on a cobalt block), M Tile Cafe (patterns carry the move kind).
