@@ -26,7 +26,7 @@ const PAGE = 'file://' + path.resolve(__dirname, '../../web/review.html');
   await turns.nth(1).locator('input').fill('wrong way round');
   await p.locator('#sec-letgo .rv-tools button').click();
   const letgo = await p.locator('#sec-letgo table.rv tbody tr').count();
-  assert.match(await p.textContent('#rv-progress'), new RegExp(`^${letgo + 2} of \\d+ checked · ${letgo + 1} right · 1 wrong`));
+  await p.waitForFunction((n) => new RegExp(`^${n + 2} of \\d+ checked · ${n + 1} right · 1 wrong`).test(document.getElementById('rv-progress').textContent), letgo, { timeout: 10000 });
   await p.click('#rv-copy');
   const text = await p.inputValue('#rv-text');
   assert.match(text, /^Move review: 1 wrong, \d+ right/);
@@ -43,7 +43,7 @@ const PAGE = 'file://' + path.resolve(__dirname, '../../web/review.html');
   // Other starts of a move are drawn when opened.
   const more = p.locator('#sec-turns details.rv-more').first();
   await more.locator('summary').click();
-  assert.ok(await more.locator('svg').count() > 5);
+  await p.waitForFunction(() => document.querySelector('#sec-turns details.rv-more').querySelectorAll('svg').length > 5, null, { timeout: 10000 });
 
   assert.deepEqual(errs, []);
   console.log('REVIEW PAGE OK');
