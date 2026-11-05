@@ -125,8 +125,8 @@
     return options[0];
   }
 
-  /** The cross body lead: the follower passes the leader's right side on the way. */
-  const passesRightSide = (move) => /cross body lead/i.test((move && move.name) || '');
+  /** The cross body lead and the paseala: the follower passes or visits the leader's right side on the way. */
+  const passesRightSide = (move) => /cross body lead|paseala/i.test((move && move.name) || '');
 
   function frameAt(move, from, to, t) {
     t = clamp01(t);

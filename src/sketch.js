@@ -288,7 +288,11 @@
       const points = [a.from, a.via, a.to].filter(Boolean).map(pt).join(' ');
       // A dot where the hand is: a grip on the leader's arm, a hand on the body, or her free hand on him.
       const dot = a.grip || (a.who === 'leader' ? a.to : a.heldBy ? null : a.to);
-      return `<polyline points="${points}" class="sk-arm sk-arm-${a.who}${isTop ? ' sk-top' : ''}"/>` + (dot ? handDot(dot, a.h, !a.grip) : '');
+      // A light casing under each arm keeps it visible where it crosses a body of the same colour,
+      // and shows which arm is on top where two cross (like lines on a metro map).
+      const cls = isTop ? ' sk-top' : '';
+      return `<polyline points="${points}" class="sk-arm-case${cls}"/><polyline points="${points}" class="sk-arm sk-arm-${a.who}${cls}"/>` +
+        (dot ? handDot(dot, a.h, !a.grip) : '');
     }).join('\n  ');
     const title = opts.title ? `<title>${esc(opts.title)}</title>` : '';
     const behind = L.follower.c[1] > L.leader.c[1] + 5; // follower behind the leader

@@ -230,3 +230,18 @@ test('an arm never appears or vanishes at full length: hands reach out and withd
     }
   }
 });
+
+test('a move whose name says someone turns, spins or walks around shows it', async () => {
+  const { loadData } = await import('../scripts/build.mjs');
+  const MG = require('../src/graph.js');
+  const R = require('../src/review.js');
+  const g = MG.compile(loadData());
+  const still = [];
+  for (const m of g.moves) {
+    if (m.kind === 'compound' || !/\b(turns?|spins?|walk-around|walk around each other)\b/i.test(m.name)) continue;
+    const e = (g.edgesByMove[m.id] || [])[0];
+    const shown = R.shownTurns(M, g, m, e);
+    if (Math.max(Math.abs(shown.follower), Math.abs(shown.leader)) < 90 && !M.turnsOf(m).couple) still.push(m.id);
+  }
+  assert.deepEqual(still, []);
+});

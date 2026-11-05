@@ -27,3 +27,12 @@ test('titles are escaped', () => {
   const svg = SK.sketchSVG({ orientation: 'facing', frame: 'open', hands: '', arms: 'neutral' }, { title: '<b>&' });
   assert.ok(svg.includes('&lt;b&gt;&amp;'));
 });
+
+test('every arm has a light casing under it, so it shows over a body of the same colour', () => {
+  const p = { orientation: 'shadow', frame: 'closed', hands: 'L>R,R>waist', crossed: 'none', arms: 'wrap_follower_R' };
+  const svg = SK.sketchSVG(p);
+  const arms = [...svg.matchAll(/<polyline points="([^"]+)" class="sk-arm /g)].map((m) => m[1]);
+  const cases = [...svg.matchAll(/<polyline points="([^"]+)" class="sk-arm-case/g)].map((m) => m[1]);
+  assert.ok(arms.length >= 3);
+  assert.deepEqual(cases, arms);
+});

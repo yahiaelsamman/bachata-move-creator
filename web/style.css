@@ -334,7 +334,9 @@ button.primary:disabled { background: var(--bg); color: var(--muted); border-col
 .sk-arm-leader { stroke: var(--ink); }
 .sk-arm-follower { stroke: var(--partner); }
 .sk-top { stroke-width: 5.5; }
-.sk-grip { fill: var(--ink); }
+.sk-arm-case { fill: none; stroke: var(--panel); stroke-width: 6.5; stroke-linecap: round; stroke-linejoin: round; }
+.sk-arm-case.sk-top { stroke-width: 8.5; }
+.sk-grip { fill: var(--ink); stroke: var(--panel); stroke-width: 1.2; }
 .sk-touch { fill: var(--ink); opacity: 0.75; }
 .sk-high { fill: none; stroke: var(--ink); stroke-width: 1.4; }
 .sk-legend { display: block; height: 18px; max-width: 230px; }

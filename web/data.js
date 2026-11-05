@@ -491,6 +491,9 @@ window.BACHATA_DATA = {
    "level": 2,
    "from": "hammerlock_R",
    "counts": 8,
+   "turn": {
+    "couple": 360
+   },
    "notes": "Walk around each other on 1-8 with the follower's arm behind the back. Safety: keep that hand at hip height, never push it up the back, and let go at the first resistance."
   },
   {
@@ -2339,6 +2342,10 @@ window.BACHATA_DATA = {
    "level": 2,
    "from": "apart",
    "counts": 4,
+   "turn": {
+    "follower": 360,
+    "leader": 360
+   },
    "notes": "Both spin alone at the same time, the same or opposite direction, and finish facing on 4.",
    "aka": [
     "vrashchenie odnovremennoe (Russian)"
