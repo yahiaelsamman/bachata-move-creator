@@ -124,8 +124,23 @@
       label: (s, t) => (s.counts ? `count ${countAt(s, t)}` : t < 0.5 ? 'start' : 'end'),
     });
     return h('figure', { class: 'sk-fig movie' }, art, controls, status, App.heightKey(),
-      h('figcaption', {}, h('strong', {}, 'Start: '), posName(it.from), h('br'), h('strong', {}, 'End: '), posName(it.to)));
+      h('figcaption', {}, viewTurnsNote(seg), h('strong', {}, 'Start: '), posName(it.from), h('br'), h('strong', {}, 'End: '), posName(it.to)));
   };
+
+  /**
+   * The picture turns with the leader. When the leader turns and that moves the partner round him
+   * (e.g. a half turn into the leader's shadow), the leader is drawn still and the partner goes round:
+   * say so, or it looks as if the partner did the turn.
+   */
+  function viewTurnsNote(seg) {
+    const turn = Motion.turnsOf(seg.move).leader;
+    if (!turn) return null;
+    const a = Motion.frameAt(seg.move, seg.from, seg.to, 0).leader.face;
+    const b = Motion.frameAt(seg.move, seg.from, seg.to, 0.5).leader.face;
+    if (Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) > 0.05) return null;     // the leader is drawn turning
+    const size = Math.abs(turn) === 180 ? 'a half turn' : Math.abs(turn) === 90 ? 'a quarter turn' : 'a turn';
+    return h('span', { class: 'view-note' }, `You make ${size} to the ${turn > 0 ? 'right' : 'left'}. The picture turns with you, so your partner seems to go round you.`, h('br'));
+  }
 
   /** Light up the domino that is playing (without redrawing the strip). */
   function highlight(index) {
