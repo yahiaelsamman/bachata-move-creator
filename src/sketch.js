@@ -299,7 +299,7 @@
     const { top, bottom, left, right: rightEdge } = opts.bounds || boundsOf(L);
     const x0 = left ?? 15;
     const vw = (rightEdge ?? W - 15) - x0;
-    return `<svg viewBox="${x0} ${r1(top)} ${vw} ${r1(bottom - top)}" class="sketch" role="img" xmlns="http://www.w3.org/2000/svg">${title}
+    return `<svg viewBox="${x0} ${r1(top)} ${vw} ${r1(bottom - top)}" class="sketch" ${title ? 'role="img"' : 'aria-hidden="true"'} xmlns="http://www.w3.org/2000/svg">${title}
   <path d="${cone(L.follower)}" class="sk-fov sk-fov-partner"/>
   <path d="${cone(L.leader)}" class="sk-fov"/>
   ${dancer(L.follower, 'follower', 'partner', behind)}

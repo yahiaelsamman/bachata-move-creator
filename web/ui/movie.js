@@ -67,7 +67,7 @@
   function player(segments, { label, onSegment = () => {}, ariaLabel }) {
     const total = segments.reduce((sum, s) => sum + durationOf(s), 0);
     const bounds = sharedBounds(segments);
-    const art = h('div', { class: 'sk-art' });
+    const art = h('div', { class: 'sk-art', role: 'img', 'aria-label': `Leader view, seen from above: ${ariaLabel.replace(/^Position in /, '')}` });
     const scrub = h('input', { type: 'range', min: '0', max: '1000', value: '0', 'aria-label': ariaLabel });
     const status = h('span', { class: 'mv-count', 'aria-live': 'off' });
     const nums = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => h('span', {}, String(n)));

@@ -55,7 +55,7 @@
         (state.maxLevel < 3 ? ` (showing moves you rated up to ${LEVEL_NAME[state.maxLevel]}, and unrated ones)` : '') +
         '. Levels are yours: tap ○○○ to rate a move. “Add” appears when a move can follow the end of your combo.'),
       h('div', { class: 'card lib-wrap table-wrap' }, h('table', { class: 'lib' },
-        h('thead', {}, h('tr', {}, ['Move', 'Starts in', 'Ends in', 'Counts', 'Level', ''].map((t) => h('th', {}, t)))),
+        h('thead', {}, h('tr', {}, ['Move', 'Starts in', 'Ends in', 'Counts', 'Level'].map((t) => h('th', {}, t)), h('th', {}, h('span', { class: 'visually-hidden' }, 'Add')))),
         h('tbody', {}, rows.map(({ m, ep }) => h('tr', {},
           h('td', { class: 'mv' }, h('strong', {}, m.name), badge(m.kind),
             m.check ? h('span', { class: 'flag small', title: m.check }, ' · ⚑ to check') : null,

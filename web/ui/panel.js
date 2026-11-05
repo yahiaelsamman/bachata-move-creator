@@ -28,7 +28,7 @@
     }
     $('panel').replaceChildren(h('div', { class: 'build-grid' },
       side.length ? h('aside', { class: 'leader-view card', 'aria-label': 'Leader view' },
-        h('div', { class: 'lv-head' }, h('h3', { class: 'eyebrow' }, 'Leader view'), h('span', { class: 'lv-where' }, where)), side) : h('div'),
+        h('div', { class: 'lv-head' }, h('h2', { class: 'eyebrow' }, 'Leader view'), h('span', { class: 'lv-where' }, where)), side) : h('div'),
       h('div', { class: 'panel-main' }, main)));
   };
 
