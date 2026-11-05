@@ -42,6 +42,9 @@
 #             read from the name ("Follower right turn (double)") or the notes ("turns left").
 #             `free: follower` gives the size but not the direction: from crossed hands the follower
 #             turns towards the hand on top, from other holds the shorter way.
+#             `couple: degrees` turns both together (a couple turn, a walk-around).
+#   halo      optional, L or R, for the animation: the leader's hand that takes the joined hands up over
+#             the follower's head and down again without a turn (face loops).
 #   sequence  (compound only) list of move ids. These are live references, so
 #             the start, end and counts are computed from the parts.
 #
