@@ -2,11 +2,13 @@
  * Review: sorts the moves into groups that need different amounts of looking at, and says in plain
  * words what each move changes. Used by web/review.html, and tested.
  *
- *   classify(graph, Motion) -> { inplace, letgo, turns, path, combos }   lists of review items
+ *   classify(graph, Motion, mirrors) -> { inplace, letgo, turns, path, combos }   lists of review items
  *   holdChange(from, to)    -> { lets, takes, keeps, other }               the hands, in words
  *   turnReading(Motion, move) -> { who, degrees, text, source } | null     the turn the animation uses
  *
- * An item is { move, edges: [{ from, to }], starts: [position ids], turn, change }.
+ * An item is { move, edges: [{ from, to }], starts: [position ids], turn, shown, change, mirrorOf, mirrors }.
+ * `mirrors` (from MoveMirror.mirrorMoves) pairs moves that are exact mirror images: the first of a pair in a
+ * group is the one to look at (`mirrors` lists the move ids it covers), the other has `mirrorOf` set.
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
@@ -91,7 +93,7 @@
   }
 
   /** Sorts every move into the group that says how to review it. */
-  function classify(g, Motion) {
+  function classify(g, Motion, mirrors = {}) {
     const out = { inplace: [], letgo: [], turns: [], path: [], combos: [] };
     const order = (id) => g.positions.findIndex((p) => p.id === id);
     for (const move of g.moves) {
@@ -117,6 +119,17 @@
     for (const k of ['inplace', 'letgo', 'path']) out[k].sort(byStart);
     // Turns: the ones the animation had to guess from wording first, then the ones set in the data.
     out.turns.sort((a, b) => (a.turn.source === 'data') - (b.turn.source === 'data') || byStart(a, b));
+    // Mirror images: look at one move of a pair, the other is covered by it.
+    for (const k of ['letgo', 'turns', 'path']) {
+      const byId = new Map(out[k].map((it) => [it.move.id, it]));
+      const covered = new Set();
+      for (const it of out[k]) {
+        if (covered.has(it.move.id)) continue;
+        const twins = (mirrors[it.move.id] || []).filter((id) => byId.has(id) && !covered.has(id));
+        it.mirrors = twins;
+        for (const id of twins) { covered.add(id); byId.get(id).mirrorOf = it.move.id; }
+      }
+    }
     return out;
   }
 

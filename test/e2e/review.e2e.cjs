@@ -11,7 +11,7 @@ const PAGE = 'file://' + path.resolve(__dirname, '../../web/review.html');
   p.on('dialog', (d) => d.accept());
   await p.goto(PAGE); await p.evaluate(() => localStorage.clear()); await p.reload();
 
-  const rows = await p.locator('table.rv tbody tr').count();
+  const rows = await p.locator('table.rv tbody tr').count();      // the moves to look at, and their mirror images
   const moves = await p.evaluate(() => window.BACHATA_DATA.moves.filter((m) => m.kind !== 'compound').length);
   assert.equal(rows, moves, 'one row per move (combo blocks play their parts)');
   assert.equal(await p.locator('text=[object').count(), 0, 'no broken text');
@@ -44,6 +44,21 @@ const PAGE = 'file://' + path.resolve(__dirname, '../../web/review.html');
   const more = p.locator('#sec-turns details.rv-more').first();
   await more.locator('summary').click();
   await p.waitForFunction(() => document.querySelector('#sec-turns details.rv-more').querySelectorAll('svg').length > 5, null, { timeout: 10000 });
+
+  // Mirror images: marking a move marks its mirror image too, and the notes name both.
+  const mirrorRow = p.locator('table.rv-mirror tbody tr').first();
+  const primaryName = await mirrorRow.locator('strong').textContent();
+  const twinName = await mirrorRow.locator('.rv-name').textContent();
+  const primary = p.locator('table.rv:not(.rv-mirror) tbody tr', { has: p.locator('.rv-name', { hasText: new RegExp('^' + primaryName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$') }) });
+  await primary.locator('button').nth(1).click();
+  await primary.locator('input').fill('check both sides');
+  assert.match(await mirrorRow.locator('.rv-status').textContent(), /wrong/);
+  await p.click('#rv-copy');
+  const both = await p.inputValue('#rv-text');
+  assert.ok(both.includes(`check both sides  [its mirror image too: ${twinName}]`), both);
+  assert.equal(both.split('\n').filter((l) => l.startsWith('- ')).length, 1, 'the mirror image is not listed on its own');
+  await primary.locator('button').nth(0).click();
+  assert.match(await mirrorRow.locator('.rv-status').textContent(), /right/);
 
   assert.deepEqual(errs, []);
   console.log('REVIEW PAGE OK');

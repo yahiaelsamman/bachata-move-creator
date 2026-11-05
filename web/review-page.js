@@ -9,7 +9,7 @@
   const Motion = window.Motion;
   const Rev = window.MoveReview;
   const g = MG.compile(window.BACHATA_DATA);
-  const groups = Rev.classify(g, Motion);
+  const groups = Rev.classify(g, Motion, window.MoveMirror.mirrorMoves(g, Motion));
 
   const KEY = 'bmc-review-v1';
   let marks = {};
@@ -100,6 +100,15 @@
   // ---- marks --------------------------------------------------------------------------------------------
   const sections = [];
 
+  /** A move that has mirror images passes its mark on to them (they animate as exact mirror images). */
+  function share(item) {
+    for (const t of item.twinItems || []) {
+      const m = marks[item.move.id];
+      if (m && m.s) marks[t.move.id] = { ...m }; else delete marks[t.move.id];
+      t.paint();
+    }
+  }
+
   function markCell(item, tr) {
     const id = item.move.id;
     const ok = h('button', { type: 'button', title: 'Right', 'aria-label': 'Right: ' + item.move.name }, '✓');
@@ -113,10 +122,10 @@
       note.hidden = m.s !== 'wrong';
       note.value = m.note || '';
     }
-    const set = (s) => { marks[id] = marks[id] && marks[id].s === s ? {} : { ...(marks[id] || {}), s }; save(); paint(); updateCounts(); };
+    const set = (s) => { marks[id] = marks[id] && marks[id].s === s ? {} : { ...(marks[id] || {}), s }; share(item); save(); paint(); updateCounts(); };
     ok.addEventListener('click', () => set('ok'));
     bad.addEventListener('click', () => { set('wrong'); if (marks[id].s === 'wrong') note.focus(); });
-    note.addEventListener('input', () => { marks[id] = { ...(marks[id] || {}), s: 'wrong', note: note.value }; save(); });
+    note.addEventListener('input', () => { marks[id] = { ...(marks[id] || {}), s: 'wrong', note: note.value }; share(item); save(); });
     item.paint = paint;
     paint();
     return h('td', { class: 'rv-mark' }, ok, ' ', bad, note);
@@ -137,20 +146,40 @@
   function section({ id, title, help, head, items, cells, open }) {
     const count = h('span', { class: 'rv-count' });
     const body = h('tbody');
+    const byId = new Map(items.map((it) => [it.move.id, it]));
+    const primaries = items.filter((it) => !it.mirrorOf), twins = items.filter((it) => it.mirrorOf);
+    for (const it of primaries) it.twinItems = (it.mirrors || []).map((id) => byId.get(id));
     const markAll = h('button', { type: 'button', class: 'ghost', onclick: () => {
-      for (const it of items) if (!(marks[it.move.id] || {}).s) marks[it.move.id] = { s: 'ok' };
+      for (const it of primaries) if (!(marks[it.move.id] || {}).s) { marks[it.move.id] = { s: 'ok' }; share(it); }
       save(); items.forEach((it) => it.paint()); updateCounts();
     } }, 'Mark the unchecked ones ✓');
-    for (const item of items) {
+    for (const item of primaries) {
       const tr = h('tr');
       tr.append(nameCell(item.move), ...cells(item), markCell(item, tr));
       body.append(tr);
+    }
+    // Mirror images: covered by the move they mirror, shown here only so nothing seems missing.
+    const mirrorBody = h('tbody');
+    for (const item of twins) {
+      const tr = h('tr');
+      const status = h('td', { class: 'rv-status' });
+      item.paint = () => {
+        const m = marks[item.move.id] || {};
+        tr.className = m.s === 'ok' ? 'rv-ok' : m.s === 'wrong' ? 'rv-wrong' : '';
+        status.textContent = m.s === 'ok' ? '✓ right' : m.s === 'wrong' ? '✗ wrong' : 'not checked';
+      };
+      item.paint();
+      tr.append(nameCell(item.move), h('td', {}, 'mirror image of ', h('strong', {}, byId.get(item.mirrorOf).move.name)), status);
+      mirrorBody.append(tr);
     }
     const el = h('details', { class: 'rv-section', id: 'sec-' + id, open: open ? '' : null },
       h('summary', {}, title, count),
       h('p', { class: 'rv-help' }, help),
       h('div', { class: 'rv-tools' }, markAll),
-      h('div', { class: 'table-wrap' }, h('table', { class: 'rv' }, h('thead', {}, h('tr', {}, head.map((t) => h('th', {}, t)))), body)));
+      h('div', { class: 'table-wrap' }, h('table', { class: 'rv' }, h('thead', {}, h('tr', {}, head.map((t) => h('th', {}, t)))), body)),
+      twins.length ? h('details', { class: 'rv-more rv-mirrors' },
+        h('summary', {}, `${twins.length} more move${twins.length > 1 ? 's are' : ' is'} the mirror image of one above (left and right swapped): your mark above covers ${twins.length > 1 ? 'them' : 'it'}`),
+        h('div', { class: 'table-wrap' }, h('table', { class: 'rv rv-mirror' }, h('thead', {}, h('tr', {}, ['Move', 'Covered by', 'Mark'].map((t) => h('th', {}, t)))), mirrorBody))) : null);
     sections.push({ id, title, items, count });
     return el;
   }
@@ -199,8 +228,11 @@
       for (const it of s.items) {
         const m = marks[it.move.id] || {};
         if (m.s === 'ok') ok++;
-        else if (m.s === 'wrong') lines.push(`- [${s.title}] ${it.move.name} (${it.move.id})${m.note ? ': ' + m.note : ''}`);
-        else unchecked++;
+        else if (m.s === 'wrong') {
+          if (it.mirrorOf) continue;                                   // listed with the move it mirrors
+          const twins = (it.twinItems || []).map((t) => t.move.name);
+          lines.push(`- [${s.title}] ${it.move.name} (${it.move.id})${m.note ? ': ' + m.note : ''}${twins.length ? `  [its mirror image too: ${twins.join(', ')}]` : ''}`);
+        } else unchecked++;
       }
     }
     return `Move review: ${lines.length} wrong, ${ok} right, ${unchecked} not checked yet\n` + (lines.length ? '\nWrong:\n' + lines.join('\n') : '');

@@ -7,9 +7,11 @@ const require = createRequire(import.meta.url);
 const MG = require('../src/graph.js');
 const M = require('../src/motion.js');
 const Rev = require('../src/review.js');
+const X = require('../src/mirror.js');
 
 const g = MG.compile(loadData());
-const groups = Rev.classify(g, M);
+const mirrors = X.mirrorMoves(g, M);
+const groups = Rev.classify(g, M, mirrors);
 const all = ['inplace', 'letgo', 'turns', 'path', 'combos'].flatMap((k) => groups[k]);
 
 test('every move is in exactly one group', () => {
@@ -63,4 +65,21 @@ test('shownTurns measures what the animation really turns', () => {
   assert.equal(Rev.shownText({ follower: 360, leader: 0 }), 'follower right 360°');
   assert.equal(Rev.shownText({ follower: 0, leader: -180 }), 'leader left 180°');
   assert.equal(Rev.shownText({ follower: 0, leader: 0 }), 'nobody turns');
+});
+
+test('mirror images are covered by one move of the pair', () => {
+  const items = ['letgo', 'turns', 'path'].flatMap((k) => groups[k]);
+  const covered = items.filter((it) => it.mirrorOf);
+  assert.ok(covered.length >= 15, `${covered.length}`);
+  const byId = new Map(items.map((it) => [it.move.id, it]));
+  for (const it of covered) {
+    const first = byId.get(it.mirrorOf);
+    assert.ok(first && !first.mirrorOf, it.move.id);
+    assert.ok(first.mirrors.includes(it.move.id));
+    assert.ok(mirrors[first.move.id].includes(it.move.id));
+  }
+  // Nothing is both a first move and covered by another.
+  assert.ok(items.every((it) => !(it.mirrorOf && it.mirrors && it.mirrors.length)));
+  // Without mirror information every move is its own.
+  assert.ok(['letgo', 'turns', 'path'].flatMap((k) => Rev.classify(g, M)[k]).every((it) => !it.mirrorOf));
 });

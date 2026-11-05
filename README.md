@@ -156,6 +156,7 @@ From the repository:
 | `src/generator.js` | Random combos: whole 8-counts, back to the start, no teleport or undo, each in-place move at most once. |
 | `src/sketch.js` | Leader-view SVG drawn from a position's attributes. |
 | `src/motion.js` | The couple at any moment of a move: turns, paths and hands, for the animation. |
+| `src/mirror.js` | Mirror images: swaps left and right in a position or an animation frame and finds which moves are mirrors of each other. A test checks every mirror pair animates as an exact mirror image; the review page uses the pairs so you look at one of each. |
 | `src/review.js` | Sorts the moves into review groups (in place, let go / catch, turns, paths), says in words what the hands do and how far the animation really turns someone. |
 | `web/review.html` | The review page: a table or filmstrip per move with ✓ / ✗ and a note; marks stay in the browser and "Copy my notes" lists the wrong ones. |
 | `src/reach.js` | Body limits: arm reach, how far a shoulder can rotate back, bodies that may not overlap, arms that may not go through a body or (crossed) through the arm on top. The sketch and the animation keep to them; `npm run build` and the tests check every frame of every move. |
