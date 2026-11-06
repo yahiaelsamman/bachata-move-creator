@@ -23,6 +23,20 @@
 - **Thin positions** (fewer than 3 ways in or out): `npm run build` prints the
   current list.
 
+## Needs a dancer (animation)
+
+- **Paseala** stands still. Sliding the follower out to the leader's right side while
+  she keeps facing him looked wrong (his left arm stretched across both bodies). Should
+  she open up beside him, both facing forward, and come back?
+- **Hand change (behind the back)** shows a plain hand swap. Draw the hand going round
+  behind the leader's back?
+- **Cross body lead:** the leader's quarter turn to the left is not drawn (the picture
+  turns with the leader). Show it?
+- **Arm hops:** the leader's right arm still swings quickly round her when wrapping
+  into or out of the cuddle, and the follower's arm in the shadow neck turn
+  (`KNOWN_ARM_HOPS` in `test/motion.test.mjs`). Slowing the hand down after a turn fixes
+  them but puts an arm through her body in the shadow entries, so it needs a better idea.
+
 ## Product ideas
 
 - Hand-identity check in the build: a move may not change which leader hand
