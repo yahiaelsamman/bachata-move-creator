@@ -840,6 +840,9 @@ window.BACHATA_DATA = {
    "from": "open_LR",
    "to": "open_RR",
    "counts": 4,
+   "turn": {
+    "follower": 0
+   },
    "notes": "On 1-2 the leader brings the follower's right hand behind the leader's own back and passes it to the right hand; tap 4. Often danced with a leader right turn over 8 counts; regrip to crossed hands afterwards if wanted.",
    "aka": [
     "behind-the-back hand change"

@@ -1,5 +1,5 @@
 // Offline support: network first (so updates arrive), cache as fallback.
-const CACHE = 'bmc-v18';
+const CACHE = 'bmc-v19';
 const ASSETS = [
   './', 'index.html', 'review.html', 'review.css', 'review-page.js', 'style.css', 'data.js', 'practice.js', 'app.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon.svg', 'fonts/asap-latin.woff2',
