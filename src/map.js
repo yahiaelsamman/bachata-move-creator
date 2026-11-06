@@ -114,8 +114,8 @@
    * Rings keep the order of the force layout around the middle, so neighbours stay roughly where
    * they are on the overview.
    */
-  function layoutHub(g, full, centerId) {
-    const W = 700, H = 560, CX = 350, CY = 284;
+  function layoutHub(g, full, centerId, { compact = false } = {}) {
+    let W = 700, H = 560, CX = 350, CY = 284;
     const kinds = {};
     for (const e of g.edges) {
       if (!MG.isTransition(g, e) || (e.from !== centerId && e.to !== centerId)) continue;
@@ -134,7 +134,9 @@
     // Crowded inner rings get wider; the outer ring stays outside it.
     const grow = Math.max(1, near.length / 13);
     const r1x = Math.min(135 * grow, 230), r1y = Math.min(120 * grow, 205);
-    const r2x = Math.max(255, r1x + 75), r2y = Math.max(222, r1y + 60);
+    // Compact (phones): the outer ring is only dots, so it sits just outside the inner ring.
+    const r2x = compact ? r1x + 48 : Math.max(255, r1x + 75), r2y = compact ? r1y + 44 : Math.max(222, r1y + 60);
+    if (compact) { W = Math.round(2 * r2x + 240); H = Math.round(2 * r2y + 80); CX = W / 2; CY = H / 2; }
     const place = (ids, rx, ry, off) => ids.map((id, i) => {
       const a = -Math.PI / 2 + off + (i * 2 * Math.PI) / ids.length;
       return { id, a, x: CX + rx * Math.cos(a), y: CY + ry * Math.sin(a) };
@@ -155,7 +157,7 @@
     }
     const ring2 = place(far, r2x, r2y, best);
     return {
-      center: centerId, cx: CX, cy: CY, width: W, height: H, ring1, ring2,
+      center: centerId, cx: CX, cy: CY, width: W, height: H, ring1, ring2, compact,
       rings: [[r1x, r1y], [r2x, r2y]], loops: MG.loopMoves(g, centerId).length,
     };
   }
@@ -203,7 +205,7 @@
       `<title>${esc(g.posById[hub.center].name)}</title><rect x="${r1(cx - w / 2)}" y="${r1(cy - 16)}" width="${r1(w)}" height="32" rx="16"/>` +
       `<text x="${cx}" y="${cy + 6}" text-anchor="middle">${esc(name)}</text></g>`;
     const rings = hub.rings.map(([rx, ry]) => `<ellipse cx="${cx}" cy="${cy}" rx="${r1(rx)}" ry="${r1(ry)}" class="hub-ring"/>`).join('');
-    return `<svg viewBox="-30 0 ${hub.width + 60} ${hub.height}" class="hubmap" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Map around ${esc(g.posById[hub.center].name)}">
+    return `<svg viewBox="-30 0 ${hub.width + 60} ${hub.height}" class="hubmap${hub.compact ? ' compact' : ''}" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Map around ${esc(g.posById[hub.center].name)}">
 ${rings}
 ${spokes}
 ${hub.ring2.map((n) => station(n, false)).join('\n')}

@@ -8,6 +8,7 @@
   const { $, h, button, optionList, posName, shortName, state, edit } = App;
   const moveName = (id) => App.g.moveById[id].name;
   const WAYS_SHOWN = 7;
+  const phone = window.matchMedia('(max-width: 640px)');     // phones get a tighter hub with bigger names
 
   /** The middle of the map: the position picked on it, else where the combo ends. */
   const centerOf = (result) => (state.mapSelected && App.g.posById[state.mapSelected] ? state.mapSelected : result.end);
@@ -15,7 +16,7 @@
   App.renderMap = function (result) {
     const g = App.g;
     const center = centerOf(result);
-    const hub = PM.layoutHub(g, App.mapLayout, center);
+    const hub = PM.layoutHub(g, App.mapLayout, center, { compact: phone.matches });
     const link = state.mapLink && [state.mapLink.from, state.mapLink.to].includes(center)
       ? (state.mapLink.from === center ? state.mapLink.to : state.mapLink.from) : null;
     $('map-title').replaceChildren('Around ', h('b', {}, posName(center)),
@@ -150,6 +151,7 @@
       App.showOnMap(id === center && state.mapSelected ? null : id);
     };
     $('map').addEventListener('click', onMapActivate);
+    phone.addEventListener('change', () => { if (App.isTab('map')) App.render(); });
     $('map-overview').addEventListener('click', onMapActivate);
     $('map').addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onMapActivate(ev); } });
   };

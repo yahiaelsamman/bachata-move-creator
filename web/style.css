@@ -591,9 +591,9 @@ dialog.practice::backdrop { background: rgba(27, 38, 68, 0.5); }
   .map-card { padding: 10px; }
   .map-legend { margin-left: 0; font-size: 13px; }
   .overview { grid-template-columns: 1fr; }
-  .hub-label { font-size: 25px; stroke-width: 7px; }
+  .hub-label { font-size: 19px; stroke-width: 6px; }
   .hub-far .hub-label { display: none; }     /* the outer names are in the overview and on tap */
-  .hub-center text { font-size: 22px; }
+  .hub-center text { font-size: 18px; }
   .map-note { font-size: 12px; }
   .lib-controls .seg { margin-left: 0; }
   body:not([data-tab="build"]) .combo-sticky { position: static; }
