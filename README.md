@@ -14,7 +14,7 @@ Link social dance moves like dominoes and build new combinations.
 
 It's a directed multigraph: several moves can connect the same two positions.
 
-![Domino strip with leader view](docs/screenshot.png)
+![Build: the combo as a metro line, the leader view and what can follow](docs/screenshot.png)
 
 ## Run it
 
@@ -30,38 +30,44 @@ npm test
 
 ## What you can do
 
-The combo stays pinned at the top while you scroll. Below it are four tabs:
-**Build** (what can follow, move details and the leader view), **Map**,
-**Library** (all moves and positions) and **My moves**. Less-used actions (copy
-as text, save as compound, clear, start weight) are in the **More** menu.
+The look follows the MVV (Munich public transport) network map. The combo is a metro
+line pinned at the top: each move is a station, and the line leaving it has the colour
+of its kind (blue = move, green = styling, orange = adjuster). The kind is always shown
+as a dot plus the word, never by colour alone. Four tabs: **Build**, **Map**, **Library**
+and **My moves**. Less-used actions (extend, clear, share, print, save as combo, level
+filter, start weight) are in the **More** menu. On a phone the tabs sit at the bottom.
 
 **Build combos**
-- **+ next move** lists everything that can follow where you are (A–Z, filter by
-  name or kind).
-- **Random combo** builds 16, 32 or 48 counts in whole 8-counts (8-count moves start on 1) and comes back to the start position. It never drops both hands to reconnect, never undoes the move it just made, and uses each in-place move at most once. **Extend** keeps your combo and continues it.
-- **Examples** load the compound moves from the data as a starting point.
+- **What can follow** lists every move that starts where you are: name, kind, counts,
+  the half of the phrase a turn is usually led on, and where it ends ("↺ stays" or "→ X").
+  Filter by kind or by name.
+- **Random** builds 16, 32 or 48 counts in whole 8-counts (8-count moves start on 1) and comes back to the start position. It never drops both hands to reconnect, never undoes the move it just made, and uses each in-place move at most once. **Extend** keeps your combo and continues it.
+- **Examples** load the built-in combos as a starting point.
 
 **Edit combos**
-- Click a domino to see details, or to:
+- Tap a station to see the move, or to:
   - replace it with a move that has the same start and end
   - insert a move after it (moves that keep the chain connected are listed first)
-  - move it, cut the combo there, or expand a compound move into its parts
-- Remove a domino from the middle and a red **bridge** marker appears. Click it for
+  - move it, cut the combo there, or expand a combo block into its parts
+- Remove a move from the middle and a red **break** appears on the line. Tap it for
   the shortest ways to reconnect (up to 3 moves).
-- **Undo** (Ctrl+Z). Keyboard: ← → select, Delete removes, Esc goes back to "next move".
+- **Undo** (Ctrl+Z). Keyboard: ← → select, Delete removes, Esc goes back to "what can follow".
 
 **See it**
-- **Leader view:** a top-down sketch of the position as the leader sees it. You're
-  at the bottom facing up, the follower is placed from the orientation and frame,
-  arms are drawn from the handholds, and the top hand is drawn thicker when hands
-  are crossed. A selected combo block shows its start and end. The dot at a hand shows
-  how high it is: small at the waist, bigger at the shoulder, with a ring over the head.
-- **Animation:** a selected move plays in the leader view: **Play**, a scrubber and the
-  current count. The follower turns the right way (from the move's name or lead note),
-  passes the leader's right side in a cross body lead, and goes round the leader when he
-  turns. Practice mode animates the same sketch in time with the beat.
-- **Whole combo:** with no domino selected, the leader view plays the whole combo move
-  after move (combo blocks play their parts) and lights up the domino that is playing.
+- **Leader view:** the couple from above as the leader sees it. You (navy) are at the
+  bottom facing up, your partner (purple) is placed from the orientation and frame, and
+  each of you has a soft view cone. Arms are drawn from the handholds with a light edge,
+  so they show over a body; the top hand is thicker when hands are crossed. The dot at a
+  hand shows how high it is: small at the waist, bigger at the shoulder, with a ring over the head.
+- **Animation:** a selected move plays in the leader view with the count (1-8), a
+  scrubber in the colours of the moves and a round play button. Turns go the way the
+  move's name or lead note says, the joined hands go up over the turning head, and in a
+  face loop the hand goes over her head without a turn. The picture turns with the
+  leader: when the leader turns and that moves the partner round him (a half turn into
+  the leader's shadow), the leader is drawn still, the partner goes round, and a line
+  under the animation says so. Practice mode animates the same drawing on the beat.
+- **Whole combo:** with no station selected, the leader view plays the whole combo move
+  after move (combo blocks play their parts) and lights up the station that is playing.
 - **Body limits:** every frame keeps to what bodies can do, seen from above: arms reach
   only so far, a hand doesn't go behind its own back (except a hammerlock or a reach to
   the leader's neck), the joined hands rise over the follower's head in a turn, the
@@ -70,35 +76,41 @@ as text, save as compound, clear, start weight) are in the **More** menu.
   top one stays low, and an arm only folds behind a back in a turn away from it (a left
   turn for the right arm). Height is three levels (waist, shoulder, over the head), not a
   full 3D model. Every move of every position passes these checks; a move that breaks one
-  can be listed in `test/known-issues.mjs` (it is empty now).
-- **Map of positions:** every position with arrows for the moves between them. Your
-  combo is drawn as a path. Click a position for its ways in and out, to start a
-  new combo there, or to get the shortest routes there from the end of your
-  combo. Tap an arrow to see its moves and add one. **Around …** shows just one
-  position and its neighbours (tap a neighbour to move on); it's the default on
-  phones. **Whole map** shows everything.
+  can be listed in `test/known-issues.mjs` (it is empty now). Arms that still snap
+  between two frames are listed in `test/motion.test.mjs` (`KNOWN_ARM_HOPS`).
+- **Map:** a hub around one position, like a station on a metro map. The positions one
+  move away sit on the inner ring, joined to the middle by a solid blue line (moves), a
+  dotted orange line (adjusters) or both; every other position is a dot on the outer
+  ring. Tap a station to move it to the middle, tap a line for its moves. The side panel
+  shows the position, its ways out (tap one to add it when your combo ends here), **Start
+  a combo here** and **Routes from my combo**. Under the hub, **All positions** shows the
+  whole graph as dots (positions linked by moves sit close together); tap one to centre
+  the hub there.
 
 **Practice**
 - **Practice** steps through the combo one big card at a time: the move, its counts
-  on the 8, notes and the start/end sketches. **Play** advances on the beat (tempo
+  on the 8, notes and the animated sketch. **Play** advances on the beat (tempo
   slider, optional click or spoken count, loop). Catches and releases show on the card they
   happen in.
 
-**Move library**
-- Every move in one searchable list (name, notes or position), filterable by kind
-  and "needs review", with where it starts and ends. **Add** appears when the move
-  can follow the end of your combo.
+**Library**
+- Every move in one searchable list (name, notes or position), filterable by kind and
+  "to check", with where it starts and ends, its counts and your level. **Add** appears
+  when the move can follow the end of your combo. **Positions** lists every position with
+  its sketch and notation.
 
-**Levels**
-- Every move has a draft level (beginner, intermediate, advanced; compounds take
-  their hardest part). The **Level** filter hides harder moves everywhere,
-  including random combos and bridges.
+**Levels are yours**
+- Moves start unrated. Tap ○○○ in the Library to rate one beginner, intermediate or
+  advanced (tap again to change, a fourth time to clear); ratings stay in this browser.
+  **More › Show moves** hides moves you rated above a level everywhere, including random
+  combos and bridges. Unrated moves always show.
 
 **Add your own moves**
-- **My moves and compounds → Add a move:** name, kind, level, counts, where it can
-  start, where it ends. It's checked like the build would check it and works
-  right away in this browser. **Copy YAML** gives the lines to paste into
-  `data/moves.yaml` to make it permanent.
+- **My moves → New move:** name, kind, length (4 or 8 counts, or on the fly), where it
+  ends and every position it starts in. It's checked like the build would check it and
+  works right away in this browser. Moves stay short: anything longer is a **combo**
+  (build it, then **More › Save as combo**); combos have their own tab. **For the data
+  file (YAML)** gives the lines to paste into `data/moves.yaml` to make them permanent.
 
 **Keep and share**
 - **Share link:** the combo lives in the URL, so a link opens the same combo
@@ -106,10 +118,9 @@ as text, save as compound, clear, start weight) are in the **More** menu.
   whoever opens it.
 - **Copy as text:** the combo as one line of move names and counts plus its link,
   ready for a chat message.
-- **Save as compound:** stores the strip as one block in this browser. Copy its
-  YAML into `data/moves.yaml` to make it permanent.
+- **Save as combo:** stores the line as one block in this browser.
 
-![Map of positions](docs/map.png)
+![Map: a hub around one position, with the overview of all positions](docs/map.png)
 
 ## The data
 
@@ -168,13 +179,13 @@ From the repository:
 | `src/review.js` | Sorts the moves into review groups (in place, let go / catch, turns, paths), says in words what the hands do and how far the animation really turns someone. |
 | `web/review.html` | The review page: a table or filmstrip per move with ✓ / ✗ and a note; marks stay in the browser and "Copy my notes" lists the wrong ones. |
 | `src/reach.js` | Body limits: arm reach, how far a shoulder can rotate back, bodies that may not overlap, arms that may not go through a body or (crossed) through the arm on top. The sketch and the animation keep to them; `npm run build` and the tests check every frame of every move. |
-| `src/map.js` | Position map: deterministic force layout and SVG. |
+| `src/map.js` | Position map: the hub around one position, and a deterministic force layout for the overview of all positions. |
 | `src/share.js` | Share links (with moves added in the app), YAML and text exports. |
-| `web/index.html`, `web/style.css` | The page. `web/data.js` is generated by the build. |
+| `web/index.html`, `web/style.css` | The page and its look (MVV colours as CSS variables; see `docs/design/HANDOFF.md`). `web/fonts/` holds the Asap font (SIL Open Font License). `web/data.js` is generated by the build. |
 | `web/app.js` | Page entry point: redraws, toolbar, keyboard shortcuts, boot. Loaded last. |
 | `web/ui/dom.js` | Small DOM helpers and the `App` object every UI file adds to. Read its header first. |
 | `web/ui/state.js` | The combo, undo, own moves, and every action that changes the combo (`App.edit`). |
-| `web/ui/strip.js`, `panel.js`, `map-panel.js`, `reference.js`, `my-moves.js` | One file per part of the page: dominoes, the panel under them, the map, library and positions, the add-a-move form. |
+| `web/ui/strip.js`, `panel.js`, `map-panel.js`, `reference.js`, `my-moves.js` | One file per part of the page: the combo line, the panel under it, the map, library and positions, my moves and combos. |
 | `web/ui/layout.js` | The four tabs, the More menu, and scrolling the panel into view on phones. |
 | `web/ui/movie.js` | The animated leader view of a move: Play, scrubber and count. |
 | `web/practice.js` | Practice mode (beat counter, click, spoken count). |
