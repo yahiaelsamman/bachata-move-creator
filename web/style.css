@@ -344,14 +344,20 @@ button.primary:disabled { background: var(--bg); color: var(--muted); border-col
 .sk-legend { display: block; height: 18px; max-width: 230px; }
 .sk-key { font-size: 9.5px; fill: var(--muted); font-family: 'Asap', sans-serif; font-weight: 600; }
 
-/* Player: count, a scrubber over the moves' colours, a round play button. */
-.mv-controls { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: end; gap: 14px; margin-top: 4px; }
-.mv-beats { display: flex; flex-direction: column; gap: 2px; }
-.mv-beats .eyebrow { font-size: 10px; }
-.mv-beats .nums { display: flex; gap: 2px; font-size: 13px; font-weight: 700; color: var(--muted); }
-.mv-beats .nums span { width: 18px; height: 20px; display: inline-grid; place-items: center; border-radius: 5px; }
-.mv-beats .nums span.now { background: var(--ink); color: var(--on-ink); }
-.mv-track { position: relative; height: 28px; align-self: center; }
+/* Player: the counts (tap one to stop there), a scrubber over the moves' colours, step back / play / step on. */
+.mv-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; margin-top: 4px; }
+.mv-beats { display: flex; flex-direction: column; gap: 3px; }
+.mv-beats .eyebrow { font-size: 10px; letter-spacing: 1.5px; }
+.mv-beats .nums { display: flex; gap: 2px; }
+.mv-beats .num {
+  width: 26px; height: 28px; padding: 0; border: 0; border-radius: 6px;
+  display: inline-grid; place-items: center;
+  background: none; color: var(--muted); font-size: 14px; font-weight: 700;
+}
+.mv-beats .num:hover:not(:disabled) { background: var(--bg); color: var(--ink); }
+.mv-beats .num.now { background: var(--ink); color: var(--on-ink); }
+.mv-beats .num:disabled { opacity: 0.35; }
+.mv-track { position: relative; height: 28px; flex: 1 1 140px; align-self: center; }
 .mv-segs { position: absolute; left: 0; right: 0; top: 11px; height: 6px; display: flex; gap: 3px; }
 .mv-segs i { height: 100%; background: var(--k, var(--move)); border-radius: 2px; min-width: 3px; }
 .mv-track input[type="range"] {
@@ -365,12 +371,14 @@ button.primary:disabled { background: var(--bg); color: var(--muted); border-col
   background: var(--ink); border: 2px solid var(--bg);
 }
 .mv-track input[type="range"]::-moz-range-thumb { width: 6px; height: 24px; border-radius: 4px; background: var(--ink); border: 2px solid var(--bg); }
+.mv-buttons { display: flex; align-items: center; gap: 6px; }
 .mv-play {
   width: 48px; height: 48px; padding: 0; border-radius: 50%;
   background: var(--ink); color: var(--on-ink); font-size: 17px; line-height: 1;
   display: grid; place-items: center;
 }
 .mv-play:hover { background: #2c3a60; }
+.mv-step { width: 36px; height: 36px; padding: 0; border-radius: 50%; font-size: 20px; line-height: 1; display: grid; place-items: center; background: var(--bg); }
 .mv-count { font-size: 13px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; min-height: 1.4em; }
 
 /* "How to use" under the build view. */
@@ -581,7 +589,11 @@ dialog.practice::backdrop { background: rgba(27, 38, 68, 0.5); }
   .leader-view .sketch { max-height: 30vh; }
   .leader-view .sk-label { font-size: 10px; }
   .leader-view .sk-legend, .leader-view figcaption { display: none; }
-  .mv-controls { gap: 10px; }
+  .mv-controls { gap: 8px 10px; }
+  .mv-beats { flex-basis: 100%; }
+  .mv-beats .nums { justify-content: space-between; }
+  .mv-beats .num { width: 40px; height: 44px; font-size: 16px; }
+  .mv-step { width: 44px; height: 44px; }
   .panel-main { background: var(--panel); border: 2px solid var(--ink); border-radius: var(--radius); padding: 12px 14px 4px; }
   .panel-head h2 { font-size: 19px; min-width: 0; flex: 0 1 auto; }
   .options button { min-height: 48px; padding: 8px 0; }

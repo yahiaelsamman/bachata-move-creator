@@ -135,6 +135,25 @@ const flows = {
     assert.equal(await art(), first, 'scrubbing back to 0 shows the start again');
   },
 
+  async 'stop on a count, then step a quarter count at a time'() {
+    const page = await open('#start=open_LR&weight=mirrored&moves=basic,follower-right-turn');
+    await page.locator('.domino').nth(1).click();              // the turn on 5-8
+    assert.ok(await page.locator('.mv-beats .num', { hasText: '3' }).isDisabled(), 'counts outside the move are off');
+    const first = await page.locator('.movie .sk-art').innerHTML();
+    await page.locator('.mv-beats .num', { hasText: '7' }).click();
+    assert.equal(await text(page, '.mv-count'), 'count 7');
+    assert.equal(await page.locator('.mv-beats .num.now').innerText(), '7');
+    assert.notEqual(await page.locator('.movie .sk-art').innerHTML(), first);
+    await page.locator('.mv-step[aria-label="A quarter count forward"]').click();
+    await page.locator('.mv-step[aria-label="A quarter count forward"]').click();
+    assert.equal(await text(page, '.mv-count'), 'count 7½');
+    await page.locator('.mv-step[aria-label="A quarter count back"]').click();
+    assert.equal(await text(page, '.mv-count'), 'count 7¼');
+    await page.locator('.movie input[type=range]').press('Shift+ArrowRight');
+    assert.equal(await text(page, '.mv-count'), 'count 8');
+    assert.equal(await page.locator('.mv-play').getAttribute('aria-label'), 'Play', 'stays paused');
+  },
+
   async 'a connector (0 counts) gets a short animation; a combo block keeps start and end sketches'() {
     const page = await open('#start=open_LR&weight=mirrored&moves=catch-second-hand,classic-opener');
     await page.locator('.domino').nth(0).click();

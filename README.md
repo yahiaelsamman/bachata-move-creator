@@ -60,7 +60,10 @@ filter, start weight) are in the **More** menu. On a phone the tabs sit at the b
   so they show over a body; the top hand is thicker when hands are crossed. The dot at a
   hand shows how high it is: small at the waist, bigger at the shoulder, with a ring over the head.
 - **Animation:** a selected move plays in the leader view with the count (1-8), a
-  scrubber in the colours of the moves and a round play button. Turns go the way the
+  scrubber in the colours of the moves and a round play button. Tap a count to stop
+  right there (say in the middle of a turn on 3), and step a quarter count back or
+  forward with ‹ › (or the arrow keys on the scrubber; Shift for a whole count). Paused,
+  the count shows quarters: 3, 3¼, 3½, 3¾. Turns go the way the
   move's name or lead note says, the joined hands go up over the turning head, and in a
   face loop the hand goes over her head without a turn. The picture turns with the
   leader: when the leader turns and that moves the partner round him (a half turn into

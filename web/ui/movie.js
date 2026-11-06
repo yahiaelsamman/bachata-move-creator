@@ -59,31 +59,54 @@
     return { seg: segments[segments.length - 1], t: 1 };
   }
 
+  /** "3", "3¼", "3½", "3¾": the count, with quarters when paused between counts. */
+  const QUARTERS = ['', '¼', '½', '¾'];
+  App.countText = function (seg, t, exact) {
+    const pos = Math.min(seg.counts, t * seg.counts);
+    const q = exact && pos < seg.counts ? Math.floor((pos - Math.floor(pos)) * 4 + 1e-6) : 0;
+    return `${countAt(seg, t)}${QUARTERS[q]}`;
+  };
+
   /**
-   * The player: a sketch, the count (1-8), a scrubber drawn over the moves' colours, a round Play/Pause
-   * button and a status line. `label(seg, t)` says where we are; `onSegment(seg | null)` is told which
+   * The player: a sketch, the counts 1-8 (tap one to jump there and stop), a scrubber drawn over the
+   * moves' colours, Play/Pause between two buttons that step a quarter count back or forward, and a
+   * status line. `label(seg, t, paused)` says where we are; `onSegment(seg | null)` is told which
    * segment shows (null when stopped).
    */
   function player(segments, { label, onSegment = () => {}, ariaLabel }) {
     const total = segments.reduce((sum, s) => sum + durationOf(s), 0);
     const bounds = sharedBounds(segments);
+    const starts = [];                               // ms at which each segment starts
+    segments.reduce((ms, s) => { starts.push(ms); return ms + durationOf(s); }, 0);
     const art = h('div', { class: 'sk-art', role: 'img', 'aria-label': `Leader view, seen from above: ${ariaLabel.replace(/^Position in /, '')}` });
     const scrub = h('input', { type: 'range', min: '0', max: '1000', value: '0', 'aria-label': ariaLabel });
-    const status = h('span', { class: 'mv-count', 'aria-live': 'off' });
-    const nums = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => h('span', {}, String(n)));
-    const beats = h('div', { class: 'mv-beats', 'aria-hidden': 'true' }, h('span', { class: 'eyebrow' }, 'Count'), h('div', { class: 'nums' }, nums));
+    const status = h('span', { class: 'mv-count', 'aria-live': 'polite' });
+    const nums = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => button(String(n), () => goToCount(n), { class: 'num', 'aria-label': `Stop on count ${n}`, title: `Stop on count ${n}` }));
+    const beats = h('div', { class: 'mv-beats' }, h('span', { class: 'eyebrow' }, 'Count · tap to stop there'), h('div', { class: 'nums' }, nums));
     const segs = h('div', { class: 'mv-segs', 'aria-hidden': 'true' },
       segments.map((s) => h('i', { class: `k-${s.move.kind}`, style: `flex: ${durationOf(s)} 1 0` })));
     let raf = null;
     let startedAt = 0;
+    let at = 0;                                      // where we are, in ms
 
-    function draw(fraction, playing) {
-      const { seg, t } = locate(segments, fraction * total);
+    /** The counts (1-8) that occur in the animation, with the time each one starts. */
+    const beatTimes = [];
+    segments.forEach((s, i) => {
+      for (let k = 0; k < s.counts; k++) beatTimes.push({ ms: starts[i] + k * BEAT_MS, count: ((s.beat - 1 + k) % 8) + 1, seg: i });
+    });
+    const segAt = (ms) => Math.max(0, starts.findIndex((st, i) => ms >= st && ms < st + durationOf(segments[i])));
+
+    function draw(ms, playing) {
+      at = Math.max(0, Math.min(total, ms));
+      const { seg, t } = locate(segments, at);
       art.innerHTML = Motion.frameSVG(seg.move, seg.from, seg.to, t, bounds);
-      scrub.value = String(Math.round(fraction * 1000));
-      status.textContent = label(seg, t);
+      scrub.value = String(Math.round((at / total) * 1000));
+      status.textContent = label(seg, t, !playing);
       const now = seg.counts ? countAt(seg, t) : 0;
-      nums.forEach((el, i) => el.classList.toggle('now', i + 1 === now));
+      nums.forEach((el, i) => {
+        el.classList.toggle('now', i + 1 === now);
+        el.disabled = !beatTimes.some((b) => b.count === i + 1);
+      });
       onSegment(playing ? seg : null);
     }
     function setButton(playing) {
@@ -99,29 +122,59 @@
     }
     function step(now) {
       if (!art.isConnected) return stop();         // the panel was redrawn
-      const fraction = Math.min(1, (now - startedAt) / total);
-      draw(fraction, fraction < 1);
-      if (fraction < 1) raf = requestAnimationFrame(step); else stop();
+      const ms = Math.min(total, now - startedAt);
+      draw(ms, ms < total);
+      if (ms < total) raf = requestAnimationFrame(step); else stop();
+    }
+    /** Stop and show a moment (ms). */
+    function showAt(ms) { stop(); draw(ms, false); }
+    /** Jump to the start of count n: in the move on screen if it has that count, else the nearest one. */
+    function goToCount(n) {
+      const cur = segAt(at);
+      const options = beatTimes.filter((b) => b.count === n);
+      if (!options.length) return;
+      const here = options.filter((b) => b.seg === cur);
+      const pick = (here.length ? here : options).reduce((a, b) => (Math.abs(b.ms - at) < Math.abs(a.ms - at) ? b : a));
+      showAt(pick.ms);
+    }
+    /** A quarter count back or forward (a 0-count move takes four steps too). */
+    function nudge(dir, whole = false) {
+      const seg = segments[segAt(Math.min(at, total - 1e-6))];
+      const unit = (seg.counts ? BEAT_MS : QUICK_MS) / (whole ? 1 : 4);
+      const grid = Math.round(at / unit) * unit;      // snap to the quarter grid, then move
+      showAt(Math.abs(grid - at) > 1 ? (dir > 0 ? Math.ceil(at / unit) : Math.floor(at / unit)) * unit : grid + dir * unit);
     }
     const play = button('▶', () => {
       if (raf) return stop();
-      const from = Number(scrub.value) >= 1000 ? 0 : Number(scrub.value) / 1000;   // at the end: replay
-      startedAt = performance.now() - from * total;
+      const from = at >= total ? 0 : at;              // at the end: replay
+      startedAt = performance.now() - from;
       setButton(true);
       raf = requestAnimationFrame(step);
     }, { class: 'mv-play' });
     setButton(false);
-    scrub.addEventListener('input', () => { stop(); draw(Number(scrub.value) / 1000, false); });
+    const back = button('‹', () => nudge(-1), { class: 'mv-step', 'aria-label': 'A quarter count back', title: 'A quarter count back (← on the slider)' });
+    const fwd = button('›', () => nudge(1), { class: 'mv-step', 'aria-label': 'A quarter count forward', title: 'A quarter count forward (→ on the slider)' });
+    scrub.addEventListener('input', () => showAt((Number(scrub.value) / 1000) * total));
+    // Arrow keys on the slider: a quarter count; with Shift, a whole count.
+    scrub.addEventListener('keydown', (ev) => {
+      const dir = { ArrowLeft: -1, ArrowDown: -1, ArrowRight: 1, ArrowUp: 1 }[ev.key];
+      if (!dir) return;
+      ev.preventDefault();
+      nudge(dir, ev.shiftKey);
+    });
 
     draw(0, false);
-    return { art, status, controls: h('div', { class: 'mv-controls' }, beats, h('div', { class: 'mv-track' }, segs, scrub), play) };
+    return {
+      art, status,
+      controls: h('div', { class: 'mv-controls' }, beats, h('div', { class: 'mv-track' }, segs, scrub), h('div', { class: 'mv-buttons' }, back, play, fwd)),
+    };
   }
 
   App.movieFigure = function (it) {
     const seg = segmentOf(it, null);
     const { art, status, controls } = player([seg], {
       ariaLabel: `Position in ${it.move.name}`,
-      label: (s, t) => (s.counts ? `count ${countAt(s, t)}` : t < 0.5 ? 'start' : 'end'),
+      label: (s, t, paused) => (s.counts ? `count ${App.countText(s, t, paused)}` : t < 0.5 ? 'start' : 'end'),
     });
     return h('figure', { class: 'sk-fig movie' }, art, controls, status, App.heightKey(),
       h('figcaption', {}, viewTurnsNote(seg), h('strong', {}, 'Start: '), posName(it.from), h('br'), h('strong', {}, 'End: '), posName(it.to)));
@@ -153,7 +206,7 @@
     const dominoes = result.items.length;
     const { art, status, controls } = player(segments, {
       ariaLabel: 'Position in the combo',
-      label: (s, t) => `${s.index + 1}/${dominoes} · ${s.move.name}` + (s.counts ? ` · count ${countAt(s, t)}` : ''),
+      label: (s, t, paused) => `${s.index + 1}/${dominoes} · ${s.move.name}` + (s.counts ? ` · count ${App.countText(s, t, paused)}` : ''),
       onSegment: (s) => highlight(s ? s.index : null),
     });
     const breaks = result.items.filter((it) => it.broken).length;
